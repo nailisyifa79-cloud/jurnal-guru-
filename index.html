@@ -6,7 +6,7 @@
     <title>Jurnal Guru - @Konsiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ===== SEMUA STYLE SAMA SEPERTI SEBELUMNYA ===== */
+        /* ===== SEMUA STYLE ===== */
         * { box-sizing: border-box; }
         body { 
             font-family: Arial, sans-serif; 
@@ -65,40 +65,61 @@
         .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
         .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
 
-        .login-box input {
+        /* ===== INPUT PASSWORD DENGAN TOMBOL MATA ===== */
+        .password-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .password-wrapper input {
             width: 100%;
             padding: 12px 14px;
+            padding-right: 45px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 14px;
-            margin-bottom: 12px;
             background: #f8fafc;
         }
-        .login-box input:focus {
+        .password-wrapper input:focus {
             border-color: #2563eb;
             outline: none;
             background: white;
         }
+        .password-wrapper .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #94a3b8;
+            padding: 4px;
+            transition: 0.3s;
+            border-radius: 8px;
+        }
+        .password-wrapper .toggle-password:hover {
+            color: #2563eb;
+            background: #f1f5f9;
+        }
 
-        /* ===== KHUSUS: Input Kode Akses ===== */
-        .login-box .kode-akses {
-            border-color: #f59e0b;
-            background: #fffbeb;
+        /* Kode Akses dengan warna khusus */
+        .kode-akses {
+            border-color: #f59e0b !important;
+            background: #fffbeb !important;
         }
-        .login-box .kode-akses:focus {
-            border-color: #d97706;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+        .kode-akses:focus {
+            border-color: #d97706 !important;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
         }
-        .login-box .label-kode {
+        .label-kode {
             color: #92400e;
             font-weight: 600;
             font-size: 13px;
             display: block;
             margin-bottom: 4px;
         }
-        .login-box .label-kode .icon {
-            font-size: 14px;
-        }
+        .label-kode .icon { font-size: 14px; }
 
         .login-box .btn {
             width: 100%;
@@ -134,7 +155,6 @@
         }
         .login-box .brand-footer span { color: #2563eb; font-weight: 600; }
 
-        /* ===== INFO KODE AKSES ===== */
         .info-kode {
             background: #fef3c7;
             border: 1px solid #fcd34d;
@@ -147,7 +167,7 @@
         }
         .info-kode .highlight { font-weight: 700; }
 
-        /* ===== APP (sama seperti sebelumnya) ===== */
+        /* ===== APP ===== */
         #app {
             max-width: 480px;
             margin: 0 auto;
@@ -187,7 +207,7 @@
         }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
-        /* Bottom Nav */
+        /* ===== BOTTOM NAV - Dengan status disabled ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -214,15 +234,46 @@
             color: #94a3b8;
             font-size: 10px;
             font-weight: 500;
+            transition: 0.3s;
+            position: relative;
         }
         .bottom-nav button.active { color: #2563eb; }
         .bottom-nav button .icon { font-size: 22px; }
 
-        /* Pages */
+        /* ===== TOMBOL DISABLED (Sebelum Login) ===== */
+        .bottom-nav button.disabled {
+            color: #cbd5e1 !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+        .bottom-nav button.disabled .icon {
+            opacity: 0.5;
+        }
+        .bottom-nav button.disabled::after {
+            content: '🔒';
+            position: absolute;
+            top: -4px;
+            right: 2px;
+            font-size: 10px;
+        }
+
+        /* ===== PESAN LOCK ===== */
+        .lock-message {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 13px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+        }
+        .lock-message .icon { font-size: 28px; display: block; margin-bottom: 8px; }
+        .lock-message strong { color: #2563eb; }
+
+        /* ===== REST OF STYLE (sama seperti sebelumnya) ===== */
         .page { display: none; padding: 14px; }
         .page.active { display: block; }
 
-        /* Cards */
         .card {
             background: white;
             border-radius: 16px;
@@ -241,7 +292,6 @@
             align-items: center;
         }
 
-        /* Form */
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-bottom: 3px; }
         .form-group input, .form-group select, .form-group textarea {
@@ -288,7 +338,6 @@
             background: #eff6ff;
         }
 
-        /* Student item */
         .student-item {
             display: flex;
             align-items: center;
@@ -310,7 +359,6 @@
         .student-item .status-badge.alfa { background: #fecaca; color: #991b1b; }
         .student-item .del { color: #ef4444; font-weight: bold; cursor: pointer; font-size: 18px; }
 
-        /* Jurnal card */
         .jurnal-card {
             background: #f8fafc;
             border-radius: 12px;
@@ -324,11 +372,9 @@
         .jurnal-card .title { font-weight: 600; color: #1e293b; margin: 4px 0; }
         .jurnal-card .info { font-size: 12px; color: #475569; }
 
-        /* Empty state */
         .empty { text-align: center; padding: 30px 16px; color: #94a3b8; }
         .empty .icon { font-size: 36px; }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -349,7 +395,6 @@
         .toast.success { background: #065f46; }
         .toast.error { background: #991b1b; }
 
-        /* Footer Konsiva */
         .footer-brand {
             text-align: center;
             padding: 12px 0 6px;
@@ -360,11 +405,9 @@
         }
         .footer-brand span { color: #2563eb; font-weight: 700; }
 
-        /* Grid */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
-        /* Info box */
         .info-box {
             background: #eff6ff;
             border: 1px solid #bfdbfe;
@@ -376,7 +419,6 @@
         }
         .info-box .highlight { font-weight: 700; }
 
-        /* Petunjuk */
         .petunjuk {
             font-size: 11px;
             color: #64748b;
@@ -390,7 +432,6 @@
         .petunjuk .icon-bullet { margin-right: 4px; }
         .petunjuk strong { color: #1e293b; }
 
-        /* Count box */
         .count-box {
             display: flex;
             gap: 12px;
@@ -403,7 +444,6 @@
         .count-box .h { color: #16a34a; }
         .count-box .a { color: #dc2626; }
 
-        /* Rekap tidak hadir */
         .rekap-alfa {
             background: #fef2f2;
             border: 1px solid #fca5a5;
@@ -464,29 +504,64 @@
         <h1>Jurnal Guru</h1>
         <p class="subtitle">Masuk ke akun Anda</p>
 
-        <!-- ===== PASSWORD GLOBAL ===== -->
         <div class="info-kode">
             🔑 <span class="highlight">Kode Akses</span> didapatkan dari penjual aplikasi
         </div>
 
         <form id="loginForm">
-            <!-- INPUT KODE AKSES (BARU!) -->
-            <input type="password" id="kodeAkses" placeholder="🔑 Kode Akses" 
-                   class="kode-akses" required />
+            <!-- Kode Akses -->
+            <div class="password-wrapper">
+                <input type="password" id="kodeAkses" placeholder="🔑 Kode Akses" 
+                       class="kode-akses" required />
+                <button type="button" class="toggle-password" data-target="kodeAkses">
+                    👁️
+                </button>
+            </div>
             
-            <input type="email" id="loginEmail" placeholder="📧 Email" required />
-            <input type="password" id="loginPassword" placeholder="🔒 Password" required minlength="4" />
+            <!-- Email -->
+            <div class="password-wrapper">
+                <input type="email" id="loginEmail" placeholder="📧 Email" required />
+            </div>
+            
+            <!-- Password dengan tombol mata -->
+            <div class="password-wrapper">
+                <input type="password" id="loginPassword" placeholder="🔒 Password" required minlength="4" />
+                <button type="button" class="toggle-password" data-target="loginPassword">
+                    👁️
+                </button>
+            </div>
+
             <button type="submit" class="btn">Masuk</button>
         </form>
 
         <form id="registerForm" style="display:none; margin-top:12px;">
-            <!-- INPUT KODE AKSES (BARU!) -->
-            <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses" 
-                   class="kode-akses" required />
+            <!-- Kode Akses -->
+            <div class="password-wrapper">
+                <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses" 
+                       class="kode-akses" required />
+                <button type="button" class="toggle-password" data-target="kodeAksesRegister">
+                    👁️
+                </button>
+            </div>
             
-            <input type="text" id="registerName" placeholder="👤 Nama Lengkap" required />
-            <input type="email" id="registerEmail" placeholder="📧 Email" required />
-            <input type="password" id="registerPassword" placeholder="🔒 Password (min 4)" required minlength="4" />
+            <!-- Nama -->
+            <div class="password-wrapper">
+                <input type="text" id="registerName" placeholder="👤 Nama Lengkap" required />
+            </div>
+            
+            <!-- Email -->
+            <div class="password-wrapper">
+                <input type="email" id="registerEmail" placeholder="📧 Email" required />
+            </div>
+            
+            <!-- Password dengan tombol mata -->
+            <div class="password-wrapper">
+                <input type="password" id="registerPassword" placeholder="🔒 Password (min 4)" required minlength="4" />
+                <button type="button" class="toggle-password" data-target="registerPassword">
+                    👁️
+                </button>
+            </div>
+
             <button type="submit" class="btn">Daftar</button>
         </form>
 
@@ -539,162 +614,201 @@
 
     <!-- ===== PAGE: JURNAL ===== -->
     <div id="pageJurnal" class="page">
-        <div class="card">
-            <div class="card-title"><span>✏️ Buat Jurnal</span></div>
+        <!-- Lock message untuk yang belum login -->
+        <div id="jurnalLock" class="lock-message" style="display:none;">
+            <div class="icon">🔒</div>
+            <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
+        </div>
 
-            <div class="info-box">
-                💡 <span class="highlight">Cara pakai:</span><br>
-                • Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b> (nama otomatis sesuai urutan absen)<br>
-                • Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama lengkap</b> siswa yang tidak hadir<br>
-                • Siswa yang tidak hadir otomatis statusnya ❌ Tidak Hadir
-            </div>
+        <!-- Konten Jurnal (hanya muncul setelah login) -->
+        <div id="jurnalContent" style="display:none;">
+            <div class="card">
+                <div class="card-title"><span>✏️ Buat Jurnal</span></div>
 
-            <div class="petunjuk">
-                <span class="icon-bullet">📌</span> <strong>Catatan:</strong><br>
-                • Untuk <strong>Semua Hadir</strong>, Anda <strong>tidak perlu</strong> menulis nama satu per satu.<br>
-                • Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong> sesuai urutan absen.<br>
-                • Untuk <strong>Tidak Hadir</strong>, tulis <strong>nama lengkap</strong> siswa yang tidak hadir.<br>
-                • Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.
-            </div>
-
-            <form id="jurnalForm">
-                <div class="form-group">
-                    <label>📅 Tanggal</label>
-                    <input type="date" id="fTanggal" required />
+                <div class="info-box">
+                    💡 <span class="highlight">Cara pakai:</span><br>
+                    • Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b> (nama otomatis sesuai urutan absen)<br>
+                    • Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama lengkap</b> siswa yang tidak hadir<br>
+                    • Siswa yang tidak hadir otomatis statusnya ❌ Tidak Hadir
                 </div>
-                <div class="grid-2">
+
+                <div class="petunjuk">
+                    <span class="icon-bullet">📌</span> <strong>Catatan:</strong><br>
+                    • Untuk <strong>Semua Hadir</strong>, Anda <strong>tidak perlu</strong> menulis nama satu per satu.<br>
+                    • Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong> sesuai urutan absen.<br>
+                    • Untuk <strong>Tidak Hadir</strong>, tulis <strong>nama lengkap</strong> siswa yang tidak hadir.<br>
+                    • Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.
+                </div>
+
+                <form id="jurnalForm">
                     <div class="form-group">
-                        <label>🏫 Kelas</label>
-                        <input type="text" id="fKelas" placeholder="Contoh: 1A / 7B / XI IPA" required />
+                        <label>📅 Tanggal</label>
+                        <input type="date" id="fTanggal" required />
                     </div>
-                    <div class="form-group">
-                        <label>📖 Mata Pelajaran</label>
-                        <input type="text" id="fMapel" placeholder="Contoh: Matematika / Biologi" required />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>📝 Materi</label>
-                    <input type="text" id="fMateri" placeholder="Contoh: Bab 1 - Pengenalan" required />
-                </div>
-                <div class="form-group">
-                    <label>📌 Catatan</label>
-                    <textarea id="fCatatan" rows="2" placeholder="Catatan tambahan..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
-                        <label style="margin:0;">👨‍🎓 Daftar Siswa</label>
-                        <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                            <button type="button" id="semuaHadirBtn" class="btn btn-success btn-sm">✅ Semua Hadir</button>
-                            <button type="button" id="tambahTidakHadirBtn" class="btn btn-warning btn-sm">➕ Tidak Hadir</button>
-                            <button type="button" id="hapusSemuaSiswaBtn" class="btn btn-danger btn-sm">🗑️</button>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>🏫 Kelas</label>
+                            <input type="text" id="fKelas" placeholder="Contoh: 1A / 7B / XI IPA" required />
+                        </div>
+                        <div class="form-group">
+                            <label>📖 Mata Pelajaran</label>
+                            <input type="text" id="fMapel" placeholder="Contoh: Matematika / Biologi" required />
                         </div>
                     </div>
-                    <div id="presensiContainer">
-                        <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa</div>
+                    <div class="form-group">
+                        <label>📝 Materi</label>
+                        <input type="text" id="fMateri" placeholder="Contoh: Bab 1 - Pengenalan" required />
                     </div>
-                    <div class="count-box">
-                        Total: <span id="totalSiswaCount">0</span> siswa ·
-                        ✅ Hadir: <span class="h" id="hadirCount">0</span> ·
-                        ❌ Tidak Hadir: <span class="a" id="alfaCount">0</span>
+                    <div class="form-group">
+                        <label>📌 Catatan</label>
+                        <textarea id="fCatatan" rows="2" placeholder="Catatan tambahan..."></textarea>
                     </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">💾 Simpan Jurnal</button>
-            </form>
+                    <div class="form-group">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
+                            <label style="margin:0;">👨‍🎓 Daftar Siswa</label>
+                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                                <button type="button" id="semuaHadirBtn" class="btn btn-success btn-sm">✅ Semua Hadir</button>
+                                <button type="button" id="tambahTidakHadirBtn" class="btn btn-warning btn-sm">➕ Tidak Hadir</button>
+                                <button type="button" id="hapusSemuaSiswaBtn" class="btn btn-danger btn-sm">🗑️</button>
+                            </div>
+                        </div>
+                        <div id="presensiContainer">
+                            <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa</div>
+                        </div>
+                        <div class="count-box">
+                            Total: <span id="totalSiswaCount">0</span> siswa ·
+                            ✅ Hadir: <span class="h" id="hadirCount">0</span> ·
+                            ❌ Tidak Hadir: <span class="a" id="alfaCount">0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">💾 Simpan Jurnal</button>
+                </form>
+            </div>
+            <div class="footer-brand"><span>@Konsiva</span> — Data di perangkat Anda</div>
         </div>
-        <div class="footer-brand"><span>@Konsiva</span> — Data di perangkat Anda</div>
     </div>
 
     <!-- ===== PAGE: RIWAYAT ===== -->
     <div id="pageRiwayat" class="page">
-        <div class="card">
-            <div class="card-title">
-                <span>📋 Riwayat Jurnal</span>
-                <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️ Hapus Semua</button>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-                <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." 
-                       style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
-                <input type="text" id="filterKelasRiwayat" placeholder="🏫 Filter Kelas..." 
-                       style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
-            </div>
-            <div id="riwayatList"></div>
-            <div id="riwayatEmpty" class="empty" style="display:none;">
-                <div class="icon">📭</div><p>Belum ada jurnal</p>
-            </div>
+        <!-- Lock message untuk yang belum login -->
+        <div id="riwayatLock" class="lock-message" style="display:none;">
+            <div class="icon">🔒</div>
+            <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
         </div>
-        <div class="footer-brand"><span>@Konsiva</span> — Semua data aman</div>
+
+        <!-- Konten Riwayat (hanya muncul setelah login) -->
+        <div id="riwayatContent" style="display:none;">
+            <div class="card">
+                <div class="card-title">
+                    <span>📋 Riwayat Jurnal</span>
+                    <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️ Hapus Semua</button>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                    <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." 
+                           style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                    <input type="text" id="filterKelasRiwayat" placeholder="🏫 Filter Kelas..." 
+                           style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                </div>
+                <div id="riwayatList"></div>
+                <div id="riwayatEmpty" class="empty" style="display:none;">
+                    <div class="icon">📭</div><p>Belum ada jurnal</p>
+                </div>
+            </div>
+            <div class="footer-brand"><span>@Konsiva</span> — Semua data aman</div>
+        </div>
     </div>
 
     <!-- ===== PAGE: LAPORAN ===== -->
     <div id="pageLaporan" class="page">
-        <div class="card">
-            <div class="card-title">
-                <span>📊 Laporan</span>
-                <button id="cetakLaporanBtn" class="btn btn-success btn-sm">🖨️ Cetak</button>
-            </div>
-
-            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-                <button id="periodeBulanan" class="btn btn-sm btn-outline active" style="flex:1;">📅 Bulanan</button>
-                <button id="periodeMingguan" class="btn btn-sm btn-outline" style="flex:1;">📅 Mingguan</button>
-            </div>
-
-            <div id="filterBulanan">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                    <div class="form-group" style="margin:0;">
-                        <label>📅 Bulan</label>
-                        <input type="month" id="laporanBulan" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
-                    </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>🏫 Kelas</label>
-                        <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" 
-                               style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
-                    </div>
-                </div>
-            </div>
-
-            <div id="filterMingguan" style="display:none;">
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                    <div class="form-group" style="margin:0;">
-                        <label>📅 Bulan</label>
-                        <input type="month" id="laporanBulanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
-                    </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>📅 Minggu ke-</label>
-                        <select id="laporanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;">
-                            <option value="1">Minggu 1</option>
-                            <option value="2">Minggu 2</option>
-                            <option value="3">Minggu 3</option>
-                            <option value="4">Minggu 4</option>
-                            <option value="5">Minggu 5</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>🏫 Kelas</label>
-                        <input type="text" id="laporanKelasMinggu" placeholder="Semua / 1A / 7B" 
-                               style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
-                    </div>
-                </div>
-                <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
-                    💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.
-                </div>
-            </div>
-
-            <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
-            <div id="laporanHasil" class="mt-3">
-                <div class="empty"><div class="icon">📊</div><p>Pilih periode & klik Tampilkan</p></div>
-            </div>
+        <!-- Lock message untuk yang belum login -->
+        <div id="laporanLock" class="lock-message" style="display:none;">
+            <div class="icon">🔒</div>
+            <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
         </div>
-        <div class="footer-brand"><span>@Konsiva</span> — Laporan siap cetak</div>
+
+        <!-- Konten Laporan (hanya muncul setelah login) -->
+        <div id="laporanContent" style="display:none;">
+            <div class="card">
+                <div class="card-title">
+                    <span>📊 Laporan</span>
+                    <button id="cetakLaporanBtn" class="btn btn-success btn-sm">🖨️ Cetak</button>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                    <button id="periodeBulanan" class="btn btn-sm btn-outline active" style="flex:1;">📅 Bulanan</button>
+                    <button id="periodeMingguan" class="btn btn-sm btn-outline" style="flex:1;">📅 Mingguan</button>
+                </div>
+
+                <div id="filterBulanan">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div class="form-group" style="margin:0;">
+                            <label>📅 Bulan</label>
+                            <input type="month" id="laporanBulan" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>🏫 Kelas</label>
+                            <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" 
+                                   style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="filterMingguan" style="display:none;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                        <div class="form-group" style="margin:0;">
+                            <label>📅 Bulan</label>
+                            <input type="month" id="laporanBulanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>📅 Minggu ke-</label>
+                            <select id="laporanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;">
+                                <option value="1">Minggu 1</option>
+                                <option value="2">Minggu 2</option>
+                                <option value="3">Minggu 3</option>
+                                <option value="4">Minggu 4</option>
+                                <option value="5">Minggu 5</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>🏫 Kelas</label>
+                            <input type="text" id="laporanKelasMinggu" placeholder="Semua / 1A / 7B" 
+                                   style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                        </div>
+                    </div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
+                        💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.
+                    </div>
+                </div>
+
+                <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
+                <div id="laporanHasil" class="mt-3">
+                    <div class="empty"><div class="icon">📊</div><p>Pilih periode & klik Tampilkan</p></div>
+                </div>
+            </div>
+            <div class="footer-brand"><span>@Konsiva</span> — Laporan siap cetak</div>
+        </div>
     </div>
 
     <!-- ===== BOTTOM NAV ===== -->
     <div class="bottom-nav">
-        <button class="active" data-page="home"><span class="icon">🏠</span>Beranda</button>
-        <button data-page="jurnal"><span class="icon">✏️</span>Jurnal</button>
-        <button data-page="riwayat"><span class="icon">📋</span>Riwayat</button>
-        <button data-page="laporan"><span class="icon">📊</span>Laporan</button>
+        <button class="nav-item active" data-page="home" id="navHome">
+            <span class="icon">🏠</span>
+            <span>Beranda</span>
+        </button>
+        <button class="nav-item disabled" data-page="jurnal" id="navJurnal">
+            <span class="icon">✏️</span>
+            <span>Jurnal</span>
+        </button>
+        <button class="nav-item disabled" data-page="riwayat" id="navRiwayat">
+            <span class="icon">📋</span>
+            <span>Riwayat</span>
+        </button>
+        <button class="nav-item" data-page="laporan" id="navLaporan">
+            <span class="icon">📊</span>
+            <span>Laporan</span>
+        </button>
     </div>
 </div>
 
@@ -706,10 +820,9 @@
     'use strict';
 
     // ================================================================
-    // 🔑 KONFIGURASI PASSWORD GLOBAL (GANTI SESUAI KEINGINAN ANDA!)
+    // 🔑 KONFIGURASI PASSWORD GLOBAL
     // ================================================================
-    const KODE_AKSES = 'KONSIVA2026';  // <-- GANTI dengan kode pilihan Anda!
-    // ================================================================
+    const KODE_AKSES = 'JURNAL123';  // <-- GANTI dengan kode pilihan Anda!
 
     const STORAGE_KEY = 'jurnalData';
     const USER_KEY = 'jurnalUser';
@@ -752,6 +865,21 @@
         riwayat: $('pageRiwayat'),
         laporan: $('pageLaporan')
     };
+
+    // Lock messages
+    const jurnalLock = $('jurnalLock');
+    const jurnalContent = $('jurnalContent');
+    const riwayatLock = $('riwayatLock');
+    const riwayatContent = $('riwayatContent');
+    const laporanLock = $('laporanLock');
+    const laporanContent = $('laporanContent');
+
+    // Nav
+    const navHome = $('navHome');
+    const navJurnal = $('navJurnal');
+    const navRiwayat = $('navRiwayat');
+    const navLaporan = $('navLaporan');
+    const navItems = qsa('.nav-item');
 
     // Form
     const jurnalForm = $('jurnalForm');
@@ -798,8 +926,71 @@
     // Toast
     const toast = $('toast');
 
-    // Nav
-    const navBtns = qsa('.bottom-nav button');
+    // ================================================================
+    // 🔐 FUNGSI CEK LOGIN
+    // ================================================================
+    function isLoggedIn() {
+        return currentUser !== null;
+    }
+
+    // ================================================================
+    // 🔐 UPDATE NAVIGASI (Enable/Disable menu)
+    // ================================================================
+    function updateNavigation() {
+        const loggedIn = isLoggedIn();
+
+        // Jurnal
+        if (loggedIn) {
+            navJurnal.classList.remove('disabled');
+            jurnalLock.style.display = 'none';
+            jurnalContent.style.display = 'block';
+        } else {
+            navJurnal.classList.add('disabled');
+            jurnalLock.style.display = 'block';
+            jurnalContent.style.display = 'none';
+        }
+
+        // Riwayat
+        if (loggedIn) {
+            navRiwayat.classList.remove('disabled');
+            riwayatLock.style.display = 'none';
+            riwayatContent.style.display = 'block';
+        } else {
+            navRiwayat.classList.add('disabled');
+            riwayatLock.style.display = 'block';
+            riwayatContent.style.display = 'none';
+        }
+
+        // Laporan
+        if (loggedIn) {
+            navLaporan.classList.remove('disabled');
+            laporanLock.style.display = 'none';
+            laporanContent.style.display = 'block';
+        } else {
+            navLaporan.classList.add('disabled');
+            laporanLock.style.display = 'block';
+            laporanContent.style.display = 'none';
+        }
+    }
+
+    // ================================================================
+    // 👁️ TOMBOL MATA UNTUK LIHAT PASSWORD
+    // ================================================================
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const input = document.getElementById(targetId);
+            if (input) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    this.textContent = '👁️';
+                }
+            }
+        });
+    });
 
     // ===== UTILITY =====
     function formatDate(tgl) {
@@ -868,6 +1059,7 @@
         loadData();
         renderAll();
         setDefaults();
+        updateNavigation();
     }
 
     // Login
@@ -878,7 +1070,6 @@
         const email = loginEmail.value.trim();
         const pass = loginPassword.value.trim();
 
-        // CEK KODE AKSES
         if (!cekKodeAkses(kode)) {
             showToast('❌ Kode Akses salah! Hubungi penjual.', 'error');
             kodeAkses.value = '';
@@ -916,7 +1107,6 @@
         const email = registerEmail.value.trim();
         const pass = registerPassword.value.trim();
 
-        // CEK KODE AKSES
         if (!cekKodeAkses(kode)) {
             showToast('❌ Kode Akses salah! Hubungi penjual.', 'error');
             kodeAksesRegister.value = '';
@@ -984,6 +1174,7 @@
             currentUser = null;
             loginPage.classList.remove('hide');
             app.classList.remove('show');
+            updateNavigation();
             showToast('👋 Sampai jumpa!');
         }
     };
@@ -1044,6 +1235,10 @@
 
     // ===== TOMBOL PRESENSI =====
     semuaHadirBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25\n\n📌 Nama siswa otomatis "Siswa 1, Siswa 2, ..." sesuai urutan absen.');
         if (input && input.trim() !== '') {
             const jumlah = parseInt(input.trim());
@@ -1071,6 +1266,10 @@
     };
 
     tambahTidakHadirBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         const nama = prompt('📝 Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\n\nContoh: Andi, Budi, Cici\n\n📌 Nama akan masuk ke laporan.');
         if (nama && nama.trim() !== '') {
             const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
@@ -1083,6 +1282,10 @@
     };
 
     hapusSemuaSiswaBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         if (siswaList.length === 0) {
             showToast('📭 Tidak ada siswa', 'info');
             return;
@@ -1097,6 +1300,11 @@
     // ===== FORM JURNAL =====
     jurnalForm.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
 
         const tanggal = fTanggal.value.trim();
         const kelas = fKelas.value.trim();
@@ -1207,6 +1415,8 @@
 
     // RIWAYAT
     function renderRiwayat() {
+        if (!isLoggedIn()) return;
+
         const txt = filterRiwayat.value.trim().toLowerCase();
         const kl = filterKelasRiwayat.value.trim().toLowerCase();
 
@@ -1279,6 +1489,10 @@
     filterKelasRiwayat.oninput = renderRiwayat;
 
     hapusSemuaBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         if (jurnalData.length === 0) {
             showToast('📭 Tidak ada jurnal', 'info');
             return;
@@ -1312,6 +1526,10 @@
     });
 
     tampilkanLaporanBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         if (periode === 'bulanan') {
             tampilkanLaporanBulanan();
         } else {
@@ -1477,6 +1695,10 @@
 
     // ===== CETAK LAPORAN =====
     cetakLaporanBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         const content = laporanHasil.innerHTML;
         if (!content || content.includes('Tidak ada data')) {
             showToast('❌ Tidak ada data untuk dicetak', 'error');
@@ -1536,8 +1758,17 @@
         win.document.close();
     };
 
-    // ===== NAVIGASI =====
+    // ================================================================
+    // NAVIGASI
+    // ================================================================
     window.showPage = function(page) {
+        // Cek apakah page yang dituju memerlukan login
+        if ((page === 'jurnal' || page === 'riwayat' || page === 'laporan') && !isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+
+        // Hide semua page
         Object.keys(pages).forEach(key => {
             pages[key].classList.remove('active');
         });
@@ -1545,7 +1776,8 @@
             pages[page].classList.add('active');
         }
 
-        navBtns.forEach(btn => {
+        // Update nav
+        navItems.forEach(btn => {
             btn.classList.remove('active');
             if (btn.dataset.page === page) {
                 btn.classList.add('active');
@@ -1556,22 +1788,37 @@
         if (page === 'home') renderHome();
     };
 
-    navBtns.forEach(btn => {
-        btn.onclick = function() {
-            showPage(this.dataset.page);
-        };
+    // Event klik nav items
+    navItems.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const page = this.dataset.page;
+            
+            // Jika tombol disabled, tidak bisa diklik
+            if (this.classList.contains('disabled')) {
+                showToast('🔒 Silakan login terlebih dahulu!', 'error');
+                return;
+            }
+            
+            if (page) {
+                showPage(page);
+            }
+        });
     });
 
-    // ===== INIT =====
+    // ================================================================
+    // INIT
+    // ================================================================
     function init() {
         const loggedIn = checkAuth();
         if (!loggedIn) {
             hideSplash();
+            updateNavigation();
         } else {
             loadData();
             renderAll();
             setDefaults();
             hideSplash();
+            updateNavigation();
         }
     }
 
