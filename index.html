@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Jurnal Guru - @Konsiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ===== LIBRARY HTML2PDF ===== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* ===== SEMUA STYLE ===== */
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; min-height: 100vh; }
 
@@ -166,133 +163,39 @@
         .cetak-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
         .cetak-group .btn { flex: 1; min-width: 100px; justify-content: center; }
 
-        /* ===== PDF CONTENT STYLE ===== */
-        .pdf-content {
+        /* ===== STYLE PANDUAN PDF ===== */
+        .panduan-pdf {
+            background: #eff6ff;
+            border: 3px solid #2563eb;
+            border-radius: 16px;
             padding: 20px;
-            font-family: Arial, sans-serif;
-            background: white;
-            max-width: 900px;
-            margin: auto;
-        }
-        .pdf-content .header {
-            text-align: center;
-            border-bottom: 3px solid #2563eb;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .pdf-content .header h1 {
-            color: #2563eb;
-            font-size: 24px;
-            margin: 0;
-        }
-        .pdf-content .header p {
-            color: #64748b;
-            margin: 5px 0;
-            font-size: 14px;
-        }
-        .pdf-content .header .brand {
-            color: #2563eb;
-            font-weight: 700;
-        }
-        .pdf-content .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
             margin: 15px 0;
-        }
-        .pdf-content .stat {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 10px;
             text-align: center;
-            border: 1px solid #e2e8f0;
+            font-size: 16px;
+            color: #1e40af;
+            line-height: 2;
         }
-        .pdf-content .stat .num {
-            font-size: 24px;
+        .panduan-pdf .step {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
             font-weight: 700;
+            font-size: 16px;
+            margin-right: 8px;
         }
-        .pdf-content .stat .label {
-            font-size: 12px;
-            color: #64748b;
+        .panduan-pdf .icon-besar {
+            font-size: 28px;
         }
-        .pdf-content .stat.blue .num { color: #2563eb; }
-        .pdf-content .stat.green .num { color: #16a34a; }
-        .pdf-content .stat.red .num { color: #dc2626; }
-        .pdf-content .attendance {
-            background: #f1f5f9;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 12px 0;
-            font-size: 14px;
-        }
-        .pdf-content .attendance strong {
-            color: #2563eb;
-            font-size: 18px;
-        }
-        .pdf-content .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin: 15px 0 10px 0;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .pdf-content .rekap-alfa {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            border-radius: 10px;
-            padding: 12px;
-            margin: 10px 0;
-        }
-        .pdf-content .rekap-alfa .title {
-            font-weight: 700;
-            color: #991b1b;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-        .pdf-content .rekap-alfa .item {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px solid #fee2e2;
-            font-size: 13px;
-        }
-        .pdf-content .rekap-alfa .item:last-child { border-bottom: none; }
-        .pdf-content .rekap-alfa .item .jml {
-            background: #fee2e2;
-            padding: 1px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #991b1b;
-            font-size: 12px;
-        }
-        .pdf-content .jurnal-item {
-            background: #f8fafc;
-            padding: 10px 14px;
+        .panduan-pdf .highlight {
+            background: #fef3c7;
+            padding: 2px 12px;
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 6px;
-        }
-        .pdf-content .jurnal-item .meta {
-            font-size: 12px;
-            color: #64748b;
-        }
-        .pdf-content .jurnal-item .title {
-            font-weight: 600;
-            font-size: 14px;
-            margin: 3px 0;
-        }
-        .pdf-content .jurnal-item .info {
-            font-size: 12px;
-            color: #475569;
-        }
-        .pdf-content .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 12px;
-            border-top: 2px solid #e2e8f0;
-            color: #94a3b8;
-            font-size: 11px;
+            font-weight: 700;
+            color: #92400e;
         }
 
         @media (max-width: 480px) {
@@ -302,6 +205,7 @@
             .grid-3 { grid-template-columns: 1fr 1fr; }
             .backup-card .btn-group .btn { min-width: 80px; font-size: 12px; }
             .cetak-group .btn { min-width: 80px; font-size: 12px; }
+            .panduan-pdf { font-size: 14px; padding: 14px; }
         }
     </style>
 </head>
@@ -503,8 +407,8 @@
                     <button id="cetakLaporanBtn" class="btn btn-success" style="flex:1;">🖨️ Cetak</button>
                     <button id="simpanPdfBtn" class="btn btn-pdf" style="flex:1;">📄 Simpan PDF</button>
                 </div>
-                <div style="font-size:11px;color:#1e40af;background:#eff6ff;padding:8px 12px;border-radius:10px;margin-top:6px;text-align:center;border:1px solid #bfdbfe;">
-                    💡 <strong>Klik "Simpan PDF"</strong> → File PDF akan langsung ter-download ke HP Anda! ✅
+                <div style="font-size:12px;color:#1e40af;background:#eff6ff;padding:10px 14px;border-radius:10px;margin-top:6px;text-align:center;border:1px solid #bfdbfe;line-height:1.6;">
+                    💡 <strong>Klik "Simpan PDF"</strong> → Ikuti 3 langkah di halaman yang terbuka
                 </div>
 
                 <div id="laporanHasil" class="mt-3">
@@ -1492,7 +1396,7 @@
     };
 
     // ================================================================
-    // 📄 SIMPAN PDF - LANGSUNG DOWNLOAD (PAKAI HTML2PDF)
+    // 📄 SIMPAN PDF - DENGAN PANDUAN SANGAT JELAS (3 LANGKAH)
     // ================================================================
     simpanPdfBtn.onclick = function() {
         if (!isLoggedIn()) {
@@ -1513,9 +1417,7 @@
             return;
         }
 
-        showToast('⏳ Sedang membuat PDF...', 'info');
-        simpanPdfBtn.textContent = '⏳ Memproses...';
-        simpanPdfBtn.disabled = true;
+        showToast('📄 Membuka halaman PDF...', 'info');
 
         var bulan = laporanBulan.value;
         var kelas = laporanKelas.value;
@@ -1532,70 +1434,281 @@
             namaBulan = '';
         }
 
-        // ===== BUAT PDF CONTAINER =====
-        var pdfContainer = document.createElement('div');
-        pdfContainer.className = 'pdf-content';
+        var printWindow = window.open('', '_blank', 'width=900,height=700');
         
-        // Header
-        var header = document.createElement('div');
-        header.className = 'header';
-        header.innerHTML = `
-            <h1>📚 Laporan Jurnal Guru</h1>
-            <p>${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
-            <p class="brand">@Konsiva — Aplikasi Jurnal Guru</p>
-            <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
-        `;
-        pdfContainer.appendChild(header);
+        var htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Jurnal Guru - ${namaBulan} ${th}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 30px; 
+            max-width: 900px; 
+            margin: auto; 
+            background: white;
+            color: #1e293b;
+        }
+        /* ===== PANDUAN 3 LANGKAH ===== */
+        .panduan-3-langkah {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 4px solid #2563eb;
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .panduan-3-langkah .judul {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+        .panduan-3-langkah .judul span {
+            font-size: 24px;
+        }
+        .panduan-3-langkah .langkah {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .panduan-3-langkah .step {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 50px;
+            border: 2px solid #2563eb;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.15);
+        }
+        .panduan-3-langkah .step .nomor {
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .panduan-3-langkah .step .icon {
+            font-size: 22px;
+        }
+        .panduan-3-langkah .step .teks {
+            font-size: 14px;
+        }
+        .panduan-3-langkah .arrow {
+            font-size: 24px;
+            color: #2563eb;
+        }
+        .panduan-3-langkah .keterangan {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .panduan-3-langkah .keterangan strong {
+            color: #2563eb;
+        }
+        @media (max-width: 600px) {
+            .panduan-3-langkah .langkah { flex-direction: column; }
+            .panduan-3-langkah .arrow { transform: rotate(90deg); }
+            .panduan-3-langkah { padding: 16px; }
+        }
+        /* ===== STYLE LAPORAN ===== */
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2563eb;
+            font-size: 24px;
+            margin: 0;
+        }
+        .header p {
+            color: #64748b;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .header .brand {
+            color: #2563eb;
+            font-weight: 700;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .stat {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat .num {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .stat .label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .stat.blue .num { color: #2563eb; }
+        .stat.green .num { color: #16a34a; }
+        .stat.red .num { color: #dc2626; }
+        .attendance {
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        .attendance strong {
+            color: #2563eb;
+            font-size: 18px;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 15px 0 10px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .rekap-alfa {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        .rekap-alfa .title {
+            font-weight: 700;
+            color: #991b1b;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .rekap-alfa .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #fee2e2;
+            font-size: 13px;
+        }
+        .rekap-alfa .item:last-child { border-bottom: none; }
+        .rekap-alfa .item .jml {
+            background: #fee2e2;
+            padding: 1px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 12px;
+        }
+        .jurnal-item {
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 6px;
+        }
+        .jurnal-item .meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .jurnal-item .title {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 3px 0;
+        }
+        .jurnal-item .info {
+            font-size: 12px;
+            color: #475569;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 2px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+        @media print {
+            .panduan-3-langkah { display: none; }
+            body { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== PANDUAN 3 LANGKAH (HANYA DI LAYAR, TIDAK IKUT PRINT) ===== -->
+    <div class="panduan-3-langkah">
+        <div class="judul"><span>📄</span> 3 LANGKAH MUDAH SIMPAN PDF</div>
+        <div class="langkah">
+            <div class="step">
+                <span class="nomor">1</span>
+                <span class="icon">⋮</span>
+                <span class="teks">Klik <strong>3 titik</strong> di pojok kanan atas</span>
+            </div>
+            <span class="arrow">→</span>
+            <div class="step">
+                <span class="nomor">2</span>
+                <span class="icon">🖨️</span>
+                <span class="teks">Pilih <strong>"Cetak"</strong> atau <strong>"Print"</strong></span>
+            </div>
+            <span class="arrow">→</span>
+            <div class="step">
+                <span class="nomor">3</span>
+                <span class="icon">💾</span>
+                <span class="teks">Pilih <strong>"Save as PDF"</strong> → Klik <strong>"Simpan"</strong></span>
+            </div>
+        </div>
+        <div class="keterangan">
+            💡 <strong>Tips:</strong> Di HP, titik 3 biasanya ada di <strong>pojok kanan atas</strong> atau <strong>pojok kanan bawah</strong> browser
+        </div>
+    </div>
 
-        // Konten laporan
-        var contentDiv = document.createElement('div');
-        contentDiv.innerHTML = content;
-        pdfContainer.appendChild(contentDiv);
+    <!-- ===== LAPORAN ===== -->
+    <div class="header">
+        <h1>📚 Laporan Jurnal Guru</h1>
+        <p>${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
+        <p class="brand">@Konsiva — Aplikasi Jurnal Guru</p>
+        <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
+    </div>
+    
+    ${content}
+    
+    <div class="footer">
+        Laporan dibuat dengan <span style="color:#2563eb;font-weight:600;">@Konsiva</span> — Jurnal Guru Digital<br>
+        © ${new Date().getFullYear()} Konsiva
+    </div>
+    
+    <script>
+        // Otomatis buka print dialog setelah 1 detik
+        setTimeout(function() {
+            window.print();
+        }, 1200);
+    <\/script>
+</body>
+</html>
+    `;
 
-        // Footer
-        var footer = document.createElement('div');
-        footer.className = 'footer';
-        footer.innerHTML = `
-            Laporan dibuat dengan <span style="color:#2563eb;font-weight:600;">@Konsiva</span> — Jurnal Guru Digital<br>
-            © ${new Date().getFullYear()} Konsiva
-        `;
-        pdfContainer.appendChild(footer);
-
-        // Tambahkan ke body
-        pdfContainer.style.position = 'fixed';
-        pdfContainer.style.left = '-9999px';
-        pdfContainer.style.top = '0';
-        pdfContainer.style.width = '800px';
-        pdfContainer.style.background = 'white';
-        pdfContainer.style.padding = '20px';
-        document.body.appendChild(pdfContainer);
-
-        // ===== GENERATE PDF =====
-        var opt = {
-            margin: [10, 10, 10, 10],
-            filename: 'Laporan_Jurnal_Guru_' + (bulan || '') + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                logging: false,
-                width: 800
-            },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(pdfContainer).save().then(function() {
-            document.body.removeChild(pdfContainer);
-            simpanPdfBtn.textContent = '📄 Simpan PDF';
-            simpanPdfBtn.disabled = false;
-            showToast('✅ PDF berhasil di-download!', 'success');
-        }).catch(function(err) {
-            document.body.removeChild(pdfContainer);
-            simpanPdfBtn.textContent = '📄 Simpan PDF';
-            simpanPdfBtn.disabled = false;
-            showToast('❌ Gagal membuat PDF: ' + err.message, 'error');
-            console.error(err);
-        });
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        
+        showToast('📄 Halaman PDF terbuka!', 'success');
     };
 
     // ================================================================
