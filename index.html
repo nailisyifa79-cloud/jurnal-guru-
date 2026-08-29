@@ -65,7 +65,6 @@
         .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
         .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
 
-        /* ===== INPUT PASSWORD DENGAN TOMBOL MATA ===== */
         .password-wrapper {
             position: relative;
             margin-bottom: 12px;
@@ -103,7 +102,6 @@
             background: #f1f5f9;
         }
 
-        /* ===== KHUSUS: INPUT EMAIL ===== */
         .email-input {
             width: 100%;
             padding: 12px 14px;
@@ -120,7 +118,6 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
         }
 
-        /* ===== KODE AKSES (khusus daftar) ===== */
         .kode-akses {
             border-color: #f59e0b !important;
             background: #fffbeb !important;
@@ -480,11 +477,46 @@
         }
         .rekap-alfa .item .jml.banyak { background: #fecaca; }
 
+        /* ===== BACKUP CARD ===== */
+        .backup-card {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1px solid #bbf7d0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        .backup-card .title {
+            font-weight: 600;
+            color: #166534;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        .backup-card .desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+        .backup-card .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .backup-card .btn-group .btn {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        .btn-backup { background: #16a34a; color: white; }
+        .btn-backup:hover { background: #15803d; }
+        .btn-restore { background: #d97706; color: white; }
+        .btn-restore:hover { background: #b45309; }
+
         @media (max-width: 480px) {
             .header { padding: 12px 14px; }
             .header h2 { font-size: 16px; }
             .page { padding: 10px; }
             .grid-3 { grid-template-columns: 1fr 1fr; }
+            .backup-card .btn-group .btn { min-width: 100px; }
         }
     </style>
 </head>
@@ -508,7 +540,10 @@
         <h1>Jurnal Guru</h1>
         <p class="subtitle">Masuk ke akun Anda</p>
 
-        <!-- ===== FORM LOGIN (TANPA KODE AKSES) ===== -->
+        <div class="info-kode">
+            🔑 <span class="highlight">Kode Akses</span> didapatkan dari penjual aplikasi
+        </div>
+
         <form id="loginForm">
             <div class="password-wrapper">
                 <input type="email" id="loginEmail" placeholder="📧 Email" 
@@ -525,7 +560,6 @@
             <button type="submit" class="btn">Masuk</button>
         </form>
 
-        <!-- ===== FORM REGISTER (DENGAN KODE AKSES) ===== -->
         <form id="registerForm" style="display:none; margin-top:12px;">
             <div class="password-wrapper">
                 <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses (dari penjual)" 
@@ -697,6 +731,27 @@
                     <div class="icon">📭</div><p>Belum ada jurnal</p>
                 </div>
             </div>
+
+            <!-- ===== BACKUP & RESTORE ===== -->
+            <div class="backup-card">
+                <div class="title">💾 Backup & Restore Data</div>
+                <div class="desc">
+                    📌 Backup data untuk berjaga-jaga jika ganti HP atau HP hilang.<br>
+                    File backup bisa disimpan di Google Drive, Email, atau chat sendiri di WhatsApp.
+                </div>
+                <div class="btn-group">
+                    <button onclick="backupData()" class="btn btn-backup">
+                        💾 Backup Data
+                    </button>
+                    <button onclick="restoreData()" class="btn btn-restore">
+                        📂 Restore Data
+                    </button>
+                </div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center;">
+                    ⏰ Lakukan backup setiap 1-3 bulan sekali
+                </div>
+            </div>
+
             <div class="footer-brand"><span>@Konsiva</span> — Semua data aman</div>
         </div>
     </div>
@@ -799,7 +854,7 @@
     'use strict';
 
     // ================================================================
-    // 🔑 KONFIGURASI PASSWORD GLOBAL (HANYA UNTUK DAFTAR)
+    // 🔑 KONFIGURASI PASSWORD GLOBAL
     // ================================================================
     const KODE_AKSES = 'konsiva26';  // <-- GANTI dengan kode pilihan Anda!
 
@@ -984,14 +1039,14 @@
     }
 
     // ================================================================
-    // 🔐 CEK KODE AKSES (HANYA UNTUK DAFTAR)
+    // 🔐 CEK KODE AKSES
     // ================================================================
     function cekKodeAkses(kode) {
         return kode.trim().toUpperCase() === KODE_AKSES.trim().toUpperCase();
     }
 
     // ================================================================
-    // LOGIN (TANPA KODE AKSES)
+    // LOGIN
     // ================================================================
     function checkAuth() {
         const saved = localStorage.getItem(USER_KEY);
@@ -1019,7 +1074,7 @@
         updateNavigation();
     }
 
-    // Login - TANPA KODE AKSES
+    // Login
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -1047,7 +1102,7 @@
         }
     });
 
-    // Register - DENGAN KODE AKSES
+    // Register
     registerForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -1453,6 +1508,88 @@
             renderHome();
             showToast('🗑️ Semua dihapus', 'info');
         }
+    };
+
+    // ================================================================
+    // 💾 BACKUP & RESTORE DATA (FITUR BARU)
+    // ================================================================
+
+    // Backup Data
+    window.backupData = function() {
+        try {
+            // Ambil semua data dari localStorage
+            const data = {
+                jurnalData: localStorage.getItem(STORAGE_KEY),
+                users: localStorage.getItem(USERS_KEY),
+                user: localStorage.getItem(USER_KEY),
+                tanggal: new Date().toISOString(),
+                versi: '1.0',
+                keterangan: 'Backup Jurnal Guru'
+            };
+            
+            // Ubah ke JSON
+            const json = JSON.stringify(data, null, 2);
+            
+            // Buat file download
+            const blob = new Blob([json], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const today = new Date().toISOString().split('T')[0];
+            a.download = `backup_jurnal_guru_${today}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('✅ Backup berhasil! File sudah di-download.', 'success');
+        } catch (e) {
+            showToast('❌ Gagal backup: ' + e.message, 'error');
+        }
+    };
+
+    // Restore Data
+    window.restoreData = function() {
+        // Buat input file
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    
+                    // Validasi data
+                    if (!data.jurnalData && !data.users && !data.user) {
+                        showToast('❌ File backup tidak valid!', 'error');
+                        return;
+                    }
+                    
+                    // Konfirmasi
+                    if (!confirm('⚠️ Restore akan mengganti semua data saat ini.\n\nData yang ada sekarang akan hilang!\n\nLanjutkan?')) {
+                        return;
+                    }
+                    
+                    // Restore data
+                    if (data.jurnalData !== undefined) localStorage.setItem(STORAGE_KEY, data.jurnalData);
+                    if (data.users !== undefined) localStorage.setItem(USERS_KEY, data.users);
+                    if (data.user !== undefined) localStorage.setItem(USER_KEY, data.user);
+                    
+                    showToast('✅ Restore berhasil! Halaman akan di-refresh.', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } catch (e) {
+                    showToast('❌ File backup rusak atau tidak valid!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        input.click();
     };
 
     // ===== LAPORAN =====
