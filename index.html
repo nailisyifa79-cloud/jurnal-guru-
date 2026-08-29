@@ -6,7 +6,7 @@
     <title>Jurnal Guru - @Konsiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ===== SEMUA STYLE ===== */
+        /* ===== SEMUA STYLE SAMA SEPERTI SEBELUMNYA ===== */
         * { box-sizing: border-box; }
         body { 
             font-family: Arial, sans-serif; 
@@ -16,7 +16,6 @@
             min-height: 100vh;
         }
 
-        /* ===== SPLASH ===== */
         #splash {
             position: fixed;
             top: 0; left: 0;
@@ -42,7 +41,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
 
-        /* ===== LOGIN ===== */
         #loginPage {
             display: flex;
             justify-content: center;
@@ -174,7 +172,6 @@
         }
         .info-kode .highlight { font-weight: 700; }
 
-        /* ===== APP ===== */
         #app {
             max-width: 480px;
             margin: 0 auto;
@@ -214,6 +211,7 @@
         }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
+        /* ===== BOTTOM NAV - SEMUA MENU AKTIF SETELAH LOGIN ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -246,6 +244,7 @@
         .bottom-nav button.active { color: #2563eb; }
         .bottom-nav button .icon { font-size: 22px; }
 
+        /* ===== DISABLED HANYA SEBELUM LOGIN ===== */
         .bottom-nav button.disabled {
             color: #cbd5e1 !important;
             cursor: not-allowed !important;
@@ -262,6 +261,7 @@
             font-size: 10px;
         }
 
+        /* ===== LOCK MESSAGE HANYA SEBELUM LOGIN ===== */
         .lock-message {
             text-align: center;
             padding: 40px 20px;
@@ -340,6 +340,10 @@
             color: #2563eb;
             background: #eff6ff;
         }
+        .btn-backup { background: #16a34a; color: white; }
+        .btn-backup:hover { background: #15803d; }
+        .btn-restore { background: #d97706; color: white; }
+        .btn-restore:hover { background: #b45309; }
 
         .student-item {
             display: flex;
@@ -477,7 +481,6 @@
         }
         .rekap-alfa .item .jml.banyak { background: #fecaca; }
 
-        /* ===== BACKUP CARD ===== */
         .backup-card {
             background: linear-gradient(135deg, #f0fdf4, #dcfce7);
             border: 1px solid #bbf7d0;
@@ -506,10 +509,6 @@
             min-width: 120px;
             justify-content: center;
         }
-        .btn-backup { background: #16a34a; color: white; }
-        .btn-backup:hover { background: #15803d; }
-        .btn-restore { background: #d97706; color: white; }
-        .btn-restore:hover { background: #b45309; }
 
         @media (max-width: 480px) {
             .header { padding: 12px 14px; }
@@ -628,7 +627,7 @@
                 <button class="btn btn-primary btn-sm" onclick="showPage('jurnal')">+ Buat</button>
             </div>
             <div id="homeRecent">
-                <div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>
+                <div class="empty"><div class="icon">📭</div><p>Belum ada jurnal. Buat jurnal pertama Anda di tab Jurnal.</p></div>
             </div>
         </div>
 
@@ -637,11 +636,13 @@
 
     <!-- ===== PAGE: JURNAL ===== -->
     <div id="pageJurnal" class="page">
+        <!-- Lock message HANYA untuk BELUM LOGIN -->
         <div id="jurnalLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
         </div>
 
+        <!-- Konten Jurnal (langsung muncul setelah login) -->
         <div id="jurnalContent" style="display:block;">
             <div class="card">
                 <div class="card-title"><span>✏️ Buat Jurnal</span></div>
@@ -709,11 +710,13 @@
 
     <!-- ===== PAGE: RIWAYAT ===== -->
     <div id="pageRiwayat" class="page">
+        <!-- Lock message HANYA untuk BELUM LOGIN -->
         <div id="riwayatLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
         </div>
 
+        <!-- Konten Riwayat (langsung muncul setelah login) -->
         <div id="riwayatContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
@@ -728,7 +731,7 @@
                 </div>
                 <div id="riwayatList"></div>
                 <div id="riwayatEmpty" class="empty" style="display:none;">
-                    <div class="icon">📭</div><p>Belum ada jurnal</p>
+                    <div class="icon">📭</div><p>Belum ada jurnal. Buat jurnal pertama Anda di tab Jurnal.</p>
                 </div>
             </div>
 
@@ -758,11 +761,13 @@
 
     <!-- ===== PAGE: LAPORAN ===== -->
     <div id="pageLaporan" class="page">
+        <!-- Lock message HANYA untuk BELUM LOGIN -->
         <div id="laporanLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
         </div>
 
+        <!-- Konten Laporan (langsung muncul setelah login) -->
         <div id="laporanContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
@@ -856,7 +861,7 @@
     // ================================================================
     // 🔑 KONFIGURASI PASSWORD GLOBAL
     // ================================================================
-    const KODE_AKSES = 'konsiva26';  // <-- GANTI dengan kode pilihan Anda!
+    const KODE_AKSES = 'konsiva26';
 
     const STORAGE_KEY = 'jurnalData';
     const USER_KEY = 'jurnalUser';
@@ -903,6 +908,14 @@
     const navRiwayat = $('navRiwayat');
     const navLaporan = $('navLaporan');
     const navItems = qsa('.nav-item');
+
+    // Lock & Content
+    const jurnalLock = $('jurnalLock');
+    const jurnalContent = $('jurnalContent');
+    const riwayatLock = $('riwayatLock');
+    const riwayatContent = $('riwayatContent');
+    const laporanLock = $('laporanLock');
+    const laporanContent = $('laporanContent');
 
     // Jurnal Form
     const jurnalForm = $('jurnalForm');
@@ -963,25 +976,35 @@
         const loggedIn = isLoggedIn();
 
         if (loggedIn) {
+            // SEMUA MENU AKTIF (BISA DIKLIK)!
             navJurnal.classList.remove('disabled');
             navRiwayat.classList.remove('disabled');
             navLaporan.classList.remove('disabled');
             
-            const locks = document.querySelectorAll('.lock-message');
-            locks.forEach(lock => lock.style.display = 'none');
+            // Sembunyikan lock message
+            jurnalLock.style.display = 'none';
+            riwayatLock.style.display = 'none';
+            laporanLock.style.display = 'none';
             
-            const contents = document.querySelectorAll('[id$="Content"]');
-            contents.forEach(content => content.style.display = 'block');
+            // Tampilkan konten
+            jurnalContent.style.display = 'block';
+            riwayatContent.style.display = 'block';
+            laporanContent.style.display = 'block';
         } else {
+            // SEMUA MENU NONAKTIF (TIDAK BISA DIKLIK)
             navJurnal.classList.add('disabled');
             navRiwayat.classList.add('disabled');
             navLaporan.classList.add('disabled');
             
-            const locks = document.querySelectorAll('.lock-message');
-            locks.forEach(lock => lock.style.display = 'block');
+            // Tampilkan lock message
+            jurnalLock.style.display = 'block';
+            riwayatLock.style.display = 'block';
+            laporanLock.style.display = 'block';
             
-            const contents = document.querySelectorAll('[id$="Content"]');
-            contents.forEach(content => content.style.display = 'none');
+            // Sembunyikan konten
+            jurnalContent.style.display = 'none';
+            riwayatContent.style.display = 'none';
+            laporanContent.style.display = 'none';
         }
     }
 
@@ -1373,7 +1396,7 @@
         const todayJurnal = jurnalData.filter(j => j.tanggal === today);
 
         if (todayJurnal.length === 0) {
-            homeSummary.innerHTML = '<div class="empty"><div class="icon">📝</div><p>Belum ada jurnal hari ini</p></div>';
+            homeSummary.innerHTML = '<div class="empty"><div class="icon">📝</div><p>Belum ada data hari ini</p></div>';
         } else {
             let total = 0, hadir = 0;
             todayJurnal.forEach(j => {
@@ -1398,7 +1421,7 @@
 
         const recent = jurnalData.slice(0, 5);
         if (recent.length === 0) {
-            homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>';
+            homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal. Buat jurnal pertama Anda di tab Jurnal.</p></div>';
         } else {
             homeRecent.innerHTML = recent.map(j => {
                 const hadir = j.presensi.filter(p => p.status === 'hadir').length;
@@ -1511,26 +1534,24 @@
     };
 
     // ================================================================
-    // 💾 BACKUP & RESTORE DATA (FITUR BARU)
+    // 💾 BACKUP & RESTORE
     // ================================================================
 
-    // Backup Data
     window.backupData = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         try {
-            // Ambil semua data dari localStorage
             const data = {
                 jurnalData: localStorage.getItem(STORAGE_KEY),
                 users: localStorage.getItem(USERS_KEY),
                 user: localStorage.getItem(USER_KEY),
                 tanggal: new Date().toISOString(),
-                versi: '1.0',
-                keterangan: 'Backup Jurnal Guru'
+                versi: '1.0'
             };
             
-            // Ubah ke JSON
             const json = JSON.stringify(data, null, 2);
-            
-            // Buat file download
             const blob = new Blob([json], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1548,9 +1569,11 @@
         }
     };
 
-    // Restore Data
     window.restoreData = function() {
-        // Buat input file
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json';
@@ -1564,18 +1587,15 @@
                 try {
                     const data = JSON.parse(event.target.result);
                     
-                    // Validasi data
                     if (!data.jurnalData && !data.users && !data.user) {
                         showToast('❌ File backup tidak valid!', 'error');
                         return;
                     }
                     
-                    // Konfirmasi
                     if (!confirm('⚠️ Restore akan mengganti semua data saat ini.\n\nData yang ada sekarang akan hilang!\n\nLanjutkan?')) {
                         return;
                     }
                     
-                    // Restore data
                     if (data.jurnalData !== undefined) localStorage.setItem(STORAGE_KEY, data.jurnalData);
                     if (data.users !== undefined) localStorage.setItem(USERS_KEY, data.users);
                     if (data.user !== undefined) localStorage.setItem(USER_KEY, data.user);
@@ -1638,7 +1658,7 @@
         }
 
         if (data.length === 0) {
-            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Tidak ada data</p></div>';
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk periode ini. Buat jurnal terlebih dahulu.</p></div>';
             return;
         }
 
@@ -1670,7 +1690,7 @@
         }
 
         if (data.length === 0) {
-            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Tidak ada data untuk minggu ini</p></div>';
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk minggu ini. Buat jurnal terlebih dahulu.</p></div>';
             return;
         }
 
