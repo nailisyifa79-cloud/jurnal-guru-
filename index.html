@@ -238,6 +238,8 @@
         .btn-danger:hover { background: #b91c1c; }
         .btn-success { background: #16a34a; color: white; }
         .btn-success:hover { background: #15803d; }
+        .btn-warning { background: #d97706; color: white; }
+        .btn-warning:hover { background: #b45309; }
         .btn-sm { padding: 5px 14px; font-size: 12px; }
         .btn-block { width: 100%; }
 
@@ -253,16 +255,16 @@
             margin-bottom: 5px;
         }
         .student-item .name { flex: 1; font-size: 14px; font-weight: 500; }
-        .student-item select {
-            padding: 2px 8px;
+        .student-item .status-badge {
+            padding: 2px 10px;
             border-radius: 20px;
-            border: none;
             font-size: 11px;
             font-weight: 600;
-            background: #dcfce7;
-            color: #166534;
         }
-        .student-item select option { background: white; color: black; }
+        .student-item .status-badge.hadir { background: #dcfce7; color: #166534; }
+        .student-item .status-badge.alfa { background: #fecaca; color: #991b1b; }
+        .student-item .status-badge.sakit { background: #fef3c7; color: #92400e; }
+        .student-item .status-badge.izin { background: #dbeafe; color: #1e40af; }
         .student-item .del { color: #ef4444; font-weight: bold; cursor: pointer; font-size: 18px; }
 
         /* Jurnal card */
@@ -317,7 +319,18 @@
 
         /* Grid */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+
+        /* Info box */
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #1e40af;
+        }
+        .info-box .highlight { font-weight: 700; }
 
         /* Responsive */
         @media (max-width: 480px) {
@@ -411,6 +424,15 @@
     <div id="pageJurnal" class="page">
         <div class="card">
             <div class="card-title"><span>✏️ Buat Jurnal</span></div>
+
+            <!-- INFO CARA PAKAI -->
+            <div class="info-box">
+                💡 <span class="highlight">Cara pakai:</span><br>
+                • Jika <b>semua siswa hadir</b> → klik <b>"✅ Semua Hadir"</b><br>
+                • Jika ada yang <b>tidak hadir</b> → klik <b>"➕ Tambah Tidak Hadir"</b><br>
+                • Status otomatis: Hadir atau Alfa
+            </div>
+
             <form id="jurnalForm">
                 <div class="form-group">
                     <label>📅 Tanggal</label>
@@ -419,30 +441,11 @@
                 <div class="grid-2">
                     <div class="form-group">
                         <label>🏫 Kelas</label>
-                        <select id="fKelas" required>
-                            <option value="">Pilih</option>
-                            <option value="1A">1A</option><option value="1B">1B</option>
-                            <option value="2A">2A</option><option value="2B">2B</option>
-                            <option value="3A">3A</option><option value="3B">3B</option>
-                            <option value="4A">4A</option><option value="4B">4B</option>
-                            <option value="5A">5A</option><option value="5B">5B</option>
-                            <option value="6A">6A</option><option value="6B">6B</option>
-                        </select>
+                        <input type="text" id="fKelas" placeholder="Contoh: 1A / 7B / XI IPA" required />
                     </div>
                     <div class="form-group">
-                        <label>📖 Mapel</label>
-                        <select id="fMapel" required>
-                            <option value="">Pilih</option>
-                            <option value="Matematika">Matematika</option>
-                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                            <option value="Bahasa Inggris">Bahasa Inggris</option>
-                            <option value="IPA">IPA</option>
-                            <option value="IPS">IPS</option>
-                            <option value="Agama">Agama</option>
-                            <option value="PPKN">PPKN</option>
-                            <option value="Seni">Seni Budaya</option>
-                            <option value="PJOK">PJOK</option>
-                        </select>
+                        <label>📖 Mata Pelajaran</label>
+                        <input type="text" id="fMapel" placeholder="Contoh: Matematika / Biologi" required />
                     </div>
                 </div>
                 <div class="form-group">
@@ -455,12 +458,21 @@
                 </div>
 
                 <div class="form-group">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                        <label style="margin:0;">👨‍🎓 Siswa</label>
-                        <button type="button" id="tambahSiswaBtn" class="btn btn-primary btn-sm">+ Tambah</button>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
+                        <label style="margin:0;">👨‍🎓 Daftar Siswa</label>
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                            <button type="button" id="semuaHadirBtn" class="btn btn-success btn-sm">✅ Semua Hadir</button>
+                            <button type="button" id="tambahTidakHadirBtn" class="btn btn-warning btn-sm">➕ Tidak Hadir</button>
+                            <button type="button" id="hapusSemuaSiswaBtn" class="btn btn-danger btn-sm">🗑️</button>
+                        </div>
                     </div>
                     <div id="presensiContainer">
-                        <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa</div>
+                        <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa. Klik "Semua Hadir" atau "Tambah Tidak Hadir"</div>
+                    </div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;text-align:right;">
+                        Total: <span id="totalSiswaCount">0</span> siswa · 
+                        ✅ Hadir: <span id="hadirCount">0</span> · 
+                        ❌ Tidak Hadir: <span id="alfaCount">0</span>
                     </div>
                 </div>
 
@@ -480,16 +492,8 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
                 <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." 
                        style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
-                <select id="filterKelasRiwayat" 
-                        style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;background:white;">
-                    <option value="">Semua Kelas</option>
-                    <option value="1A">1A</option><option value="1B">1B</option>
-                    <option value="2A">2A</option><option value="2B">2B</option>
-                    <option value="3A">3A</option><option value="3B">3B</option>
-                    <option value="4A">4A</option><option value="4B">4B</option>
-                    <option value="5A">5A</option><option value="5B">5B</option>
-                    <option value="6A">6A</option><option value="6B">6B</option>
-                </select>
+                <input type="text" id="filterKelasRiwayat" placeholder="🏫 Filter Kelas..." 
+                       style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
             </div>
             <div id="riwayatList"></div>
             <div id="riwayatEmpty" class="empty" style="display:none;">
@@ -513,15 +517,8 @@
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label>🏫 Kelas</label>
-                    <select id="laporanKelas" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;">
-                        <option value="">Semua</option>
-                        <option value="1A">1A</option><option value="1B">1B</option>
-                        <option value="2A">2A</option><option value="2B">2B</option>
-                        <option value="3A">3A</option><option value="3B">3B</option>
-                        <option value="4A">4A</option><option value="4B">4B</option>
-                        <option value="5A">5A</option><option value="5B">5B</option>
-                        <option value="6A">6A</option><option value="6B">6B</option>
-                    </select>
+                    <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" 
+                           style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
                 </div>
             </div>
             <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
@@ -599,7 +596,12 @@
     const fCatatan = $('fCatatan');
     const presensiContainer = $('presensiContainer');
     const emptySiswa = $('emptySiswa');
-    const tambahSiswaBtn = $('tambahSiswaBtn');
+    const semuaHadirBtn = $('semuaHadirBtn');
+    const tambahTidakHadirBtn = $('tambahTidakHadirBtn');
+    const hapusSemuaSiswaBtn = $('hapusSemuaSiswaBtn');
+    const totalSiswaCount = $('totalSiswaCount');
+    const hadirCount = $('hadirCount');
+    const alfaCount = $('alfaCount');
 
     // Riwayat
     const riwayatList = $('riwayatList');
@@ -797,52 +799,86 @@
     }
 
     // ===== PRESENSI =====
+    function updateCounts() {
+        const total = siswaList.length;
+        const hadir = siswaList.filter(s => s.status === 'hadir').length;
+        const alfa = siswaList.filter(s => s.status === 'alfa').length;
+        totalSiswaCount.textContent = total;
+        hadirCount.textContent = hadir;
+        alfaCount.textContent = alfa;
+    }
+
     function renderPresensi() {
         presensiContainer.innerHTML = '';
         if (siswaList.length === 0) {
-            presensiContainer.innerHTML = '<div class="empty" style="padding:12px;">Belum ada siswa</div>';
+            presensiContainer.innerHTML = '<div class="empty" style="padding:16px;">Belum ada siswa. Klik "Semua Hadir" atau "Tambah Tidak Hadir"</div>';
+            updateCounts();
             return;
         }
 
         siswaList.forEach((s, i) => {
             const div = document.createElement('div');
             div.className = 'student-item';
+            const statusClass = s.status === 'hadir' ? 'hadir' : 'alfa';
+            const statusLabel = s.status === 'hadir' ? '✅ Hadir' : '❌ Tidak Hadir';
             div.innerHTML = `
                 <span class="name">${escapeHtml(s.nama)}</span>
-                <select data-index="${i}">
-                    <option value="hadir" ${s.status==='hadir'?'selected':''}>✅ Hadir</option>
-                    <option value="sakit" ${s.status==='sakit'?'selected':''}>🤒 Sakit</option>
-                    <option value="izin" ${s.status==='izin'?'selected':''}>📝 Izin</option>
-                    <option value="alfa" ${s.status==='alfa'?'selected':''}>❌ Alfa</option>
-                </select>
+                <span class="status-badge ${statusClass}">${statusLabel}</span>
                 <span class="del" data-index="${i}">×</span>
             `;
             presensiContainer.appendChild(div);
 
-            // Update status
-            div.querySelector('select').onchange = function() {
-                const idx = parseInt(this.dataset.index);
-                if (!isNaN(idx) && siswaList[idx]) {
-                    siswaList[idx].status = this.value;
-                }
-            };
-
-            // Hapus
+            // Hapus siswa
             div.querySelector('.del').onclick = function() {
                 const idx = parseInt(this.dataset.index);
                 if (!isNaN(idx)) {
                     siswaList.splice(idx, 1);
                     renderPresensi();
+                    updateCounts();
                 }
             };
         });
+        updateCounts();
     }
 
-    tambahSiswaBtn.onclick = function() {
-        const nama = prompt('Masukkan nama siswa:');
+    // ===== TOMBOL PRESENSI =====
+
+    // 1. Semua Hadir
+    semuaHadirBtn.onclick = function() {
+        const nama = prompt('Masukkan nama siswa (pisahkan dengan koma jika lebih dari 1):\nContoh: Andi, Budi, Cici');
         if (nama && nama.trim() !== '') {
-            siswaList.push({ nama: nama.trim(), status: 'hadir' });
+            const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
+            names.forEach(n => {
+                siswaList.push({ nama: n, status: 'hadir' });
+            });
             renderPresensi();
+            showToast('✅ ' + names.length + ' siswa ditambahkan (Hadir)', 'success');
+        }
+    };
+
+    // 2. Tambah Tidak Hadir
+    tambahTidakHadirBtn.onclick = function() {
+        const nama = prompt('Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\nContoh: Andi, Budi');
+        if (nama && nama.trim() !== '') {
+            const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
+            names.forEach(n => {
+                siswaList.push({ nama: n, status: 'alfa' });
+            });
+            renderPresensi();
+            showToast('⚠️ ' + names.length + ' siswa ditambahkan (Tidak Hadir)', 'warning');
+        }
+    };
+
+    // 3. Hapus Semua Siswa
+    hapusSemuaSiswaBtn.onclick = function() {
+        if (siswaList.length === 0) {
+            showToast('📭 Tidak ada siswa', 'info');
+            return;
+        }
+        if (confirm('Hapus semua siswa dari daftar?')) {
+            siswaList = [];
+            renderPresensi();
+            showToast('🗑️ Semua siswa dihapus', 'info');
         }
     };
 
@@ -851,8 +887,8 @@
         e.preventDefault();
 
         const tanggal = fTanggal.value.trim();
-        const kelas = fKelas.value;
-        const mapel = fMapel.value;
+        const kelas = fKelas.value.trim();
+        const mapel = fMapel.value.trim();
         const materi = fMateri.value.trim();
         const catatan = fCatatan.value.trim();
 
@@ -891,17 +927,12 @@
 
     // ===== SET DEFAULTS =====
     function setDefaults() {
-        // Tanggal hari ini
         const now = new Date();
         const y = now.getFullYear();
         const m = String(now.getMonth()+1).padStart(2,'0');
         const d = String(now.getDate()).padStart(2,'0');
         fTanggal.value = y + '-' + m + '-' + d;
-
-        // Bulan laporan
         laporanBulan.value = y + '-' + m;
-
-        // Today date display
         todayDate.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
     }
 
@@ -916,7 +947,6 @@
         const today = new Date().toISOString().split('T')[0];
         const todayJurnal = jurnalData.filter(j => j.tanggal === today);
 
-        // Summary
         if (todayJurnal.length === 0) {
             homeSummary.innerHTML = '<div class="empty"><div class="icon">📝</div><p>Belum ada jurnal hari ini</p></div>';
         } else {
@@ -941,29 +971,31 @@
             `;
         }
 
-        // Recent
         const recent = jurnalData.slice(0, 5);
         if (recent.length === 0) {
             homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>';
         } else {
-            homeRecent.innerHTML = recent.map(j => `
-                <div class="jurnal-card">
-                    <div class="meta">
-                        <span>📅 ${formatDate(j.tanggal)}</span>
-                        <span class="tag">🏫 ${j.kelas}</span>
-                        <span class="tag">📖 ${j.mapel}</span>
+            homeRecent.innerHTML = recent.map(j => {
+                const hadir = j.presensi.filter(p => p.status === 'hadir').length;
+                return `
+                    <div class="jurnal-card">
+                        <div class="meta">
+                            <span>📅 ${formatDate(j.tanggal)}</span>
+                            <span class="tag">🏫 ${j.kelas}</span>
+                            <span class="tag">📖 ${j.mapel}</span>
+                        </div>
+                        <div class="title">${escapeHtml(j.materi)}</div>
+                        <div class="info">👨‍🎓 ${hadir}/${j.presensi.length} hadir</div>
                     </div>
-                    <div class="title">${escapeHtml(j.materi)}</div>
-                    <div class="info">👨‍🎓 ${j.presensi.filter(p=>p.status==='hadir').length}/${j.presensi.length} hadir</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
     }
 
     // RIWAYAT
     function renderRiwayat() {
         const txt = filterRiwayat.value.trim().toLowerCase();
-        const kl = filterKelasRiwayat.value;
+        const kl = filterKelasRiwayat.value.trim().toLowerCase();
 
         let data = [...jurnalData];
         if (txt) {
@@ -975,7 +1007,7 @@
             );
         }
         if (kl) {
-            data = data.filter(j => j.kelas === kl);
+            data = data.filter(j => j.kelas.toLowerCase().includes(kl));
         }
 
         if (data.length === 0) {
@@ -1006,8 +1038,8 @@
                         <summary style="font-size:12px;color:#2563eb;cursor:pointer;">Lihat detail presensi</summary>
                         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">
                             ${j.presensi.map(p => `
-                                <span style="font-size:11px;padding:1px 10px;border-radius:12px;background:${p.status==='hadir'?'#dcfce7':p.status==='sakit'?'#fef3c7':p.status==='izin'?'#dbeafe':'#fecaca'};color:${p.status==='hadir'?'#166534':p.status==='sakit'?'#92400e':p.status==='izin'?'#1e40af':'#991b1b'};">
-                                    ${p.nama} (${p.status==='hadir'?'✅ Hadir':p.status==='sakit'?'🤒 Sakit':p.status==='izin'?'📝 Izin':'❌ Alfa'})
+                                <span style="font-size:11px;padding:1px 10px;border-radius:12px;background:${p.status==='hadir'?'#dcfce7':'#fecaca'};color:${p.status==='hadir'?'#166534':'#991b1b'};">
+                                    ${p.nama} (${p.status==='hadir'?'✅ Hadir':'❌ Tidak Hadir'})
                                 </span>
                             `).join('')}
                         </div>
@@ -1016,7 +1048,6 @@
             `;
         }).join('');
 
-        // Hapus per item
         qsa('.del-jurnal').forEach(btn => {
             btn.onclick = function() {
                 const id = this.dataset.id;
@@ -1031,11 +1062,9 @@
         });
     }
 
-    // Filter riwayat
     filterRiwayat.oninput = renderRiwayat;
-    filterKelasRiwayat.onchange = renderRiwayat;
+    filterKelasRiwayat.oninput = renderRiwayat;
 
-    // Hapus semua
     hapusSemuaBtn.onclick = function() {
         if (jurnalData.length === 0) {
             showToast('📭 Tidak ada jurnal', 'info');
@@ -1053,7 +1082,7 @@
     // ===== LAPORAN =====
     tampilkanLaporanBtn.onclick = function() {
         const bulan = laporanBulan.value;
-        const kelas = laporanKelas.value;
+        const kelas = laporanKelas.value.trim();
 
         if (!bulan) {
             showToast('❌ Pilih bulan!', 'error');
@@ -1061,21 +1090,21 @@
         }
 
         let data = jurnalData.filter(j => j.tanggal.startsWith(bulan));
-        if (kelas) data = data.filter(j => j.kelas === kelas);
+        if (kelas) {
+            data = data.filter(j => j.kelas.toLowerCase().includes(kelas.toLowerCase()));
+        }
 
         if (data.length === 0) {
             laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Tidak ada data</p></div>';
             return;
         }
 
-        let total = 0, hadir = 0, sakit = 0, izin = 0, alfa = 0;
+        let total = 0, hadir = 0, alfa = 0;
         data.forEach(j => {
             j.presensi.forEach(p => {
                 total++;
                 if (p.status === 'hadir') hadir++;
-                else if (p.status === 'sakit') sakit++;
-                else if (p.status === 'izin') izin++;
-                else if (p.status === 'alfa') alfa++;
+                else alfa++;
             });
         });
 
@@ -1086,25 +1115,21 @@
         let html = `
             <div style="margin-bottom:10px;text-align:center;border-bottom:2px solid #2563eb;padding-bottom:8px;">
                 <h3 style="margin:0;color:#2563eb;">📚 Laporan ${namaBulan} ${th}</h3>
-                ${kelas ? '<p style="margin:2px 0;font-size:13px;color:#64748b;">Kelas ' + kelas + '</p>' : ''}
+                ${kelas ? '<p style="margin:2px 0;font-size:13px;color:#64748b;">Kelas: ' + escapeHtml(kelas) + '</p>' : ''}
                 <p style="margin:2px 0;font-size:11px;color:#94a3b8;">@Konsiva — Jurnal Guru</p>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
                 <div style="background:#dbeafe;padding:8px;border-radius:10px;text-align:center;">
                     <div style="font-size:20px;font-weight:bold;color:#2563eb;">${data.length}</div>
-                    <div style="font-size:10px;color:#64748b;">Jurnal</div>
+                    <div style="font-size:10px;color:#64748b;">📝 Jurnal</div>
                 </div>
                 <div style="background:#dcfce7;padding:8px;border-radius:10px;text-align:center;">
                     <div style="font-size:20px;font-weight:bold;color:#16a34a;">${hadir}</div>
                     <div style="font-size:10px;color:#64748b;">✅ Hadir</div>
                 </div>
-                <div style="background:#fef3c7;padding:8px;border-radius:10px;text-align:center;">
-                    <div style="font-size:20px;font-weight:bold;color:#d97706;">${sakit+izin}</div>
-                    <div style="font-size:10px;color:#64748b;">🤒 Sakit/Izin</div>
-                </div>
                 <div style="background:#fecaca;padding:8px;border-radius:10px;text-align:center;">
                     <div style="font-size:20px;font-weight:bold;color:#dc2626;">${alfa}</div>
-                    <div style="font-size:10px;color:#64748b;">❌ Alfa</div>
+                    <div style="font-size:10px;color:#64748b;">❌ Tidak Hadir</div>
                 </div>
             </div>
             <div style="background:#f1f5f9;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;">
@@ -1152,7 +1177,7 @@
                     .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 15px; }
                     .header h1 { color: #2563eb; margin: 0; }
                     .header p { color: #64748b; margin: 3px 0; }
-                    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 15px 0; }
+                    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 15px 0; }
                     .stat { background: #f8fafc; padding: 10px; border-radius: 8px; text-align: center; }
                     .stat .num { font-size: 22px; font-weight: bold; }
                     .stat .label { font-size: 11px; color: #64748b; }
@@ -1167,7 +1192,7 @@
                 <div class="watermark">@Konsiva</div>
                 <div class="header">
                     <h1>📚 Laporan Jurnal Guru</h1>
-                    <p>${namaBulan} ${th} ${kelas ? '- Kelas ' + kelas : ''}</p>
+                    <p>${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
                     <p style="color:#2563eb;font-weight:600;">@Konsiva — Aplikasi Jurnal Guru</p>
                     <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
                 </div>
@@ -1187,7 +1212,6 @@
 
     // ===== NAVIGASI =====
     window.showPage = function(page) {
-        // Hide all pages
         Object.keys(pages).forEach(key => {
             pages[key].classList.remove('active');
         });
@@ -1195,7 +1219,6 @@
             pages[page].classList.add('active');
         }
 
-        // Update nav
         navBtns.forEach(btn => {
             btn.classList.remove('active');
             if (btn.dataset.page === page) {
