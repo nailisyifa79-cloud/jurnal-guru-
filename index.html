@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Jurnal Guru - @Konsiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f0f4f8; 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* ===== SPLASH ===== */
+        #splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        #splash.hide { opacity: 0; pointer-events: none; }
+        #splash h1 { color: white; font-size: 28px; margin: 10px 0 5px; }
+        #splash .brand { color: #fcd34d; font-size: 16px; letter-spacing: 3px; }
+        #splash .loader {
+            width: 30px; height: 30px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-top: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+
+        /* ===== LOGIN ===== */
+        #loginPage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            padding: 20px;
+        }
+        #loginPage.hide { display: none; }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+        .login-box .icon { text-align: center; font-size: 48px; }
+        .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
+        .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+        }
+        .login-box input:focus {
+            border-color: #2563eb;
+            outline: none;
+            background: white;
+        }
+
+        .login-box .btn {
+            width: 100%;
+            padding: 13px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-box .btn:hover { background: #1d4ed8; }
+
+        .login-box .toggle-link {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .login-box .toggle-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .login-box .brand-footer {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .login-box .brand-footer span { color: #2563eb; font-weight: 600; }
+
+        /* ===== APP ===== */
+        #app {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding-bottom: 70px;
+            display: none;
+        }
+        #app.show { display: block; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            padding: 16px 18px 14px;
+            color: white;
+            border-radius: 0 0 24px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .header .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 { font-size: 18px; margin: 0; }
+        .header h2 .tag { font-size: 10px; opacity: 0.7; background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 12px; margin-left: 6px; }
+        .header .user { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+        .header .logout {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .header .logout:hover { background: rgba(255,255,255,0.25); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            border-radius: 20px 20px 0 0;
+            z-index: 100;
+        }
+        .bottom-nav button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 16px;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .bottom-nav button.active { color: #2563eb; }
+        .bottom-nav button .icon { font-size: 22px; }
+
+        /* Pages */
+        .page { display: none; padding: 14px; }
+        .page.active { display: block; }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid #f1f5f9;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Form */
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-bottom: 3px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: #fafcff;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+        .form-group textarea { resize: vertical; min-height: 50px; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
+        .btn-sm { padding: 5px 14px; font-size: 12px; }
+        .btn-block { width: 100%; }
+
+        /* Student item */
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 5px;
+        }
+        .student-item .name { flex: 1; font-size: 14px; font-weight: 500; }
+        .student-item select {
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: none;
+            font-size: 11px;
+            font-weight: 600;
+            background: #dcfce7;
+            color: #166534;
+        }
+        .student-item select option { background: white; color: black; }
+        .student-item .del { color: #ef4444; font-weight: bold; cursor: pointer; font-size: 18px; }
+
+        /* Jurnal card */
+        .jurnal-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+        .jurnal-card .meta { font-size: 12px; color: #64748b; display: flex; flex-wrap: wrap; gap: 6px; }
+        .jurnal-card .meta .tag { background: #e2e8f0; padding: 0 10px; border-radius: 12px; }
+        .jurnal-card .title { font-weight: 600; color: #1e293b; margin: 4px 0; }
+        .jurnal-card .info { font-size: 12px; color: #475569; }
+
+        /* Empty state */
+        .empty { text-align: center; padding: 30px 16px; color: #94a3b8; }
+        .empty .icon { font-size: 36px; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            padding: 10px 22px;
+            border-radius: 12px;
+            background: #1e293b;
+            color: white;
+            font-size: 14px;
+            z-index: 999;
+            opacity: 0;
+            transition: 0.4s;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { background: #065f46; }
+        .toast.error { background: #991b1b; }
+
+        /* Footer Konsiva */
+        .footer-brand {
+            text-align: center;
+            padding: 12px 0 6px;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 6px;
+        }
+        .footer-brand span { color: #2563eb; font-weight: 700; }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header { padding: 12px 14px; }
+            .header h2 { font-size: 16px; }
+            .page { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+    <div style="font-size:50px;">📚</div>
+    <h1>Jurnal Guru</h1>
+    <div class="brand">@Konsiva</div>
+    <div class="loader"></div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast"></div>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginPage">
+    <div class="login-box">
+        <div class="icon">📚</div>
+        <h1>Jurnal Guru</h1>
+        <p class="subtitle">Masuk ke akun Anda</p>
+
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="📧 Email" required />
+            <input type="password" id="loginPassword" placeholder="🔒 Password" required minlength="4" />
+            <button type="submit" class="btn">Masuk</button>
+        </form>
+
+        <form id="registerForm" style="display:none; margin-top:12px;">
+            <input type="text" id="registerName" placeholder="👤 Nama Lengkap" required />
+            <input type="email" id="registerEmail" placeholder="📧 Email" required />
+            <input type="password" id="registerPassword" placeholder="🔒 Password (min 4)" required minlength="4" />
+            <button type="submit" class="btn">Daftar</button>
+        </form>
+
+        <div class="toggle-link">
+            <span id="toggleText">Belum punya akun? <a id="toggleLink">Daftar</a></span>
+        </div>
+
+        <div class="brand-footer">dibuat dengan ❤️ oleh <span>@Konsiva</span></div>
+    </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="top">
+            <div>
+                <h2>📚 Jurnal Guru <span class="tag">@Konsiva</span></h2>
+                <div class="user" id="userDisplay">👤 Guru</div>
+            </div>
+            <button class="logout" onclick="logout()">🚪 Keluar</button>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: HOME ===== -->
+    <div id="pageHome" class="page active">
+        <div class="card">
+            <div class="card-title">
+                <span>📊 Ringkasan Hari Ini</span>
+                <span style="font-size:12px;color:#94a3b8;" id="todayDate"></span>
+            </div>
+            <div id="homeSummary">
+                <div class="empty"><div class="icon">📝</div><p>Belum ada data hari ini</p></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span>📝 Jurnal Terbaru</span>
+                <button class="btn btn-primary btn-sm" onclick="showPage('jurnal')">+ Buat</button>
+            </div>
+            <div id="homeRecent">
+                <div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>
+            </div>
+        </div>
+
+        <div class="footer-brand"><span>@Konsiva</span> — Aplikasi Jurnal Guru</div>
+    </div>
+
+    <!-- ===== PAGE: JURNAL ===== -->
+    <div id="pageJurnal" class="page">
+        <div class="card">
+            <div class="card-title"><span>✏️ Buat Jurnal</span></div>
+            <form id="jurnalForm">
+                <div class="form-group">
+                    <label>📅 Tanggal</label>
+                    <input type="date" id="fTanggal" required />
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>🏫 Kelas</label>
+                        <select id="fKelas" required>
+                            <option value="">Pilih</option>
+                            <option value="1A">1A</option><option value="1B">1B</option>
+                            <option value="2A">2A</option><option value="2B">2B</option>
+                            <option value="3A">3A</option><option value="3B">3B</option>
+                            <option value="4A">4A</option><option value="4B">4B</option>
+                            <option value="5A">5A</option><option value="5B">5B</option>
+                            <option value="6A">6A</option><option value="6B">6B</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📖 Mapel</label>
+                        <select id="fMapel" required>
+                            <option value="">Pilih</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                            <option value="Bahasa Inggris">Bahasa Inggris</option>
+                            <option value="IPA">IPA</option>
+                            <option value="IPS">IPS</option>
+                            <option value="Agama">Agama</option>
+                            <option value="PPKN">PPKN</option>
+                            <option value="Seni">Seni Budaya</option>
+                            <option value="PJOK">PJOK</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📝 Materi</label>
+                    <input type="text" id="fMateri" placeholder="Contoh: Bab 1 - Pengenalan" required />
+                </div>
+                <div class="form-group">
+                    <label>📌 Catatan</label>
+                    <textarea id="fCatatan" rows="2" placeholder="Catatan tambahan..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <label style="margin:0;">👨‍🎓 Siswa</label>
+                        <button type="button" id="tambahSiswaBtn" class="btn btn-primary btn-sm">+ Tambah</button>
+                    </div>
+                    <div id="presensiContainer">
+                        <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">💾 Simpan Jurnal</button>
+            </form>
+        </div>
+        <div class="footer-brand"><span>@Konsiva</span> — Data di perangkat Anda</div>
+    </div>
+
+    <!-- ===== PAGE: RIWAYAT ===== -->
+    <div id="pageRiwayat" class="page">
+        <div class="card">
+            <div class="card-title">
+                <span>📋 Riwayat Jurnal</span>
+                <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️ Hapus Semua</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." 
+                       style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                <select id="filterKelasRiwayat" 
+                        style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;background:white;">
+                    <option value="">Semua Kelas</option>
+                    <option value="1A">1A</option><option value="1B">1B</option>
+                    <option value="2A">2A</option><option value="2B">2B</option>
+                    <option value="3A">3A</option><option value="3B">3B</option>
+                    <option value="4A">4A</option><option value="4B">4B</option>
+                    <option value="5A">5A</option><option value="5B">5B</option>
+                    <option value="6A">6A</option><option value="6B">6B</option>
+                </select>
+            </div>
+            <div id="riwayatList"></div>
+            <div id="riwayatEmpty" class="empty" style="display:none;">
+                <div class="icon">📭</div><p>Belum ada jurnal</p>
+            </div>
+        </div>
+        <div class="footer-brand"><span>@Konsiva</span> — Semua data aman</div>
+    </div>
+
+    <!-- ===== PAGE: LAPORAN ===== -->
+    <div id="pageLaporan" class="page">
+        <div class="card">
+            <div class="card-title">
+                <span>📊 Laporan Bulanan</span>
+                <button id="cetakLaporanBtn" class="btn btn-success btn-sm">🖨️ Cetak</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div class="form-group" style="margin:0;">
+                    <label>📅 Bulan</label>
+                    <input type="month" id="laporanBulan" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>🏫 Kelas</label>
+                    <select id="laporanKelas" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;">
+                        <option value="">Semua</option>
+                        <option value="1A">1A</option><option value="1B">1B</option>
+                        <option value="2A">2A</option><option value="2B">2B</option>
+                        <option value="3A">3A</option><option value="3B">3B</option>
+                        <option value="4A">4A</option><option value="4B">4B</option>
+                        <option value="5A">5A</option><option value="5B">5B</option>
+                        <option value="6A">6A</option><option value="6B">6B</option>
+                    </select>
+                </div>
+            </div>
+            <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
+            <div id="laporanHasil" class="mt-3">
+                <div class="empty"><div class="icon">📊</div><p>Pilih bulan & klik Tampilkan</p></div>
+            </div>
+        </div>
+        <div class="footer-brand"><span>@Konsiva</span> — Laporan siap cetak</div>
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <div class="bottom-nav">
+        <button class="active" data-page="home"><span class="icon">🏠</span>Beranda</button>
+        <button data-page="jurnal"><span class="icon">✏️</span>Jurnal</button>
+        <button data-page="riwayat"><span class="icon">📋</span>Riwayat</button>
+        <button data-page="laporan"><span class="icon">📊</span>Laporan</button>
+    </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ========================================================== -->
+<script>
+(function() {
+    'use strict';
+
+    // ===== KONFIGURASI =====
+    const STORAGE_KEY = 'jurnalData';
+    const USER_KEY = 'jurnalUser';
+    const USERS_KEY = 'jurnalUsers';
+
+    // ===== DATA =====
+    let jurnalData = [];
+    let currentUser = null;
+    let siswaList = [];
+
+    // ===== DOM =====
+    const $ = id => document.getElementById(id);
+    const qs = (sel, ctx) => (ctx || document).querySelector(sel);
+    const qsa = (sel, ctx) => (ctx || document).querySelectorAll(sel);
+
+    // Splash
+    const splash = $('splash');
+
+    // Login
+    const loginPage = $('loginPage');
+    const loginForm = $('loginForm');
+    const loginEmail = $('loginEmail');
+    const loginPassword = $('loginPassword');
+    const registerForm = $('registerForm');
+    const registerName = $('registerName');
+    const registerEmail = $('registerEmail');
+    const registerPassword = $('registerPassword');
+    const toggleLink = $('toggleLink');
+    const toggleText = $('toggleText');
+
+    // App
+    const app = $('app');
+    const userDisplay = $('userDisplay');
+
+    // Pages
+    const pages = {
+        home: $('pageHome'),
+        jurnal: $('pageJurnal'),
+        riwayat: $('pageRiwayat'),
+        laporan: $('pageLaporan')
+    };
+
+    // Form
+    const jurnalForm = $('jurnalForm');
+    const fTanggal = $('fTanggal');
+    const fKelas = $('fKelas');
+    const fMapel = $('fMapel');
+    const fMateri = $('fMateri');
+    const fCatatan = $('fCatatan');
+    const presensiContainer = $('presensiContainer');
+    const emptySiswa = $('emptySiswa');
+    const tambahSiswaBtn = $('tambahSiswaBtn');
+
+    // Riwayat
+    const riwayatList = $('riwayatList');
+    const riwayatEmpty = $('riwayatEmpty');
+    const filterRiwayat = $('filterRiwayat');
+    const filterKelasRiwayat = $('filterKelasRiwayat');
+    const hapusSemuaBtn = $('hapusSemuaBtn');
+
+    // Laporan
+    const laporanBulan = $('laporanBulan');
+    const laporanKelas = $('laporanKelas');
+    const tampilkanLaporanBtn = $('tampilkanLaporanBtn');
+    const cetakLaporanBtn = $('cetakLaporanBtn');
+    const laporanHasil = $('laporanHasil');
+
+    // Home
+    const todayDate = $('todayDate');
+    const homeSummary = $('homeSummary');
+    const homeRecent = $('homeRecent');
+
+    // Toast
+    const toast = $('toast');
+
+    // Nav
+    const navBtns = qsa('.bottom-nav button');
+
+    // ===== UTILITY =====
+    function formatDate(tgl) {
+        if (!tgl) return '-';
+        const p = tgl.split('-');
+        const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return p[2] + ' ' + bulan[parseInt(p[1])-1] + ' ' + p[0];
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    function genId() {
+        return Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+    }
+
+    // ===== TOAST =====
+    function showToast(msg, type) {
+        toast.textContent = msg;
+        toast.className = 'toast ' + (type || '');
+        void toast.offsetWidth;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ===== SPLASH =====
+    function hideSplash() {
+        setTimeout(() => splash.classList.add('hide'), 800);
+    }
+
+    // ===== LOGIN =====
+    function checkAuth() {
+        const saved = localStorage.getItem(USER_KEY);
+        if (saved) {
+            try {
+                currentUser = JSON.parse(saved);
+                showApp();
+                return true;
+            } catch(e) {
+                localStorage.removeItem(USER_KEY);
+            }
+        }
+        return false;
+    }
+
+    function showApp() {
+        loginPage.classList.add('hide');
+        app.classList.add('show');
+        if (currentUser) {
+            userDisplay.textContent = '👤 ' + currentUser.name;
+        }
+        loadData();
+        renderAll();
+        setDefaults();
+    }
+
+    // Login
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = loginEmail.value.trim();
+        const pass = loginPassword.value.trim();
+
+        if (!email || !pass) {
+            showToast('❌ Isi email & password!', 'error');
+            return;
+        }
+
+        const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        const found = users.find(u => u.email === email && u.password === pass);
+
+        if (found) {
+            currentUser = { name: found.name, email: found.email };
+            localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+            showToast('✅ Selamat datang ' + found.name + '!', 'success');
+            showApp();
+            loginForm.reset();
+        } else {
+            const exists = users.find(u => u.email === email);
+            if (exists) showToast('❌ Password salah!', 'error');
+            else showToast('❌ Email belum terdaftar!', 'error');
+        }
+    });
+
+    // Register
+    registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = registerName.value.trim();
+        const email = registerEmail.value.trim();
+        const pass = registerPassword.value.trim();
+
+        if (!name || !email || !pass) {
+            showToast('❌ Isi semua field!', 'error');
+            return;
+        }
+        if (pass.length < 4) {
+            showToast('❌ Password min 4 karakter!', 'error');
+            return;
+        }
+
+        const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        if (users.find(u => u.email === email)) {
+            showToast('❌ Email sudah terdaftar!', 'error');
+            return;
+        }
+
+        users.push({ name, email, password: pass });
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        showToast('✅ Pendaftaran berhasil! Silakan login.', 'success');
+        toggleToLogin();
+        registerForm.reset();
+    });
+
+    // Toggle
+    let isLogin = true;
+
+    function toggleToRegister() {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        toggleText.innerHTML = 'Sudah punya akun? <a id="toggleLink">Masuk</a>';
+        isLogin = false;
+        document.getElementById('toggleLink').onclick = function(e) {
+            e.preventDefault();
+            toggleToLogin();
+        };
+    }
+
+    function toggleToLogin() {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        toggleText.innerHTML = 'Belum punya akun? <a id="toggleLink">Daftar</a>';
+        isLogin = true;
+        document.getElementById('toggleLink').onclick = function(e) {
+            e.preventDefault();
+            toggleToRegister();
+        };
+    }
+
+    toggleLink.onclick = function(e) {
+        e.preventDefault();
+        if (isLogin) toggleToRegister();
+        else toggleToLogin();
+    };
+
+    // Logout
+    window.logout = function() {
+        if (confirm('Yakin keluar?')) {
+            localStorage.removeItem(USER_KEY);
+            currentUser = null;
+            loginPage.classList.remove('hide');
+            app.classList.remove('show');
+            showToast('👋 Sampai jumpa!');
+        }
+    };
+
+    // ===== STORAGE =====
+    function loadData() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            jurnalData = raw ? JSON.parse(raw) : [];
+        } catch(e) { jurnalData = []; }
+    }
+
+    function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
+    }
+
+    // ===== PRESENSI =====
+    function renderPresensi() {
+        presensiContainer.innerHTML = '';
+        if (siswaList.length === 0) {
+            presensiContainer.innerHTML = '<div class="empty" style="padding:12px;">Belum ada siswa</div>';
+            return;
+        }
+
+        siswaList.forEach((s, i) => {
+            const div = document.createElement('div');
+            div.className = 'student-item';
+            div.innerHTML = `
+                <span class="name">${escapeHtml(s.nama)}</span>
+                <select data-index="${i}">
+                    <option value="hadir" ${s.status==='hadir'?'selected':''}>✅ Hadir</option>
+                    <option value="sakit" ${s.status==='sakit'?'selected':''}>🤒 Sakit</option>
+                    <option value="izin" ${s.status==='izin'?'selected':''}>📝 Izin</option>
+                    <option value="alfa" ${s.status==='alfa'?'selected':''}>❌ Alfa</option>
+                </select>
+                <span class="del" data-index="${i}">×</span>
+            `;
+            presensiContainer.appendChild(div);
+
+            // Update status
+            div.querySelector('select').onchange = function() {
+                const idx = parseInt(this.dataset.index);
+                if (!isNaN(idx) && siswaList[idx]) {
+                    siswaList[idx].status = this.value;
+                }
+            };
+
+            // Hapus
+            div.querySelector('.del').onclick = function() {
+                const idx = parseInt(this.dataset.index);
+                if (!isNaN(idx)) {
+                    siswaList.splice(idx, 1);
+                    renderPresensi();
+                }
+            };
+        });
+    }
+
+    tambahSiswaBtn.onclick = function() {
+        const nama = prompt('Masukkan nama siswa:');
+        if (nama && nama.trim() !== '') {
+            siswaList.push({ nama: nama.trim(), status: 'hadir' });
+            renderPresensi();
+        }
+    };
+
+    // ===== FORM JURNAL =====
+    jurnalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const tanggal = fTanggal.value.trim();
+        const kelas = fKelas.value;
+        const mapel = fMapel.value;
+        const materi = fMateri.value.trim();
+        const catatan = fCatatan.value.trim();
+
+        if (!tanggal || !kelas || !mapel || !materi) {
+            showToast('❌ Lengkapi semua field!', 'error');
+            return;
+        }
+
+        if (siswaList.length === 0) {
+            showToast('❌ Tambahkan siswa!', 'error');
+            return;
+        }
+
+        const jurnal = {
+            id: genId(),
+            tanggal: tanggal,
+            kelas: kelas,
+            mapel: mapel,
+            materi: materi,
+            catatan: catatan,
+            presensi: siswaList.map(s => ({ nama: s.nama, status: s.status })),
+            createdAt: new Date().toISOString()
+        };
+
+        jurnalData.unshift(jurnal);
+        saveData();
+
+        fMateri.value = '';
+        fCatatan.value = '';
+        siswaList = [];
+        renderPresensi();
+
+        showToast('✅ Jurnal disimpan!', 'success');
+        renderAll();
+    });
+
+    // ===== SET DEFAULTS =====
+    function setDefaults() {
+        // Tanggal hari ini
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth()+1).padStart(2,'0');
+        const d = String(now.getDate()).padStart(2,'0');
+        fTanggal.value = y + '-' + m + '-' + d;
+
+        // Bulan laporan
+        laporanBulan.value = y + '-' + m;
+
+        // Today date display
+        todayDate.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    }
+
+    // ===== RENDER =====
+    function renderAll() {
+        renderHome();
+        renderRiwayat();
+    }
+
+    // HOME
+    function renderHome() {
+        const today = new Date().toISOString().split('T')[0];
+        const todayJurnal = jurnalData.filter(j => j.tanggal === today);
+
+        // Summary
+        if (todayJurnal.length === 0) {
+            homeSummary.innerHTML = '<div class="empty"><div class="icon">📝</div><p>Belum ada jurnal hari ini</p></div>';
+        } else {
+            let total = 0, hadir = 0;
+            todayJurnal.forEach(j => {
+                j.presensi.forEach(p => {
+                    total++;
+                    if (p.status === 'hadir') hadir++;
+                });
+            });
+            homeSummary.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div style="background:#dbeafe;padding:12px;border-radius:12px;text-align:center;">
+                        <div style="font-size:24px;font-weight:bold;color:#2563eb;">${todayJurnal.length}</div>
+                        <div style="font-size:11px;color:#64748b;">📝 Jurnal</div>
+                    </div>
+                    <div style="background:#dcfce7;padding:12px;border-radius:12px;text-align:center;">
+                        <div style="font-size:24px;font-weight:bold;color:#16a34a;">${hadir}/${total}</div>
+                        <div style="font-size:11px;color:#64748b;">✅ Hadir</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Recent
+        const recent = jurnalData.slice(0, 5);
+        if (recent.length === 0) {
+            homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>';
+        } else {
+            homeRecent.innerHTML = recent.map(j => `
+                <div class="jurnal-card">
+                    <div class="meta">
+                        <span>📅 ${formatDate(j.tanggal)}</span>
+                        <span class="tag">🏫 ${j.kelas}</span>
+                        <span class="tag">📖 ${j.mapel}</span>
+                    </div>
+                    <div class="title">${escapeHtml(j.materi)}</div>
+                    <div class="info">👨‍🎓 ${j.presensi.filter(p=>p.status==='hadir').length}/${j.presensi.length} hadir</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // RIWAYAT
+    function renderRiwayat() {
+        const txt = filterRiwayat.value.trim().toLowerCase();
+        const kl = filterKelasRiwayat.value;
+
+        let data = [...jurnalData];
+        if (txt) {
+            data = data.filter(j => 
+                j.materi.toLowerCase().includes(txt) ||
+                j.kelas.toLowerCase().includes(txt) ||
+                j.mapel.toLowerCase().includes(txt) ||
+                (j.catatan && j.catatan.toLowerCase().includes(txt))
+            );
+        }
+        if (kl) {
+            data = data.filter(j => j.kelas === kl);
+        }
+
+        if (data.length === 0) {
+            riwayatList.innerHTML = '';
+            riwayatEmpty.style.display = 'block';
+            return;
+        }
+        riwayatEmpty.style.display = 'none';
+
+        riwayatList.innerHTML = data.map(j => {
+            const h = j.presensi.filter(p => p.status === 'hadir').length;
+            return `
+                <div class="jurnal-card">
+                    <div style="display:flex;justify-content:space-between;align-items:start;">
+                        <div style="flex:1;">
+                            <div class="meta">
+                                <span>📅 ${formatDate(j.tanggal)}</span>
+                                <span class="tag">🏫 ${j.kelas}</span>
+                                <span class="tag">📖 ${j.mapel}</span>
+                            </div>
+                            <div class="title">${escapeHtml(j.materi)}</div>
+                            ${j.catatan ? `<div style="font-size:13px;color:#64748b;">📌 ${escapeHtml(j.catatan)}</div>` : ''}
+                            <div class="info">👨‍🎓 ${h}/${j.presensi.length} hadir</div>
+                        </div>
+                        <button class="del-jurnal" data-id="${j.id}" style="background:none;border:none;color:#ef4444;font-size:20px;cursor:pointer;font-weight:bold;">×</button>
+                    </div>
+                    <details style="margin-top:6px;">
+                        <summary style="font-size:12px;color:#2563eb;cursor:pointer;">Lihat detail presensi</summary>
+                        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">
+                            ${j.presensi.map(p => `
+                                <span style="font-size:11px;padding:1px 10px;border-radius:12px;background:${p.status==='hadir'?'#dcfce7':p.status==='sakit'?'#fef3c7':p.status==='izin'?'#dbeafe':'#fecaca'};color:${p.status==='hadir'?'#166534':p.status==='sakit'?'#92400e':p.status==='izin'?'#1e40af':'#991b1b'};">
+                                    ${p.nama} (${p.status==='hadir'?'✅ Hadir':p.status==='sakit'?'🤒 Sakit':p.status==='izin'?'📝 Izin':'❌ Alfa'})
+                                </span>
+                            `).join('')}
+                        </div>
+                    </details>
+                </div>
+            `;
+        }).join('');
+
+        // Hapus per item
+        qsa('.del-jurnal').forEach(btn => {
+            btn.onclick = function() {
+                const id = this.dataset.id;
+                if (confirm('Yakin hapus jurnal ini?')) {
+                    jurnalData = jurnalData.filter(j => j.id !== id);
+                    saveData();
+                    renderRiwayat();
+                    renderHome();
+                    showToast('🗑️ Jurnal dihapus', 'info');
+                }
+            };
+        });
+    }
+
+    // Filter riwayat
+    filterRiwayat.oninput = renderRiwayat;
+    filterKelasRiwayat.onchange = renderRiwayat;
+
+    // Hapus semua
+    hapusSemuaBtn.onclick = function() {
+        if (jurnalData.length === 0) {
+            showToast('📭 Tidak ada jurnal', 'info');
+            return;
+        }
+        if (confirm('⚠️ Yakin hapus SEMUA jurnal?')) {
+            jurnalData = [];
+            saveData();
+            renderRiwayat();
+            renderHome();
+            showToast('🗑️ Semua dihapus', 'info');
+        }
+    };
+
+    // ===== LAPORAN =====
+    tampilkanLaporanBtn.onclick = function() {
+        const bulan = laporanBulan.value;
+        const kelas = laporanKelas.value;
+
+        if (!bulan) {
+            showToast('❌ Pilih bulan!', 'error');
+            return;
+        }
+
+        let data = jurnalData.filter(j => j.tanggal.startsWith(bulan));
+        if (kelas) data = data.filter(j => j.kelas === kelas);
+
+        if (data.length === 0) {
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Tidak ada data</p></div>';
+            return;
+        }
+
+        let total = 0, hadir = 0, sakit = 0, izin = 0, alfa = 0;
+        data.forEach(j => {
+            j.presensi.forEach(p => {
+                total++;
+                if (p.status === 'hadir') hadir++;
+                else if (p.status === 'sakit') sakit++;
+                else if (p.status === 'izin') izin++;
+                else if (p.status === 'alfa') alfa++;
+            });
+        });
+
+        const persen = total > 0 ? Math.round((hadir/total)*100) : 0;
+        const [th, bl] = bulan.split('-');
+        const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1];
+
+        let html = `
+            <div style="margin-bottom:10px;text-align:center;border-bottom:2px solid #2563eb;padding-bottom:8px;">
+                <h3 style="margin:0;color:#2563eb;">📚 Laporan ${namaBulan} ${th}</h3>
+                ${kelas ? '<p style="margin:2px 0;font-size:13px;color:#64748b;">Kelas ' + kelas + '</p>' : ''}
+                <p style="margin:2px 0;font-size:11px;color:#94a3b8;">@Konsiva — Jurnal Guru</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+                <div style="background:#dbeafe;padding:8px;border-radius:10px;text-align:center;">
+                    <div style="font-size:20px;font-weight:bold;color:#2563eb;">${data.length}</div>
+                    <div style="font-size:10px;color:#64748b;">Jurnal</div>
+                </div>
+                <div style="background:#dcfce7;padding:8px;border-radius:10px;text-align:center;">
+                    <div style="font-size:20px;font-weight:bold;color:#16a34a;">${hadir}</div>
+                    <div style="font-size:10px;color:#64748b;">✅ Hadir</div>
+                </div>
+                <div style="background:#fef3c7;padding:8px;border-radius:10px;text-align:center;">
+                    <div style="font-size:20px;font-weight:bold;color:#d97706;">${sakit+izin}</div>
+                    <div style="font-size:10px;color:#64748b;">🤒 Sakit/Izin</div>
+                </div>
+                <div style="background:#fecaca;padding:8px;border-radius:10px;text-align:center;">
+                    <div style="font-size:20px;font-weight:bold;color:#dc2626;">${alfa}</div>
+                    <div style="font-size:10px;color:#64748b;">❌ Alfa</div>
+                </div>
+            </div>
+            <div style="background:#f1f5f9;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;">
+                📊 Kehadiran: <strong style="color:#2563eb;font-size:18px;">${persen}%</strong> (${hadir}/${total} siswa)
+            </div>
+            <div style="border-top:1px solid #e2e8f0;padding-top:8px;">
+                <h4 style="margin:0 0 6px;font-size:14px;">📋 Daftar Jurnal</h4>
+                ${data.map(j => `
+                    <div style="background:#f8fafc;padding:8px 12px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:4px;">
+                        <div style="font-size:12px;color:#64748b;">📅 ${formatDate(j.tanggal)} · 🏫 ${j.kelas} · 📖 ${j.mapel}</div>
+                        <div style="font-weight:600;font-size:14px;">${escapeHtml(j.materi)}</div>
+                        <div style="font-size:11px;color:#64748b;">👨‍🎓 ${j.presensi.filter(p=>p.status==='hadir').length}/${j.presensi.length} hadir</div>
+                    </div>
+                `).join('')}
+            </div>
+            <div style="text-align:center;font-size:10px;color:#94a3b8;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;">
+                © ${new Date().getFullYear()} — @Konsiva
+            </div>
+        `;
+
+        laporanHasil.innerHTML = html;
+        showToast('✅ ' + data.length + ' jurnal ditemukan', 'success');
+    };
+
+    // ===== CETAK LAPORAN =====
+    cetakLaporanBtn.onclick = function() {
+        const content = laporanHasil.innerHTML;
+        if (!content || content.includes('Tidak ada data')) {
+            showToast('❌ Tidak ada data untuk dicetak', 'error');
+            return;
+        }
+
+        const win = window.open('', '_blank', 'width=800,height=600');
+        const bulan = laporanBulan.value;
+        const kelas = laporanKelas.value;
+        const [th, bl] = bulan ? bulan.split('-') : ['',''];
+        const namaBulan = bl ? ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1] : '';
+
+        win.document.write(`
+            <html>
+            <head>
+                <title>Laporan Jurnal - ${namaBulan} ${th}</title>
+                <style>
+                    body { font-family: Arial; padding: 30px; max-width: 800px; margin: auto; }
+                    .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 15px; }
+                    .header h1 { color: #2563eb; margin: 0; }
+                    .header p { color: #64748b; margin: 3px 0; }
+                    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 15px 0; }
+                    .stat { background: #f8fafc; padding: 10px; border-radius: 8px; text-align: center; }
+                    .stat .num { font-size: 22px; font-weight: bold; }
+                    .stat .label { font-size: 11px; color: #64748b; }
+                    .item { background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 4px; }
+                    .footer { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 11px; }
+                    .brand { color: #2563eb; font-weight: 600; }
+                    .watermark { position: fixed; bottom: 30px; right: 30px; font-size: 28px; color: rgba(37,99,235,0.04); font-weight: 700; transform: rotate(-15deg); }
+                    @media print { .no-print { display: none; } }
+                </style>
+            </head>
+            <body>
+                <div class="watermark">@Konsiva</div>
+                <div class="header">
+                    <h1>📚 Laporan Jurnal Guru</h1>
+                    <p>${namaBulan} ${th} ${kelas ? '- Kelas ' + kelas : ''}</p>
+                    <p style="color:#2563eb;font-weight:600;">@Konsiva — Aplikasi Jurnal Guru</p>
+                    <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
+                </div>
+                ${content}
+                <div class="footer">
+                    Laporan dibuat dengan <span class="brand">@Konsiva</span> — Jurnal Guru Digital<br>
+                    © ${new Date().getFullYear()} Konsiva
+                </div>
+                <script>
+                    window.onload = function() { window.print(); }
+                <\/script>
+            </body>
+            </html>
+        `);
+        win.document.close();
+    };
+
+    // ===== NAVIGASI =====
+    window.showPage = function(page) {
+        // Hide all pages
+        Object.keys(pages).forEach(key => {
+            pages[key].classList.remove('active');
+        });
+        if (pages[page]) {
+            pages[page].classList.add('active');
+        }
+
+        // Update nav
+        navBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.page === page) {
+                btn.classList.add('active');
+            }
+        });
+
+        if (page === 'riwayat') renderRiwayat();
+        if (page === 'home') renderHome();
+    };
+
+    navBtns.forEach(btn => {
+        btn.onclick = function() {
+            showPage(this.dataset.page);
+        };
+    });
+
+    // ===== INIT =====
+    function init() {
+        const loggedIn = checkAuth();
+        if (!loggedIn) {
+            hideSplash();
+        } else {
+            loadData();
+            renderAll();
+            setDefaults();
+            hideSplash();
+        }
+    }
+
+    init();
+
+})();
+</script>
+
+</body>
+</html>
