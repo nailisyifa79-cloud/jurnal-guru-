@@ -1,121 +1,1651 @@
-// ================================================================
-// 📄 SIMPAN PDF - PAKAI PRINT (PASTI BERHASIL)
-// ================================================================
-simpanPdfBtn.onclick = function() {
-    if (!isLoggedIn()) {
-        showToast('🔒 Silakan login terlebih dahulu!', 'error');
-        return;
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Jurnal Guru - @Konsiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ===== LIBRARY HTML2PDF ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        /* ===== STYLE UTAMA ===== */
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; min-height: 100vh; }
+
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.5s;
+        }
+        #splash.hide { opacity: 0; pointer-events: none; }
+        #splash h1 { color: white; font-size: 28px; margin: 10px 0 5px; }
+        #splash .brand { color: #fcd34d; font-size: 16px; letter-spacing: 3px; }
+        #splash .loader { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.2); border-top: 3px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 20px; }
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+
+        #loginPage { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2563eb, #1e40af); padding: 20px; }
+        #loginPage.hide { display: none; }
+
+        .login-box { background: white; border-radius: 20px; padding: 30px 24px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+        .login-box .icon { text-align: center; font-size: 48px; }
+        .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
+        .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+
+        .password-wrapper { position: relative; margin-bottom: 12px; }
+        .password-wrapper input { width: 100%; padding: 12px 14px; padding-right: 45px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; }
+        .password-wrapper input:focus { border-color: #2563eb; outline: none; background: white; }
+        .password-wrapper .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8; padding: 4px; transition: 0.3s; border-radius: 8px; }
+
+        .email-input { width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; transition: 0.3s; }
+        .email-input:focus { border-color: #2563eb; outline: none; background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08); }
+
+        .kode-akses { border-color: #f59e0b !important; background: #fffbeb !important; }
+        .kode-akses:focus { border-color: #d97706 !important; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important; }
+
+        .login-box .btn { width: 100%; padding: 13px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .login-box .btn:hover { background: #1d4ed8; }
+        .login-box .toggle-link { text-align: center; margin-top: 14px; font-size: 13px; color: #64748b; }
+        .login-box .toggle-link a { color: #2563eb; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .login-box .brand-footer { text-align: center; margin-top: 18px; font-size: 12px; color: #94a3b8; }
+        .login-box .brand-footer span { color: #2563eb; font-weight: 600; }
+
+        .info-kode { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 8px 12px; font-size: 11px; color: #92400e; margin-bottom: 14px; text-align: center; }
+        .info-kode .highlight { font-weight: 700; }
+
+        #app { max-width: 480px; margin: 0 auto; background: #f0f4f8; min-height: 100vh; padding-bottom: 70px; display: none; }
+        #app.show { display: block; }
+
+        .header { background: linear-gradient(135deg, #2563eb, #1e40af); padding: 16px 18px 14px; color: white; border-radius: 0 0 24px 24px; position: sticky; top: 0; z-index: 50; }
+        .header .top { display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { font-size: 18px; margin: 0; }
+        .header h2 .tag { font-size: 10px; opacity: 0.7; background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 12px; margin-left: 6px; }
+        .header .user { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+        .header .logout { background: rgba(255,255,255,0.15); border: none; color: white; padding: 5px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+        .header .logout:hover { background: rgba(255,255,255,0.25); }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 8px 0 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 20px 20px 0 0; z-index: 100; }
+        .bottom-nav button { display: flex; flex-direction: column; align-items: center; background: none; border: none; cursor: pointer; padding: 4px 16px; color: #94a3b8; font-size: 10px; font-weight: 500; transition: 0.3s; position: relative; }
+        .bottom-nav button.active { color: #2563eb; }
+        .bottom-nav button .icon { font-size: 22px; }
+
+        .bottom-nav button.disabled { color: #cbd5e1 !important; cursor: not-allowed !important; opacity: 0.6; }
+        .bottom-nav button.disabled .icon { opacity: 0.5; }
+        .bottom-nav button.disabled::after { content: '🔒'; position: absolute; top: -4px; right: 2px; font-size: 10px; }
+
+        .lock-message { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; }
+        .lock-message .icon { font-size: 40px; display: block; margin-bottom: 12px; }
+        .lock-message strong { color: #2563eb; }
+
+        .page { display: none; padding: 14px; }
+        .page.active { display: block; }
+
+        .card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; }
+        .card-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-bottom: 3px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #fafcff; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2563eb; outline: none; }
+        .form-group textarea { resize: vertical; min-height: 50px; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
+        .btn-warning { background: #d97706; color: white; }
+        .btn-warning:hover { background: #b45309; }
+        .btn-sm { padding: 5px 14px; font-size: 12px; }
+        .btn-block { width: 100%; }
+        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #475569; }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-outline.active { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+        .btn-backup { background: #16a34a; color: white; }
+        .btn-backup:hover { background: #15803d; }
+        .btn-restore { background: #d97706; color: white; }
+        .btn-restore:hover { background: #b45309; }
+        .btn-refresh { background: #2563eb; color: white; }
+        .btn-refresh:hover { background: #1d4ed8; }
+        .btn-pdf { background: #dc2626; color: white; }
+        .btn-pdf:hover { background: #b91c1c; }
+
+        .student-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 5px; }
+        .student-item .name { flex: 1; font-size: 14px; font-weight: 500; }
+        .student-item .status-badge { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .student-item .status-badge.hadir { background: #dcfce7; color: #166534; }
+        .student-item .status-badge.alfa { background: #fecaca; color: #991b1b; }
+        .student-item .del { color: #ef4444; font-weight: bold; cursor: pointer; font-size: 18px; }
+
+        .jurnal-card { background: #f8fafc; border-radius: 12px; padding: 12px 14px; border: 1px solid #e2e8f0; margin-bottom: 10px; border-left: 4px solid #2563eb; }
+        .jurnal-card .meta { font-size: 12px; color: #64748b; display: flex; flex-wrap: wrap; gap: 6px; }
+        .jurnal-card .meta .tag { background: #e2e8f0; padding: 0 10px; border-radius: 12px; }
+        .jurnal-card .title { font-weight: 600; color: #1e293b; margin: 4px 0; }
+        .jurnal-card .info { font-size: 12px; color: #475569; }
+
+        .empty { text-align: center; padding: 30px 16px; color: #94a3b8; }
+        .empty .icon { font-size: 36px; }
+
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(60px); padding: 10px 22px; border-radius: 12px; background: #1e293b; color: white; font-size: 14px; z-index: 999; opacity: 0; transition: 0.4s; max-width: 90%; text-align: center; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { background: #065f46; }
+        .toast.error { background: #991b1b; }
+
+        .footer-brand { text-align: center; padding: 12px 0 6px; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; margin-top: 6px; }
+        .footer-brand span { color: #2563eb; font-weight: 700; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+        .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 13px; color: #1e40af; }
+        .info-box .highlight { font-weight: 700; }
+
+        .petunjuk { font-size: 11px; color: #64748b; background: #f8fafc; border-radius: 8px; padding: 8px 12px; margin-top: 6px; border: 1px dashed #cbd5e1; line-height: 1.6; }
+
+        .count-box { display: flex; gap: 12px; font-size: 12px; color: #64748b; padding: 6px 0; flex-wrap: wrap; }
+        .count-box span { font-weight: 600; }
+        .count-box .h { color: #16a34a; }
+        .count-box .a { color: #dc2626; }
+
+        .rekap-alfa { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 10px; padding: 12px; margin-top: 12px; }
+        .rekap-alfa .title { font-weight: 600; color: #991b1b; font-size: 13px; margin-bottom: 8px; }
+        .rekap-alfa .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #fee2e2; font-size: 13px; }
+        .rekap-alfa .item:last-child { border-bottom: none; }
+        .rekap-alfa .item .nama { font-weight: 500; }
+        .rekap-alfa .item .jml { background: #fee2e2; padding: 1px 10px; border-radius: 12px; font-weight: 600; color: #991b1b; font-size: 12px; }
+        .rekap-alfa .item .jml.banyak { background: #fecaca; }
+
+        .backup-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #bbf7d0; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+        .backup-card .title { font-weight: 600; color: #166534; font-size: 15px; margin-bottom: 8px; }
+        .backup-card .desc { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+        .backup-card .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .backup-card .btn-group .btn { flex: 1; min-width: 100px; justify-content: center; }
+
+        .cetak-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .cetak-group .btn { flex: 1; min-width: 100px; justify-content: center; }
+
+        /* ===== STYLE KHUSUS PDF ===== */
+        .pdf-content {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+        .pdf-content .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .pdf-content .header h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 24px;
+        }
+        .pdf-content .header p {
+            color: #64748b;
+            margin: 5px 0;
+        }
+        .pdf-content .header .brand {
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .pdf-content .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .pdf-content .stat {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .pdf-content .stat .num {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .pdf-content .stat .label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .pdf-content .item {
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 6px;
+        }
+        .pdf-content .item .title {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        .pdf-content .item .meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .pdf-content .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 12px;
+            border-top: 2px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        .pdf-content .rekap-alfa {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .pdf-content .rekap-alfa .title {
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .pdf-content .rekap-alfa .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #fee2e2;
+            font-size: 13px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+        }
+        .pdf-content .rekap-alfa .item:last-child {
+            border-bottom: none;
+        }
+        .pdf-content .rekap-alfa .item .jml {
+            background: #fee2e2;
+            padding: 1px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .header { padding: 12px 14px; }
+            .header h2 { font-size: 16px; }
+            .page { padding: 10px; }
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+            .backup-card .btn-group .btn { min-width: 80px; font-size: 12px; }
+            .cetak-group .btn { min-width: 80px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+    <div style="font-size:50px;">📚</div>
+    <h1>Jurnal Guru</h1>
+    <div class="brand">@Konsiva</div>
+    <div class="loader"></div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast"></div>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginPage">
+    <div class="login-box">
+        <div class="icon">📚</div>
+        <h1>Jurnal Guru</h1>
+        <p class="subtitle">Masuk ke akun Anda</p>
+        <div class="info-kode">🔑 <span class="highlight">Kode Akses</span> didapatkan dari penjual aplikasi</div>
+        <form id="loginForm">
+            <div class="password-wrapper">
+                <input type="email" id="loginEmail" placeholder="📧 Email" class="email-input" autocomplete="off" required />
+            </div>
+            <div class="password-wrapper">
+                <input type="password" id="loginPassword" placeholder="🔒 Password" required minlength="4" />
+                <button type="button" class="toggle-password" data-target="loginPassword">👁️</button>
+            </div>
+            <button type="submit" class="btn">Masuk</button>
+        </form>
+        <form id="registerForm" style="display:none; margin-top:12px;">
+            <div class="password-wrapper">
+                <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses (dari penjual)" class="kode-akses" required />
+                <button type="button" class="toggle-password" data-target="kodeAksesRegister">👁️</button>
+            </div>
+            <div class="password-wrapper">
+                <input type="text" id="registerName" placeholder="👤 Nama Lengkap" required />
+            </div>
+            <div class="password-wrapper">
+                <input type="email" id="registerEmail" placeholder="📧 Email" class="email-input" autocomplete="off" required />
+            </div>
+            <div class="password-wrapper">
+                <input type="password" id="registerPassword" placeholder="🔒 Password (min 4)" required minlength="4" />
+                <button type="button" class="toggle-password" data-target="registerPassword">👁️</button>
+            </div>
+            <button type="submit" class="btn">Daftar</button>
+        </form>
+        <div class="toggle-link">
+            <span id="toggleText">Belum punya akun? <a id="toggleLink">Daftar</a></span>
+        </div>
+        <div class="brand-footer">dibuat dengan ❤️ oleh <span>@Konsiva</span></div>
+    </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="top">
+            <div>
+                <h2>📚 Jurnal Guru <span class="tag">@Konsiva</span></h2>
+                <div class="user" id="userDisplay">👤 Guru</div>
+            </div>
+            <button class="logout" onclick="logout()">🚪 Keluar</button>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: HOME ===== -->
+    <div id="pageHome" class="page active">
+        <div class="card">
+            <div class="card-title">
+                <span>📊 Ringkasan Hari Ini</span>
+                <span style="font-size:12px;color:#94a3b8;" id="todayDate"></span>
+            </div>
+            <div id="homeSummary"><div class="empty"><div class="icon">📝</div><p>Belum ada data hari ini</p></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                <span>📝 Jurnal Terbaru</span>
+                <button class="btn btn-primary btn-sm" onclick="showPage('jurnal')">+ Buat</button>
+            </div>
+            <div id="homeRecent"><div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div></div>
+        </div>
+        <div class="footer-brand"><span>@Konsiva</span> — Aplikasi Jurnal Guru</div>
+    </div>
+
+    <!-- ===== PAGE: JURNAL ===== -->
+    <div id="pageJurnal" class="page">
+        <div id="jurnalLock" class="lock-message" style="display:none;">
+            <div class="icon">🔒</div>
+            <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
+        </div>
+        <div id="jurnalContent" style="display:block;">
+            <div class="card">
+                <div class="card-title"><span>✏️ Buat Jurnal</span></div>
+                <div class="info-box">💡 <span class="highlight">Cara pakai:</span><br>• Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b><br>• Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama</b> siswa yang tidak hadir</div>
+                <div class="petunjuk">📌 Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong><br>Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.</div>
+                <form id="jurnalForm">
+                    <div class="form-group"><label>📅 Tanggal</label><input type="date" id="fTanggal" required /></div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>🏫 Kelas</label><input type="text" id="fKelas" placeholder="Contoh: 1A / 7B / XI IPA" required /></div>
+                        <div class="form-group"><label>📖 Mata Pelajaran</label><input type="text" id="fMapel" placeholder="Contoh: Matematika / Biologi" required /></div>
+                    </div>
+                    <div class="form-group"><label>📝 Materi</label><input type="text" id="fMateri" placeholder="Contoh: Bab 1 - Pengenalan" required /></div>
+                    <div class="form-group"><label>📌 Catatan</label><textarea id="fCatatan" rows="2" placeholder="Catatan tambahan..."></textarea></div>
+                    <div class="form-group">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
+                            <label style="margin:0;">👨‍🎓 Daftar Siswa</label>
+                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                                <button type="button" id="semuaHadirBtn" class="btn btn-success btn-sm">✅ Semua Hadir</button>
+                                <button type="button" id="tambahTidakHadirBtn" class="btn btn-warning btn-sm">➕ Tidak Hadir</button>
+                                <button type="button" id="hapusSemuaSiswaBtn" class="btn btn-danger btn-sm">🗑️</button>
+                            </div>
+                        </div>
+                        <div id="presensiContainer"><div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa</div></div>
+                        <div class="count-box">Total: <span id="totalSiswaCount">0</span> siswa · ✅ Hadir: <span class="h" id="hadirCount">0</span> · ❌ Tidak Hadir: <span class="a" id="alfaCount">0</span></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">💾 Simpan Jurnal</button>
+                </form>
+            </div>
+            <div class="footer-brand"><span>@Konsiva</span> — Data di perangkat Anda</div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: RIWAYAT ===== -->
+    <div id="pageRiwayat" class="page">
+        <div id="riwayatLock" class="lock-message" style="display:none;">
+            <div class="icon">🔒</div>
+            <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
+        </div>
+        <div id="riwayatContent" style="display:block;">
+            <div class="card">
+                <div class="card-title">
+                    <span>📋 Riwayat Jurnal</span>
+                    <span style="display:flex;gap:4px;">
+                        <button id="refreshDataBtn" class="btn btn-refresh btn-sm">🔄 Refresh</button>
+                        <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️</button>
+                    </span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                    <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                    <input type="text" id="filterKelasRiwayat" placeholder="🏫 Filter Kelas..." style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                </div>
+                <div id="riwayatList"></div>
+                <div id="riwayatEmpty" class="empty" style="display:none;">
+                    <div class="icon">📭</div>
+                    <p>Belum ada jurnal</p>
+                    <p style="font-size:12px;margin-top:4px;">💡 Buat jurnal pertama di tab Jurnal</p>
+                </div>
+            </div>
+            <div class="backup-card">
+                <div class="title">💾 Backup & Restore Data</div>
+                <div class="desc">📌 Backup data untuk berjaga-jaga jika ganti HP atau HP hilang.<br>File backup bisa disimpan di Google Drive, Email, atau chat sendiri di WhatsApp.</div>
+                <div class="btn-group">
+                    <button onclick="backupData()" class="btn btn-backup">💾 Backup</button>
+                    <button onclick="restoreData()" class="btn btn-restore">📂 Restore</button>
+                </div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center;">⏰ Lakukan backup setiap 1-3 bulan sekali</div>
+            </div>
+            <div class="footer-brand"><span>@Konsiva</span> — Semua data aman</div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: LAPORAN ===== -->
+    <div id="pageLaporan" class="page">
+        <div id="laporanLock" class="lock-message" style="display:none;">
+            <div class="icon">🔒</div>
+            <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
+        </div>
+        <div id="laporanContent" style="display:block;">
+            <div class="card">
+                <div class="card-title"><span>📊 Laporan</span></div>
+                <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                    <button id="periodeBulanan" class="btn btn-sm btn-outline active" style="flex:1;">📅 Bulanan</button>
+                    <button id="periodeMingguan" class="btn btn-sm btn-outline" style="flex:1;">📅 Mingguan</button>
+                </div>
+                <div id="filterBulanan">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div class="form-group" style="margin:0;"><label>📅 Bulan</label><input type="month" id="laporanBulan" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" /></div>
+                        <div class="form-group" style="margin:0;"><label>🏫 Kelas</label><input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" /></div>
+                    </div>
+                </div>
+                <div id="filterMingguan" style="display:none;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                        <div class="form-group" style="margin:0;"><label>📅 Bulan</label><input type="month" id="laporanBulanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" /></div>
+                        <div class="form-group" style="margin:0;"><label>📅 Minggu ke-</label><select id="laporanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;"><option value="1">Minggu 1</option><option value="2">Minggu 2</option><option value="3">Minggu 3</option><option value="4">Minggu 4</option><option value="5">Minggu 5</option></select></div>
+                        <div class="form-group" style="margin:0;"><label>🏫 Kelas</label><input type="text" id="laporanKelasMinggu" placeholder="Semua / 1A / 7B" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" /></div>
+                    </div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.</div>
+                </div>
+                <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
+                
+                <div class="cetak-group">
+                    <button id="cetakLaporanBtn" class="btn btn-success" style="flex:1;">🖨️ Cetak</button>
+                    <button id="simpanPdfBtn" class="btn btn-pdf" style="flex:1;">📄 Simpan PDF</button>
+                </div>
+                <div style="font-size:11px;color:#1e40af;background:#eff6ff;padding:8px 12px;border-radius:10px;margin-top:6px;text-align:center;border:1px solid #bfdbfe;">
+                    💡 <strong>Klik "Simpan PDF"</strong> → File PDF akan langsung ter-download ke HP Anda! ✅
+                </div>
+
+                <div id="laporanHasil" class="mt-3">
+                    <div class="empty"><div class="icon">📊</div><p>Pilih periode & klik Tampilkan</p></div>
+                </div>
+            </div>
+            <div class="footer-brand"><span>@Konsiva</span> — Laporan siap cetak</div>
+        </div>
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <div class="bottom-nav">
+        <button class="nav-item active" data-page="home" id="navHome"><span class="icon">🏠</span><span>Beranda</span></button>
+        <button class="nav-item" data-page="jurnal" id="navJurnal"><span class="icon">✏️</span><span>Jurnal</span></button>
+        <button class="nav-item" data-page="riwayat" id="navRiwayat"><span class="icon">📋</span><span>Riwayat</span></button>
+        <button class="nav-item" data-page="laporan" id="navLaporan"><span class="icon">📊</span><span>Laporan</span></button>
+    </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ========================================================== -->
+<script>
+(function() {
+    'use strict';
+
+    // ================================================================
+    // 🔑 KONFIGURASI
+    // ================================================================
+    var KODE_AKSES = 'konsiva26';
+    var STORAGE_KEY = 'jurnalData';
+    var USER_KEY = 'jurnalUser';
+    var USERS_KEY = 'jurnalUsers';
+
+    var jurnalData = [];
+    var currentUser = null;
+    var siswaList = [];
+
+    // ===== DOM =====
+    var $ = function(id) { return document.getElementById(id); };
+    var qsa = function(sel, ctx) { return (ctx || document).querySelectorAll(sel); };
+
+    var splash = $('splash');
+    var loginPage = $('loginPage');
+    var loginForm = $('loginForm');
+    var loginEmail = $('loginEmail');
+    var loginPassword = $('loginPassword');
+    var registerForm = $('registerForm');
+    var kodeAksesRegister = $('kodeAksesRegister');
+    var registerName = $('registerName');
+    var registerEmail = $('registerEmail');
+    var registerPassword = $('registerPassword');
+    var toggleLink = $('toggleLink');
+    var toggleText = $('toggleText');
+    var app = $('app');
+    var userDisplay = $('userDisplay');
+    var navItems = qsa('.nav-item');
+    var navJurnal = $('navJurnal');
+    var navRiwayat = $('navRiwayat');
+    var navLaporan = $('navLaporan');
+    var refreshDataBtn = $('refreshDataBtn');
+
+    var pages = {
+        home: $('pageHome'),
+        jurnal: $('pageJurnal'),
+        riwayat: $('pageRiwayat'),
+        laporan: $('pageLaporan')
+    };
+
+    var jurnalLock = $('jurnalLock');
+    var jurnalContent = $('jurnalContent');
+    var riwayatLock = $('riwayatLock');
+    var riwayatContent = $('riwayatContent');
+    var laporanLock = $('laporanLock');
+    var laporanContent = $('laporanContent');
+
+    var jurnalForm = $('jurnalForm');
+    var fTanggal = $('fTanggal');
+    var fKelas = $('fKelas');
+    var fMapel = $('fMapel');
+    var fMateri = $('fMateri');
+    var fCatatan = $('fCatatan');
+    var presensiContainer = $('presensiContainer');
+    var semuaHadirBtn = $('semuaHadirBtn');
+    var tambahTidakHadirBtn = $('tambahTidakHadirBtn');
+    var hapusSemuaSiswaBtn = $('hapusSemuaSiswaBtn');
+    var totalSiswaCount = $('totalSiswaCount');
+    var hadirCount = $('hadirCount');
+    var alfaCount = $('alfaCount');
+
+    var riwayatList = $('riwayatList');
+    var riwayatEmpty = $('riwayatEmpty');
+    var filterRiwayat = $('filterRiwayat');
+    var filterKelasRiwayat = $('filterKelasRiwayat');
+    var hapusSemuaBtn = $('hapusSemuaBtn');
+
+    var periodeBulanan = $('periodeBulanan');
+    var periodeMingguan = $('periodeMingguan');
+    var filterBulanan = $('filterBulanan');
+    var filterMingguan = $('filterMingguan');
+    var laporanBulan = $('laporanBulan');
+    var laporanKelas = $('laporanKelas');
+    var laporanBulanMinggu = $('laporanBulanMinggu');
+    var laporanMinggu = $('laporanMinggu');
+    var laporanKelasMinggu = $('laporanKelasMinggu');
+    var tampilkanLaporanBtn = $('tampilkanLaporanBtn');
+    var cetakLaporanBtn = $('cetakLaporanBtn');
+    var simpanPdfBtn = $('simpanPdfBtn');
+    var laporanHasil = $('laporanHasil');
+
+    var todayDate = $('todayDate');
+    var homeSummary = $('homeSummary');
+    var homeRecent = $('homeRecent');
+    var toast = $('toast');
+
+    // ================================================================
+    // 👁️ TOMBOL MATA
+    // ================================================================
+    document.querySelectorAll('.toggle-password').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var targetId = this.dataset.target;
+            var input = document.getElementById(targetId);
+            if (input) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    this.textContent = '👁️';
+                }
+            }
+        });
+    });
+
+    // ===== UTILITY =====
+    function formatDate(tgl) {
+        if (!tgl) return '-';
+        var p = tgl.split('-');
+        var bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return p[2] + ' ' + bulan[parseInt(p[1])-1] + ' ' + p[0];
     }
 
-    // CEK: Apakah laporan sudah tampil?
-    var laporanElement = document.getElementById('laporanHasil');
-    var content = laporanElement.innerHTML;
-    
-    if (!content || content.includes('Pilih periode') || content.includes('Belum ada data') || content.includes('Tidak ada data')) {
-        showToast('❌ Tampilkan laporan terlebih dahulu!', 'error');
-        return;
+    function escapeHtml(text) {
+        if (!text) return '';
+        var d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
     }
 
-    // CEK: Apakah benar-benar ada jurnal?
-    if (!content.includes('📝 Jurnal')) {
-        showToast('❌ Tidak ada data jurnal untuk periode ini', 'error');
-        return;
+    function genId() {
+        return Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
     }
 
-    showToast('📄 Membuka halaman PDF...', 'info');
+    function showToast(msg, type) {
+        toast.textContent = msg;
+        toast.className = 'toast ' + (type || '');
+        void toast.offsetWidth;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(function() {
+            toast.classList.remove('show');
+        }, 3000);
+    }
 
-    var bulan = laporanBulan.value;
-    var kelas = laporanKelas.value;
-    var th, bl, namaBulan;
-    if (bulan) {
-        var parts = bulan.split('-');
-        th = parts[0];
-        bl = parts[1];
+    function hideSplash() {
+        setTimeout(function() {
+            splash.classList.add('hide');
+        }, 800);
+    }
+
+    // ================================================================
+    // 🔐 CEK KODE AKSES
+    // ================================================================
+    function cekKodeAkses(kode) {
+        return kode.trim().toUpperCase() === KODE_AKSES.trim().toUpperCase();
+    }
+
+    // ================================================================
+    // 🔐 LOGIN & NAVIGASI
+    // ================================================================
+    function isLoggedIn() {
+        return currentUser !== null;
+    }
+
+    function updateNavigation() {
+        var loggedIn = isLoggedIn();
+
+        if (loggedIn) {
+            navJurnal.classList.remove('disabled');
+            navRiwayat.classList.remove('disabled');
+            navLaporan.classList.remove('disabled');
+            jurnalLock.style.display = 'none';
+            riwayatLock.style.display = 'none';
+            laporanLock.style.display = 'none';
+            jurnalContent.style.display = 'block';
+            riwayatContent.style.display = 'block';
+            laporanContent.style.display = 'block';
+        } else {
+            navJurnal.classList.add('disabled');
+            navRiwayat.classList.add('disabled');
+            navLaporan.classList.add('disabled');
+            jurnalLock.style.display = 'block';
+            riwayatLock.style.display = 'block';
+            laporanLock.style.display = 'block';
+            jurnalContent.style.display = 'none';
+            riwayatContent.style.display = 'none';
+            laporanContent.style.display = 'none';
+        }
+    }
+
+    function checkAuth() {
+        var saved = localStorage.getItem(USER_KEY);
+        if (saved) {
+            try {
+                currentUser = JSON.parse(saved);
+                showApp();
+                return true;
+            } catch(e) {
+                localStorage.removeItem(USER_KEY);
+            }
+        }
+        return false;
+    }
+
+    function showApp() {
+        loginPage.classList.add('hide');
+        app.classList.add('show');
+        if (currentUser) {
+            userDisplay.textContent = '👤 ' + currentUser.name;
+        }
+        loadData();
+        renderAll();
+        setDefaults();
+        updateNavigation();
+    }
+
+    // Login
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var email = loginEmail.value.trim();
+        var pass = loginPassword.value.trim();
+
+        if (!email || !pass) {
+            showToast('❌ Isi email & password!', 'error');
+            return;
+        }
+
+        var users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        var found = null;
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].email === email && users[i].password === pass) {
+                found = users[i];
+                break;
+            }
+        }
+
+        if (found) {
+            currentUser = { name: found.name, email: found.email };
+            localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+            showToast('✅ Selamat datang ' + found.name + '!', 'success');
+            showApp();
+            loginForm.reset();
+        } else {
+            var exists = false;
+            for (var j = 0; j < users.length; j++) {
+                if (users[j].email === email) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists) showToast('❌ Password salah!', 'error');
+            else showToast('❌ Email belum terdaftar! Silakan daftar.', 'error');
+        }
+    });
+
+    // Register
+    registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var kode = kodeAksesRegister.value.trim();
+        var name = registerName.value.trim();
+        var email = registerEmail.value.trim();
+        var pass = registerPassword.value.trim();
+
+        if (!cekKodeAkses(kode)) {
+            showToast('❌ Kode Akses salah! Hubungi penjual.', 'error');
+            kodeAksesRegister.value = '';
+            kodeAksesRegister.focus();
+            return;
+        }
+
+        if (!name || !email || !pass) {
+            showToast('❌ Isi semua field!', 'error');
+            return;
+        }
+        if (pass.length < 4) {
+            showToast('❌ Password min 4 karakter!', 'error');
+            return;
+        }
+
+        var users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].email === email) {
+                showToast('❌ Email sudah terdaftar!', 'error');
+                return;
+            }
+        }
+
+        users.push({ name: name, email: email, password: pass });
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        showToast('✅ Pendaftaran berhasil! Silakan login.', 'success');
+        toggleToLogin();
+        registerForm.reset();
+    });
+
+    // Toggle
+    var isLogin = true;
+
+    function toggleToRegister() {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        toggleText.innerHTML = 'Sudah punya akun? <a id="toggleLink">Masuk</a>';
+        isLogin = false;
+        document.getElementById('toggleLink').onclick = function(e) {
+            e.preventDefault();
+            toggleToLogin();
+        };
+    }
+
+    function toggleToLogin() {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        toggleText.innerHTML = 'Belum punya akun? <a id="toggleLink">Daftar</a>';
+        isLogin = true;
+        document.getElementById('toggleLink').onclick = function(e) {
+            e.preventDefault();
+            toggleToRegister();
+        };
+    }
+
+    toggleLink.onclick = function(e) {
+        e.preventDefault();
+        if (isLogin) toggleToRegister();
+        else toggleToLogin();
+    };
+
+    // Logout
+    window.logout = function() {
+        if (confirm('Yakin keluar?')) {
+            localStorage.removeItem(USER_KEY);
+            currentUser = null;
+            loginPage.classList.remove('hide');
+            app.classList.remove('show');
+            updateNavigation();
+            showToast('👋 Sampai jumpa!');
+        }
+    };
+
+    // ================================================================
+    // 💾 STORAGE
+    // ================================================================
+    function loadData() {
+        try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                jurnalData = JSON.parse(raw);
+                console.log('✅ Data dimuat:', jurnalData.length, 'jurnal');
+            } else {
+                jurnalData = [];
+                console.log('ℹ️ Belum ada data');
+            }
+        } catch(e) { 
+            jurnalData = [];
+            console.log('❌ Gagal muat data');
+        }
+    }
+
+    function saveData() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
+            console.log('✅ Data disimpan:', jurnalData.length, 'jurnal');
+            return true;
+        } catch(e) {
+            console.log('❌ Gagal simpan data');
+            return false;
+        }
+    }
+
+    // ================================================================
+    // 🔄 REFRESH DATA
+    // ================================================================
+    function refreshData() {
+        showToast('🔄 Memuat ulang data...', 'info');
+        loadData();
+        renderAll();
+        showToast('✅ Data berhasil dimuat: ' + jurnalData.length + ' jurnal', 'success');
+    }
+
+    refreshDataBtn.addEventListener('click', refreshData);
+
+    // ===== PRESENSI =====
+    function updateCounts() {
+        var total = siswaList.length;
+        var hadir = 0;
+        var alfa = 0;
+        for (var i = 0; i < siswaList.length; i++) {
+            if (siswaList[i].status === 'hadir') hadir++;
+            else if (siswaList[i].status === 'alfa') alfa++;
+        }
+        totalSiswaCount.textContent = total;
+        hadirCount.textContent = hadir;
+        alfaCount.textContent = alfa;
+    }
+
+    function renderPresensi() {
+        presensiContainer.innerHTML = '';
+        if (siswaList.length === 0) {
+            presensiContainer.innerHTML = '<div class="empty" style="padding:16px;">Belum ada siswa</div>';
+            updateCounts();
+            return;
+        }
+
+        for (var i = 0; i < siswaList.length; i++) {
+            var s = siswaList[i];
+            var div = document.createElement('div');
+            div.className = 'student-item';
+            var statusClass = s.status === 'hadir' ? 'hadir' : 'alfa';
+            var statusLabel = s.status === 'hadir' ? '✅ Hadir' : '❌ Tidak Hadir';
+            div.innerHTML = '<span class="name">' + escapeHtml(s.nama) + '</span><span class="status-badge ' + statusClass + '">' + statusLabel + '</span><span class="del" data-index="' + i + '">×</span>';
+            presensiContainer.appendChild(div);
+
+            div.querySelector('.del').onclick = function() {
+                var idx = parseInt(this.dataset.index);
+                if (!isNaN(idx)) {
+                    siswaList.splice(idx, 1);
+                    renderPresensi();
+                    updateCounts();
+                }
+            };
+        }
+        updateCounts();
+    }
+
+    // ===== TOMBOL PRESENSI =====
+    semuaHadirBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        var input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25');
+        if (input && input.trim() !== '') {
+            var jumlah = parseInt(input.trim());
+            if (isNaN(jumlah) || jumlah <= 0) {
+                showToast('❌ Masukkan angka yang valid!', 'error');
+                return;
+            }
+            if (jumlah > 100) {
+                showToast('❌ Maksimal 100 siswa', 'error');
+                return;
+            }
+            var names = [];
+            for (var i = 1; i <= jumlah; i++) {
+                names.push('Siswa ' + i);
+            }
+            for (var j = 0; j < names.length; j++) {
+                siswaList.push({ nama: names[j], status: 'hadir' });
+            }
+            renderPresensi();
+            showToast('✅ ' + names.length + ' siswa ditambahkan (Semua Hadir)', 'success');
+        }
+    };
+
+    tambahTidakHadirBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        var nama = prompt('📝 Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\n\nContoh: Andi, Budi, Cici');
+        if (nama && nama.trim() !== '') {
+            var names = nama.split(',').map(function(n) { return n.trim(); }).filter(function(n) { return n !== ''; });
+            for (var i = 0; i < names.length; i++) {
+                siswaList.push({ nama: names[i], status: 'alfa' });
+            }
+            renderPresensi();
+            showToast('⚠️ ' + names.length + ' siswa ditambahkan (Tidak Hadir)', 'warning');
+        }
+    };
+
+    hapusSemuaSiswaBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        if (siswaList.length === 0) {
+            showToast('📭 Tidak ada siswa', 'info');
+            return;
+        }
+        if (confirm('Hapus semua siswa dari daftar?')) {
+            siswaList = [];
+            renderPresensi();
+            showToast('🗑️ Semua siswa dihapus', 'info');
+        }
+    };
+
+    // ===== FORM JURNAL =====
+    jurnalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+
+        var tanggal = fTanggal.value.trim();
+        var kelas = fKelas.value.trim();
+        var mapel = fMapel.value.trim();
+        var materi = fMateri.value.trim();
+        var catatan = fCatatan.value.trim();
+
+        if (!tanggal || !kelas || !mapel || !materi) {
+            showToast('❌ Lengkapi semua field!', 'error');
+            return;
+        }
+
+        if (siswaList.length === 0) {
+            showToast('❌ Tambahkan siswa!', 'error');
+            return;
+        }
+
+        var presensiData = [];
+        for (var i = 0; i < siswaList.length; i++) {
+            presensiData.push({ nama: siswaList[i].nama, status: siswaList[i].status });
+        }
+
+        var jurnal = {
+            id: genId(),
+            tanggal: tanggal,
+            kelas: kelas,
+            mapel: mapel,
+            materi: materi,
+            catatan: catatan,
+            presensi: presensiData,
+            createdAt: new Date().toISOString()
+        };
+
+        jurnalData.unshift(jurnal);
+        saveData();
+
+        fMateri.value = '';
+        fCatatan.value = '';
+        siswaList = [];
+        renderPresensi();
+
+        showToast('✅ Jurnal disimpan!', 'success');
+        renderAll();
+    });
+
+    // ===== SET DEFAULTS =====
+    function setDefaults() {
+        var now = new Date();
+        var y = now.getFullYear();
+        var m = String(now.getMonth()+1).padStart(2,'0');
+        var d = String(now.getDate()).padStart(2,'0');
+        fTanggal.value = y + '-' + m + '-' + d;
+        laporanBulan.value = y + '-' + m;
+        laporanBulanMinggu.value = y + '-' + m;
+        todayDate.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    }
+
+    // ===== RENDER =====
+    function renderAll() {
+        renderHome();
+        renderRiwayat();
+    }
+
+    // HOME
+    function renderHome() {
+        var today = new Date().toISOString().split('T')[0];
+        var todayJurnal = [];
+        for (var i = 0; i < jurnalData.length; i++) {
+            if (jurnalData[i].tanggal === today) todayJurnal.push(jurnalData[i]);
+        }
+
+        if (todayJurnal.length === 0) {
+            homeSummary.innerHTML = '<div class="empty"><div class="icon">📝</div><p>Belum ada data hari ini</p></div>';
+        } else {
+            var total = 0, hadir = 0;
+            for (var j = 0; j < todayJurnal.length; j++) {
+                for (var k = 0; k < todayJurnal[j].presensi.length; k++) {
+                    total++;
+                    if (todayJurnal[j].presensi[k].status === 'hadir') hadir++;
+                }
+            }
+            homeSummary.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div style="background:#dbeafe;padding:12px;border-radius:12px;text-align:center;"><div style="font-size:24px;font-weight:bold;color:#2563eb;">' + todayJurnal.length + '</div><div style="font-size:11px;color:#64748b;">📝 Jurnal</div></div><div style="background:#dcfce7;padding:12px;border-radius:12px;text-align:center;"><div style="font-size:24px;font-weight:bold;color:#16a34a;">' + hadir + '/' + total + '</div><div style="font-size:11px;color:#64748b;">✅ Hadir</div></div></div>';
+        }
+
+        var recent = jurnalData.slice(0, 5);
+        if (recent.length === 0) {
+            homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>';
+        } else {
+            var html = '';
+            for (var l = 0; l < recent.length; l++) {
+                var j = recent[l];
+                var h = 0;
+                for (var m = 0; m < j.presensi.length; m++) {
+                    if (j.presensi[m].status === 'hadir') h++;
+                }
+                html += '<div class="jurnal-card"><div class="meta"><span>📅 ' + formatDate(j.tanggal) + '</span><span class="tag">🏫 ' + j.kelas + '</span><span class="tag">📖 ' + j.mapel + '</span></div><div class="title">' + escapeHtml(j.materi) + '</div><div class="info">👨‍🎓 ' + h + '/' + j.presensi.length + ' hadir</div></div>';
+            }
+            homeRecent.innerHTML = html;
+        }
+    }
+
+    // ===== RIWAYAT =====
+    function renderRiwayat() {
+        if (!isLoggedIn()) return;
+
+        loadData();
+
+        var txt = filterRiwayat.value.trim().toLowerCase();
+        var kl = filterKelasRiwayat.value.trim().toLowerCase();
+
+        var data = [];
+        for (var i = 0; i < jurnalData.length; i++) {
+            var j = jurnalData[i];
+            var match = true;
+            if (txt) {
+                if (!j.materi.toLowerCase().includes(txt) && !j.kelas.toLowerCase().includes(txt) && !j.mapel.toLowerCase().includes(txt) && !(j.catatan && j.catatan.toLowerCase().includes(txt))) {
+                    match = false;
+                }
+            }
+            if (kl) {
+                if (!j.kelas.toLowerCase().includes(kl)) match = false;
+            }
+            if (match) data.push(j);
+        }
+
+        if (data.length === 0) {
+            riwayatList.innerHTML = '';
+            riwayatEmpty.style.display = 'block';
+            return;
+        }
+        riwayatEmpty.style.display = 'none';
+
+        var html = '';
+        for (var k = 0; k < data.length; k++) {
+            var j2 = data[k];
+            var h2 = 0;
+            for (var l = 0; l < j2.presensi.length; l++) {
+                if (j2.presensi[l].status === 'hadir') h2++;
+            }
+            var detailPresensi = '';
+            for (var m = 0; m < j2.presensi.length; m++) {
+                var p = j2.presensi[m];
+                var bg = p.status === 'hadir' ? '#dcfce7' : '#fecaca';
+                var color = p.status === 'hadir' ? '#166534' : '#991b1b';
+                var label = p.status === 'hadir' ? '✅ Hadir' : '❌ Tidak Hadir';
+                detailPresensi += '<span style="font-size:11px;padding:1px 10px;border-radius:12px;background:' + bg + ';color:' + color + ';">' + p.nama + ' (' + label + ')</span>';
+            }
+            html += '<div class="jurnal-card"><div style="display:flex;justify-content:space-between;align-items:start;"><div style="flex:1;"><div class="meta"><span>📅 ' + formatDate(j2.tanggal) + '</span><span class="tag">🏫 ' + j2.kelas + '</span><span class="tag">📖 ' + j2.mapel + '</span></div><div class="title">' + escapeHtml(j2.materi) + '</div>' + (j2.catatan ? '<div style="font-size:13px;color:#64748b;">📌 ' + escapeHtml(j2.catatan) + '</div>' : '') + '<div class="info">👨‍🎓 ' + h2 + '/' + j2.presensi.length + ' hadir</div></div><button class="del-jurnal" data-id="' + j2.id + '" style="background:none;border:none;color:#ef4444;font-size:20px;cursor:pointer;font-weight:bold;">×</button></div><details style="margin-top:6px;"><summary style="font-size:12px;color:#2563eb;cursor:pointer;">Lihat detail presensi</summary><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">' + detailPresensi + '</div></details></div>';
+        }
+        riwayatList.innerHTML = html;
+
+        var delBtns = riwayatList.querySelectorAll('.del-jurnal');
+        for (var n = 0; n < delBtns.length; n++) {
+            delBtns[n].onclick = function() {
+                var id = this.dataset.id;
+                if (confirm('Yakin hapus jurnal ini?')) {
+                    var newData = [];
+                    for (var i = 0; i < jurnalData.length; i++) {
+                        if (jurnalData[i].id !== id) newData.push(jurnalData[i]);
+                    }
+                    jurnalData = newData;
+                    saveData();
+                    renderRiwayat();
+                    renderHome();
+                    showToast('🗑️ Jurnal dihapus', 'info');
+                }
+            };
+        }
+    }
+
+    filterRiwayat.oninput = renderRiwayat;
+    filterKelasRiwayat.oninput = renderRiwayat;
+
+    hapusSemuaBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        if (jurnalData.length === 0) {
+            showToast('📭 Tidak ada jurnal', 'info');
+            return;
+        }
+        if (confirm('⚠️ Yakin hapus SEMUA jurnal?')) {
+            jurnalData = [];
+            saveData();
+            renderRiwayat();
+            renderHome();
+            showToast('🗑️ Semua dihapus', 'info');
+        }
+    };
+
+    // ================================================================
+    // 💾 BACKUP & RESTORE
+    // ================================================================
+
+    window.backupData = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        try {
+            loadData();
+            var data = {
+                jurnalData: localStorage.getItem(STORAGE_KEY),
+                users: localStorage.getItem(USERS_KEY),
+                user: localStorage.getItem(USER_KEY),
+                tanggal: new Date().toISOString(),
+                versi: '1.0'
+            };
+            var json = JSON.stringify(data, null, 2);
+            var blob = new Blob([json], {type: 'application/json'});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            var today = new Date().toISOString().split('T')[0];
+            a.download = 'backup_jurnal_guru_' + today + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('✅ Backup berhasil!', 'success');
+        } catch (e) {
+            showToast('❌ Gagal backup: ' + e.message, 'error');
+        }
+    };
+
+    window.restoreData = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    var data = JSON.parse(event.target.result);
+                    if (!data.jurnalData && !data.users && !data.user) {
+                        showToast('❌ File backup tidak valid!', 'error');
+                        return;
+                    }
+                    if (!confirm('⚠️ Restore akan mengganti semua data saat ini.\n\nLanjutkan?')) {
+                        return;
+                    }
+                    if (data.jurnalData !== undefined) localStorage.setItem(STORAGE_KEY, data.jurnalData);
+                    if (data.users !== undefined) localStorage.setItem(USERS_KEY, data.users);
+                    if (data.user !== undefined) localStorage.setItem(USER_KEY, data.user);
+                    showToast('✅ Restore berhasil!', 'success');
+                    setTimeout(function() { location.reload(); }, 1500);
+                } catch (e) {
+                    showToast('❌ File backup rusak!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    };
+
+    // ===== LAPORAN =====
+    var periode = 'bulanan';
+
+    periodeBulanan.addEventListener('click', function() {
+        periode = 'bulanan';
+        this.classList.add('active');
+        periodeMingguan.classList.remove('active');
+        filterBulanan.style.display = 'block';
+        filterMingguan.style.display = 'none';
+    });
+
+    periodeMingguan.addEventListener('click', function() {
+        periode = 'mingguan';
+        this.classList.add('active');
+        periodeBulanan.classList.remove('active');
+        filterBulanan.style.display = 'none';
+        filterMingguan.style.display = 'block';
+    });
+
+    tampilkanLaporanBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        loadData();
+        if (periode === 'bulanan') {
+            tampilkanLaporanBulanan();
+        } else {
+            tampilkanLaporanMingguan();
+        }
+    };
+
+    function tampilkanLaporanBulanan() {
+        var bulan = laporanBulan.value;
+        var kelas = laporanKelas.value.trim();
+
+        if (!bulan) {
+            showToast('❌ Pilih bulan!', 'error');
+            return;
+        }
+
+        var data = [];
+        for (var i = 0; i < jurnalData.length; i++) {
+            if (jurnalData[i].tanggal.startsWith(bulan)) data.push(jurnalData[i]);
+        }
+        if (kelas) {
+            var filtered = [];
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].kelas.toLowerCase().includes(kelas.toLowerCase())) filtered.push(data[j]);
+            }
+            data = filtered;
+        }
+
+        if (data.length === 0) {
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk periode ini</p></div>';
+            return;
+        }
+
+        var thbl = bulan.split('-');
+        var th = thbl[0];
+        var bl = thbl[1];
         var namaBulanArr = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-        namaBulan = namaBulanArr[parseInt(bl)-1];
-    } else {
-        th = '';
-        bl = '';
-        namaBulan = '';
+        var namaBulan = namaBulanArr[parseInt(bl)-1];
+        var labelPeriode = 'Bulanan - ' + namaBulan + ' ' + th;
+
+        renderLaporan(data, labelPeriode, kelas);
     }
 
-    // ===== GUNAKAN KONTEN LAPORAN YANG SUDAH TAMPIL =====
-    var laporanContent = laporanElement.innerHTML;
-    
-    // Buat halaman baru untuk print
-    var printWindow = window.open('', '_blank', 'width=800,height=600');
-    
-    // Tulis HTML lengkap dengan panduan
-    printWindow.document.write('<!DOCTYPE html>');
-    printWindow.document.write('<html>');
-    printWindow.document.write('<head>');
-    printWindow.document.write('<title>Laporan Jurnal Guru - ' + namaBulan + ' ' + th + '</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write('body { font-family: Arial, sans-serif; padding: 30px; max-width: 900px; margin: auto; }');
-    printWindow.document.write('.header { text-align: center; border-bottom: 3px solid #2563eb; padding-bottom: 15px; margin-bottom: 20px; }');
-    printWindow.document.write('.header h1 { color: #2563eb; margin: 0; font-size: 24px; }');
-    printWindow.document.write('.header p { color: #64748b; margin: 5px 0; }');
-    printWindow.document.write('.header .brand { color: #2563eb; font-weight: 600; }');
-    printWindow.document.write('.stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 15px 0; }');
-    printWindow.document.write('.stat { background: #f8fafc; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; }');
-    printWindow.document.write('.stat .num { font-size: 24px; font-weight: bold; }');
-    printWindow.document.write('.stat .label { font-size: 12px; color: #64748b; }');
-    printWindow.document.write('.item { background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 6px; }');
-    printWindow.document.write('.item .title { font-weight: 600; font-size: 14px; margin: 4px 0; }');
-    printWindow.document.write('.item .meta { font-size: 12px; color: #64748b; }');
-    printWindow.document.write('.footer { text-align: center; margin-top: 25px; padding-top: 12px; border-top: 2px solid #e2e8f0; color: #94a3b8; font-size: 12px; }');
-    printWindow.document.write('.watermark { position: fixed; bottom: 30px; right: 30px; font-size: 30px; color: rgba(37,99,235,0.05); font-weight: 700; transform: rotate(-15deg); pointer-events: none; }');
-    printWindow.document.write('.rekap-alfa { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 10px; padding: 12px; margin: 12px 0; }');
-    printWindow.document.write('.rekap-alfa .title { font-weight: 600; color: #991b1b; font-size: 14px; margin-bottom: 8px; }');
-    printWindow.document.write('.rekap-alfa .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #fee2e2; font-size: 13px; }');
-    printWindow.document.write('.rekap-alfa .item:last-child { border-bottom: none; }');
-    printWindow.document.write('.rekap-alfa .item .jml { background: #fee2e2; padding: 1px 10px; border-radius: 12px; font-weight: 600; color: #991b1b; font-size: 12px; }');
-    printWindow.document.write('.panduan { background: #eff6ff; border: 2px solid #2563eb; border-radius: 10px; padding: 14px 18px; margin: 15px 0; text-align: center; font-size: 15px; color: #1e40af; line-height: 1.8; }');
-    printWindow.document.write('.panduan strong { font-weight: 700; }');
-    printWindow.document.write('@media print { .panduan { display: none; } body { padding: 20px; } }');
-    printWindow.document.write('</style>');
-    printWindow.document.write('</head>');
-    printWindow.document.write('<body>');
-    
-    printWindow.document.write('<div class="watermark">@Konsiva</div>');
-    
-    // Panduan cara save PDF (hanya di layar, tidak ikut print)
-    printWindow.document.write('<div class="panduan">');
-    printWindow.document.write('📄 <strong>Cara Simpan PDF di HP:</strong><br>');
-    printWindow.document.write('1. Klik menu <strong>⋮</strong> (3 titik) di pojok kanan atas browser<br>');
-    printWindow.document.write('2. Pilih <strong>"Cetak"</strong> atau <strong>"Print"</strong><br>');
-    printWindow.document.write('3. Pilih <strong>"Save as PDF"</strong> atau <strong>"Simpan sebagai PDF"</strong><br>');
-    printWindow.document.write('4. Klik <strong>"Simpan"</strong> ✅');
-    printWindow.document.write('</div>');
-    
-    // Header
-    printWindow.document.write('<div class="header">');
-    printWindow.document.write('<h1>📚 Laporan Jurnal Guru</h1>');
-    printWindow.document.write('<p>' + namaBulan + ' ' + th + (kelas ? ' - Kelas ' + escapeHtml(kelas) : '') + '</p>');
-    printWindow.document.write('<p class="brand">@Konsiva — Aplikasi Jurnal Guru</p>');
-    printWindow.document.write('<p style="font-size:11px;color:#94a3b8;">Dicetak: ' + new Date().toLocaleDateString('id-ID') + '</p>');
-    printWindow.document.write('</div>');
-    
-    // Konten laporan
-    printWindow.document.write(laporanContent);
-    
-    // Footer
-    printWindow.document.write('<div class="footer">');
-    printWindow.document.write('Laporan dibuat dengan <span style="color:#2563eb;font-weight:600;">@Konsiva</span> — Jurnal Guru Digital<br>');
-    printWindow.document.write('© ' + new Date().getFullYear() + ' Konsiva');
-    printWindow.document.write('</div>');
-    
-    printWindow.document.write('<script>');
-    printWindow.document.write('window.onload = function() {');
-    printWindow.document.write('  setTimeout(function() {');
-    printWindow.document.write('    window.print();');
-    printWindow.document.write('  }, 800);');
-    printWindow.document.write('}');
-    printWindow.document.write('<\/script>');
-    
-    printWindow.document.write('</body>');
-    printWindow.document.write('</html>');
-    printWindow.document.close();
-    
-    showToast('📄 Halaman PDF terbuka, ikuti panduan', 'success');
-};
+    function tampilkanLaporanMingguan() {
+        var bulan = laporanBulanMinggu.value;
+        var minggu = parseInt(laporanMinggu.value);
+        var kelas = laporanKelasMinggu.value.trim();
+
+        if (!bulan) {
+            showToast('❌ Pilih bulan!', 'error');
+            return;
+        }
+
+        var startDay = (minggu - 1) * 7 + 1;
+        var endDay = Math.min(minggu * 7, 31);
+        var startDate = bulan + '-' + String(startDay).padStart(2, '0');
+        var endDate = bulan + '-' + String(endDay).padStart(2, '0');
+
+        var data = [];
+        for (var i = 0; i < jurnalData.length; i++) {
+            if (jurnalData[i].tanggal >= startDate && jurnalData[i].tanggal <= endDate) data.push(jurnalData[i]);
+        }
+        if (kelas) {
+            var filtered = [];
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].kelas.toLowerCase().includes(kelas.toLowerCase())) filtered.push(data[j]);
+            }
+            data = filtered;
+        }
+
+        if (data.length === 0) {
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk minggu ini</p></div>';
+            return;
+        }
+
+        var thbl = bulan.split('-');
+        var th = thbl[0];
+        var bl = thbl[1];
+        var namaBulanArr = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        var namaBulan = namaBulanArr[parseInt(bl)-1];
+        var labelPeriode = 'Mingguan - Minggu ' + minggu + ' (' + formatDate(startDate) + ' - ' + formatDate(endDate) + ')';
+
+        renderLaporan(data, labelPeriode, kelas);
+    }
+
+    function renderLaporan(data, labelPeriode, kelas) {
+        var total = 0, hadir = 0, alfa = 0;
+        for (var i = 0; i < data.length; i++) {
+            for (var j = 0; j < data[i].presensi.length; j++) {
+                total++;
+                if (data[i].presensi[j].status === 'hadir') hadir++;
+                else alfa++;
+            }
+        }
+
+        var persen = total > 0 ? Math.round((hadir/total)*100) : 0;
+
+        var alfaMap = {};
+        for (var k = 0; k < data.length; k++) {
+            for (var l = 0; l < data[k].presensi.length; l++) {
+                var p = data[k].presensi[l];
+                if (p.status === 'alfa') {
+                    if (!alfaMap[p.nama]) {
+                        alfaMap[p.nama] = {
+                            nama: p.nama,
+                            jumlah: 0,
+                            tanggal: []
+                        };
+                    }
+                    alfaMap[p.nama].jumlah++;
+                    alfaMap[p.nama].tanggal.push(formatDate(data[k].tanggal));
+                }
+            }
+        }
+
+        var alfaList = [];
+        for (var key in alfaMap) {
+            alfaList.push(alfaMap[key]);
+        }
+        alfaList.sort(function(a, b) { return b.jumlah - a.jumlah; });
+
+        var html = '<div style="margin-bottom:10px;text-align:center;border-bottom:2px solid #2563eb;padding-bottom:8px;"><h3 style="margin:0;color:#2563eb;">📚 Laporan ' + labelPeriode + '</h3>' + (kelas ? '<p style="margin:2px 0;font-size:13px;color:#64748b;">Kelas: ' + escapeHtml(kelas) + '</p>' : '') + '<p style="margin:2px 0;font-size:11px;color:#94a3b8;">@Konsiva — Jurnal Guru</p></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;"><div style="background:#dbeafe;padding:8px;border-radius:10px;text-align:center;"><div style="font-size:20px;font-weight:bold;color:#2563eb;">' + data.length + '</div><div style="font-size:10px;color:#64748b;">📝 Jurnal</div></div><div style="background:#dcfce7;padding:8px;border-radius:10px;text-align:center;"><div style="font-size:20px;font-weight:bold;color:#16a34a;">' + hadir + '</div><div style="font-size:10px;color:#64748b;">✅ Hadir</div></div><div style="background:#fecaca;padding:8px;border-radius:10px;text-align:center;"><div style="font-size:20px;font-weight:bold;color:#dc2626;">' + alfa + '</div><div style="font-size:10px;color:#64748b;">❌ Tidak Hadir</div></div></div><div style="background:#f1f5f9;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;">📊 Kehadiran: <strong style="color:#2563eb;font-size:18px;">' + persen + '%</strong> (' + hadir + '/' + total + ' siswa)</div>';
+
+        if (alfaList.length > 0) {
+            html += '<div class="rekap-alfa"><div class="title">📋 Rekap Siswa Tidak Hadir (' + alfaList.length + ' siswa)</div>';
+            for (var m = 0; m < alfaList.length; m++) {
+                var item = alfaList[m];
+                html += '<div class="item"><span class="nama">' + (m+1) + '. ' + escapeHtml(item.nama) + '</span><span class="jml ' + (item.jumlah > 3 ? 'banyak' : '') + '">' + item.jumlah + 'x tidak hadir</span></div>';
+            }
+            html += '<div style="font-size:10px;color:#94a3b8;margin-top:6px;border-top:1px solid #fee2e2;padding-top:4px;">💡 Urutan dari yang paling sering tidak hadir</div></div>';
+        }
+
+        html += '<div style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;"><h4 style="margin:0 0 6px;font-size:14px;">📋 Detail Jurnal</h4>';
+        for (var n = 0; n < data.length; n++) {
+            var j = data[n];
+            var h = 0;
+            for (var o = 0; o < j.presensi.length; o++) {
+                if (j.presensi[o].status === 'hadir') h++;
+            }
+            var tidakHadir = '';
+            for (var p2 = 0; p2 < j.presensi.length; p2++) {
+                if (j.presensi[p2].status === 'alfa') {
+                    if (tidakHadir) tidakHadir += ', ';
+                    tidakHadir += j.presensi[p2].nama;
+                }
+            }
+            html += '<div style="background:#f8fafc;padding:8px 12px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:4px;"><div style="font-size:12px;color:#64748b;">📅 ' + formatDate(j.tanggal) + ' · 🏫 ' + j.kelas + ' · 📖 ' + j.mapel + '</div><div style="font-weight:600;font-size:14px;">' + escapeHtml(j.materi) + '</div><div style="font-size:11px;color:#64748b;">👨‍🎓 ' + h + '/' + j.presensi.length + ' hadir</div>' + (tidakHadir ? '<div style="font-size:10px;color:#dc2626;margin-top:2px;">❌ Tidak hadir: ' + tidakHadir + '</div>' : '') + '</div>';
+        }
+        html += '</div><div style="text-align:center;font-size:10px;color:#94a3b8;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;">© ' + new Date().getFullYear() + ' — @Konsiva</div>';
+
+        laporanHasil.innerHTML = html;
+        showToast('✅ ' + data.length + ' jurnal ditemukan', 'success');
+    }
+
+    // ================================================================
+    // 🖨️ CETAK LAPORAN
+    // ================================================================
+    cetakLaporanBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        var content = laporanHasil.innerHTML;
+        if (!content || content.includes('Tidak ada data')) {
+            showToast('❌ Tidak ada data untuk dicetak', 'error');
+            return;
+        }
+
+        var win = window.open('', '_blank', 'width=800,height=600');
+        var bulan = laporanBulan.value;
+        var kelas = laporanKelas.value;
+        var th, bl, namaBulan;
+        if (bulan) {
+            var parts = bulan.split('-');
+            th = parts[0];
+            bl = parts[1];
+            var namaBulanArr = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            namaBulan = namaBulanArr[parseInt(bl)-1];
+        } else {
+            th = '';
+            bl = '';
+            namaBulan = '';
+        }
+
+        win.document.write('<!DOCTYPE html><html><head><title>Laporan Jurnal - ' + namaBulan + ' ' + th + '</title><style>body{font-family:Arial;padding:30px;max-width:800px;margin:auto;}.header{text-align:center;border-bottom:2px solid #2563eb;padding-bottom:15px;}.header h1{color:#2563eb;margin:0;}.header p{color:#64748b;margin:3px 0;}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0;}.stat{background:#f8fafc;padding:10px;border-radius:8px;text-align:center;}.stat .num{font-size:22px;font-weight:bold;}.stat .label{font-size:11px;color:#64748b;}.item{background:#f8fafc;padding:8px 12px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:4px;}.footer{text-align:center;margin-top:20px;padding-top:12px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:11px;}.brand{color:#2563eb;font-weight:600;}.watermark{position:fixed;bottom:30px;right:30px;font-size:28px;color:rgba(37,99,235,0.04);font-weight:700;transform:rotate(-15deg);}.rekap-alfa{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;margin:12px 0;}.rekap-alfa .title{font-weight:600;color:#991b1b;font-size:14px;margin-bottom:8px;}.rekap-alfa .item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #fee2e2;font-size:13px;}.rekap-alfa .item:last-child{border-bottom:none;}.rekap-alfa .item .jml{background:#fee2e2;padding:1px 10px;border-radius:12px;font-weight:600;color:#991b1b;font-size:12px;}@media print{.no-print{display:none;}}</style></head><body><div class="watermark">@Konsiva</div><div class="header"><h1>📚 Laporan Jurnal Guru</h1><p>' + namaBulan + ' ' + th + (kelas ? ' - Kelas ' + escapeHtml(kelas) : '') + '</p><p style="color:#2563eb;font-weight:600;">@Konsiva — Aplikasi Jurnal Guru</p><p style="font-size:11px;color:#94a3b8;">Dicetak: ' + new Date().toLocaleDateString('id-ID') + '</p></div>' + content + '<div class="footer">Laporan dibuat dengan <span class="brand">@Konsiva</span> — Jurnal Guru Digital<br>© ' + new Date().getFullYear() + ' Konsiva</div><script>window.onload = function() { window.print(); }<\/script></body></html>');
+        win.document.close();
+    };
+
+    // ================================================================
+    // 📄 SIMPAN PDF - PAKAI HTML2PDF (FIX TAMPILAN RUSAK)
+    // ================================================================
+    simpanPdfBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+
+        // CEK: Apakah laporan sudah tampil?
+        var laporanElement = document.getElementById('laporanHasil');
+        var content = laporanElement.innerHTML;
+        
+        if (!content || content.includes('Pilih periode') || content.includes('Belum ada data') || content.includes('Tidak ada data')) {
+            showToast('❌ Tampilkan laporan terlebih dahulu!', 'error');
+            return;
+        }
+
+        if (!content.includes('📝 Jurnal')) {
+            showToast('❌ Tidak ada data jurnal untuk periode ini', 'error');
+            return;
+        }
+
+        showToast('⏳ Sedang membuat PDF...', 'info');
+        simpanPdfBtn.textContent = '⏳ Memproses...';
+        simpanPdfBtn.disabled = true;
+
+        var bulan = laporanBulan.value;
+        var kelas = laporanKelas.value;
+        var th, bl, namaBulan;
+        if (bulan) {
+            var parts = bulan.split('-');
+            th = parts[0];
+            bl = parts[1];
+            var namaBulanArr = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            namaBulan = namaBulanArr[parseInt(bl)-1];
+        } else {
+            th = '';
+            bl = '';
+            namaBulan = '';
+        }
+
+        // ===== BUAT ELEMEN PDF DENGAN STYLE LENGKAP =====
+        var pdfContainer = document.createElement('div');
+        pdfContainer.className = 'pdf-content';
+        pdfContainer.style.cssText = 'padding:20px;font-family:Arial,sans-serif;background:white;max-width:900px;margin:auto;';
+        
+        // Header
+        var header = document.createElement('div');
+        header.style.cssText = 'text-align:center;border-bottom:3px solid #2563eb;padding-bottom:15px;margin-bottom:20px;';
+        header.innerHTML = `
+            <h1 style="color:#2563eb;margin:0;font-size:24px;">📚 Laporan Jurnal Guru</h1>
+            <p style="color:#64748b;margin:5px 0;font-size:14px;">${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
+            <p style="color:#2563eb;font-weight:600;font-size:12px;">@Konsiva — Aplikasi Jurnal Guru</p>
+            <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
+        `;
+        pdfContainer.appendChild(header);
+
+        // Konten laporan
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = laporanContent;
+        pdfContainer.appendChild(contentDiv);
+
+        // Footer
+        var footer = document.createElement('div');
+        footer.style.cssText = 'text-align:center;margin-top:25px;padding-top:12px;border-top:2px solid #e2e8f0;color:#94a3b8;font-size:12px;';
+        footer.innerHTML = `
+            Laporan dibuat dengan <span style="color:#2563eb;font-weight:600;">@Konsiva</span> — Jurnal Guru Digital<br>
+            © ${new Date().getFullYear()} Konsiva
+        `;
+        pdfContainer.appendChild(footer);
+
+        // Tambahkan ke body sementara (di luar layar)
+        pdfContainer.style.position = 'fixed';
+        pdfContainer.style.left = '-9999px';
+        pdfContainer.style.top = '0';
+        pdfContainer.style.width = '800px';
+        document.body.appendChild(pdfContainer);
+
+        // Gunakan html2pdf dengan setting yang tepat
+        var opt = {
+            margin:        [10, 10, 10, 10],
+            filename:     'Laporan_Jurnal_Guru_' + (bulan || '') + '.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                logging: false,
+                width: 800,
+                height: pdfContainer.scrollHeight
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(pdfContainer).save().then(function() {
+            document.body.removeChild(pdfContainer);
+            simpanPdfBtn.textContent = '📄 Simpan PDF';
+            simpanPdfBtn.disabled = false;
+            showToast('✅ PDF berhasil di-download!', 'success');
+        }).catch(function(err) {
+            document.body.removeChild(pdfContainer);
+            simpanPdfBtn.textContent = '📄 Simpan PDF';
+            simpanPdfBtn.disabled = false;
+            showToast('❌ Gagal membuat PDF: ' + err.message, 'error');
+            console.error(err);
+        });
+    };
+
+    // ================================================================
+    // NAVIGASI
+    // ================================================================
+    window.showPage = function(page) {
+        if (!isLoggedIn() && page !== 'home') {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+
+        var pageKeys = ['home', 'jurnal', 'riwayat', 'laporan'];
+        for (var i = 0; i < pageKeys.length; i++) {
+            pages[pageKeys[i]].classList.remove('active');
+        }
+        if (pages[page]) {
+            pages[page].classList.add('active');
+        }
+
+        for (var j = 0; j < navItems.length; j++) {
+            navItems[j].classList.remove('active');
+            if (navItems[j].dataset.page === page) {
+                navItems[j].classList.add('active');
+            }
+        }
+
+        if (page === 'riwayat') {
+            loadData();
+            renderRiwayat();
+        }
+        if (page === 'home') renderHome();
+    };
+
+    for (var i = 0; i < navItems.length; i++) {
+        navItems[i].addEventListener('click', function() {
+            var page = this.dataset.page;
+            if (this.classList.contains('disabled')) {
+                showToast('🔒 Silakan login terlebih dahulu!', 'error');
+                return;
+            }
+            if (page) {
+                showPage(page);
+            }
+        });
+    }
+
+    // ================================================================
+    // INIT
+    // ================================================================
+    function init() {
+        var loggedIn = checkAuth();
+        if (!loggedIn) {
+            hideSplash();
+            updateNavigation();
+        } else {
+            loadData();
+            renderAll();
+            setDefaults();
+            hideSplash();
+            updateNavigation();
+            setTimeout(function() {
+                renderAll();
+            }, 500);
+        }
+    }
+
+    init();
+
+})();
+</script>
+
+</body>
+</html>
