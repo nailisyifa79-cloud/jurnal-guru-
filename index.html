@@ -65,7 +65,6 @@
         .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
         .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
 
-        /* ===== INPUT PASSWORD DENGAN TOMBOL MATA ===== */
         .password-wrapper {
             position: relative;
             margin-bottom: 12px;
@@ -110,13 +109,6 @@
         .kode-akses:focus {
             border-color: #d97706 !important;
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
-        }
-        .label-kode {
-            color: #92400e;
-            font-weight: 600;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
         }
 
         .login-box .btn {
@@ -176,7 +168,6 @@
         }
         #app.show { display: block; }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, #2563eb, #1e40af);
             padding: 16px 18px 14px;
@@ -205,7 +196,6 @@
         }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
-        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -255,7 +245,6 @@
             font-size: 10px;
         }
 
-        /* ===== LOCK MESSAGE ===== */
         .lock-message {
             text-align: center;
             padding: 40px 20px;
@@ -268,7 +257,6 @@
         .lock-message .icon { font-size: 40px; display: block; margin-bottom: 12px; }
         .lock-message strong { color: #2563eb; }
 
-        /* ===== REST OF STYLE ===== */
         .page { display: none; padding: 14px; }
         .page.active { display: block; }
 
@@ -608,7 +596,7 @@
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
         </div>
 
-        <div id="jurnalContent" style="display:none;">
+        <div id="jurnalContent" style="display:block;">
             <div class="card">
                 <div class="card-title"><span>✏️ Buat Jurnal</span></div>
 
@@ -680,7 +668,7 @@
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
         </div>
 
-        <div id="riwayatContent" style="display:none;">
+        <div id="riwayatContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
                     <span>📋 Riwayat Jurnal</span>
@@ -708,7 +696,7 @@
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
         </div>
 
-        <div id="laporanContent" style="display:none;">
+        <div id="laporanContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
                     <span>📊 Laporan</span>
@@ -816,7 +804,6 @@
     const qs = (sel, ctx) => (ctx || document).querySelector(sel);
     const qsa = (sel, ctx) => (ctx || document).querySelectorAll(sel);
 
-    // Splash
     const splash = $('splash');
 
     // Login
@@ -833,7 +820,6 @@
     const toggleLink = $('toggleLink');
     const toggleText = $('toggleText');
 
-    // App
     const app = $('app');
     const userDisplay = $('userDisplay');
 
@@ -845,14 +831,6 @@
         laporan: $('pageLaporan')
     };
 
-    // Lock messages & content
-    const jurnalLock = $('jurnalLock');
-    const jurnalContent = $('jurnalContent');
-    const riwayatLock = $('riwayatLock');
-    const riwayatContent = $('riwayatContent');
-    const laporanLock = $('laporanLock');
-    const laporanContent = $('laporanContent');
-
     // Nav
     const navHome = $('navHome');
     const navJurnal = $('navJurnal');
@@ -860,7 +838,7 @@
     const navLaporan = $('navLaporan');
     const navItems = qsa('.nav-item');
 
-    // Form
+    // Jurnal Form
     const jurnalForm = $('jurnalForm');
     const fTanggal = $('fTanggal');
     const fKelas = $('fKelas');
@@ -918,42 +896,37 @@
     function updateNavigation() {
         const loggedIn = isLoggedIn();
 
-        // Jurnal
         if (loggedIn) {
+            // HAPUS class disabled dari semua nav
             navJurnal.classList.remove('disabled');
-            jurnalLock.style.display = 'none';
-            jurnalContent.style.display = 'block';
-        } else {
-            navJurnal.classList.add('disabled');
-            jurnalLock.style.display = 'block';
-            jurnalContent.style.display = 'none';
-        }
-
-        // Riwayat
-        if (loggedIn) {
             navRiwayat.classList.remove('disabled');
-            riwayatLock.style.display = 'none';
-            riwayatContent.style.display = 'block';
-        } else {
-            navRiwayat.classList.add('disabled');
-            riwayatLock.style.display = 'block';
-            riwayatContent.style.display = 'none';
-        }
-
-        // Laporan
-        if (loggedIn) {
             navLaporan.classList.remove('disabled');
-            laporanLock.style.display = 'none';
-            laporanContent.style.display = 'block';
+            
+            // Sembunyikan lock message (jika ada)
+            const locks = document.querySelectorAll('.lock-message');
+            locks.forEach(lock => lock.style.display = 'none');
+            
+            // Tampilkan konten
+            const contents = document.querySelectorAll('[id$="Content"]');
+            contents.forEach(content => content.style.display = 'block');
         } else {
+            // Tambahkan class disabled ke semua nav (kecuali home)
+            navJurnal.classList.add('disabled');
+            navRiwayat.classList.add('disabled');
             navLaporan.classList.add('disabled');
-            laporanLock.style.display = 'block';
-            laporanContent.style.display = 'none';
+            
+            // Tampilkan lock message
+            const locks = document.querySelectorAll('.lock-message');
+            locks.forEach(lock => lock.style.display = 'block');
+            
+            // Sembunyikan konten
+            const contents = document.querySelectorAll('[id$="Content"]');
+            contents.forEach(content => content.style.display = 'none');
         }
     }
 
     // ================================================================
-    // 👁️ TOMBOL MATA UNTUK LIHAT PASSWORD
+    // 👁️ TOMBOL MATA
     // ================================================================
     document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -1006,7 +979,7 @@
     }
 
     // ================================================================
-    // 🔐 CEK KODE AKSES (Tidak peduli huruf besar/kecil & spasi)
+    // 🔐 CEK KODE AKSES
     // ================================================================
     function cekKodeAkses(kode) {
         return kode.trim().toUpperCase() === KODE_AKSES.trim().toUpperCase();
@@ -1218,7 +1191,7 @@
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
-        const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25\n\n📌 Nama siswa otomatis "Siswa 1, Siswa 2, ..."');
+        const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25');
         if (input && input.trim() !== '') {
             const jumlah = parseInt(input.trim());
             if (isNaN(jumlah) || jumlah <= 0) {
