@@ -65,6 +65,7 @@
         .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
         .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
 
+        /* ===== INPUT PASSWORD DENGAN TOMBOL MATA ===== */
         .password-wrapper {
             position: relative;
             margin-bottom: 12px;
@@ -102,6 +103,24 @@
             background: #f1f5f9;
         }
 
+        /* ===== KHUSUS: INPUT EMAIL ===== */
+        .email-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: #f8fafc;
+            transition: 0.3s;
+        }
+        .email-input:focus {
+            border-color: #2563eb;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        /* ===== KODE AKSES (khusus daftar) ===== */
         .kode-akses {
             border-color: #f59e0b !important;
             background: #fffbeb !important;
@@ -121,6 +140,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: 0.3s;
         }
         .login-box .btn:hover { background: #1d4ed8; }
 
@@ -193,6 +213,7 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 13px;
+            transition: 0.3s;
         }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
@@ -228,7 +249,6 @@
         .bottom-nav button.active { color: #2563eb; }
         .bottom-nav button .icon { font-size: 22px; }
 
-        /* ===== TOMBOL DISABLED (SEBELUM LOGIN) ===== */
         .bottom-nav button.disabled {
             color: #cbd5e1 !important;
             cursor: not-allowed !important;
@@ -488,21 +508,11 @@
         <h1>Jurnal Guru</h1>
         <p class="subtitle">Masuk ke akun Anda</p>
 
-        <div class="info-kode">
-            🔑 <span class="highlight">Kode Akses</span> didapatkan dari penjual aplikasi
-        </div>
-
+        <!-- ===== FORM LOGIN (TANPA KODE AKSES) ===== -->
         <form id="loginForm">
             <div class="password-wrapper">
-                <input type="password" id="kodeAkses" placeholder="🔑 Kode Akses" 
-                       class="kode-akses" required />
-                <button type="button" class="toggle-password" data-target="kodeAkses">
-                    👁️
-                </button>
-            </div>
-            
-            <div class="password-wrapper">
-                <input type="email" id="loginEmail" placeholder="📧 Email" required />
+                <input type="email" id="loginEmail" placeholder="📧 Email" 
+                       class="email-input" autocomplete="off" required />
             </div>
             
             <div class="password-wrapper">
@@ -515,9 +525,10 @@
             <button type="submit" class="btn">Masuk</button>
         </form>
 
+        <!-- ===== FORM REGISTER (DENGAN KODE AKSES) ===== -->
         <form id="registerForm" style="display:none; margin-top:12px;">
             <div class="password-wrapper">
-                <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses" 
+                <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses (dari penjual)" 
                        class="kode-akses" required />
                 <button type="button" class="toggle-password" data-target="kodeAksesRegister">
                     👁️
@@ -529,7 +540,8 @@
             </div>
             
             <div class="password-wrapper">
-                <input type="email" id="registerEmail" placeholder="📧 Email" required />
+                <input type="email" id="registerEmail" placeholder="📧 Email" 
+                       class="email-input" autocomplete="off" required />
             </div>
             
             <div class="password-wrapper">
@@ -787,7 +799,7 @@
     'use strict';
 
     // ================================================================
-    // 🔑 KONFIGURASI PASSWORD GLOBAL
+    // 🔑 KONFIGURASI PASSWORD GLOBAL (HANYA UNTUK DAFTAR)
     // ================================================================
     const KODE_AKSES = 'konsiva26';  // <-- GANTI dengan kode pilihan Anda!
 
@@ -809,7 +821,6 @@
     // Login
     const loginPage = $('loginPage');
     const loginForm = $('loginForm');
-    const kodeAkses = $('kodeAkses');
     const loginEmail = $('loginEmail');
     const loginPassword = $('loginPassword');
     const registerForm = $('registerForm');
@@ -891,35 +902,29 @@
     }
 
     // ================================================================
-    // 🔐 UPDATE NAVIGASI (Enable/Disable menu)
+    // 🔐 UPDATE NAVIGASI
     // ================================================================
     function updateNavigation() {
         const loggedIn = isLoggedIn();
 
         if (loggedIn) {
-            // HAPUS class disabled dari semua nav
             navJurnal.classList.remove('disabled');
             navRiwayat.classList.remove('disabled');
             navLaporan.classList.remove('disabled');
             
-            // Sembunyikan lock message (jika ada)
             const locks = document.querySelectorAll('.lock-message');
             locks.forEach(lock => lock.style.display = 'none');
             
-            // Tampilkan konten
             const contents = document.querySelectorAll('[id$="Content"]');
             contents.forEach(content => content.style.display = 'block');
         } else {
-            // Tambahkan class disabled ke semua nav (kecuali home)
             navJurnal.classList.add('disabled');
             navRiwayat.classList.add('disabled');
             navLaporan.classList.add('disabled');
             
-            // Tampilkan lock message
             const locks = document.querySelectorAll('.lock-message');
             locks.forEach(lock => lock.style.display = 'block');
             
-            // Sembunyikan konten
             const contents = document.querySelectorAll('[id$="Content"]');
             contents.forEach(content => content.style.display = 'none');
         }
@@ -979,14 +984,14 @@
     }
 
     // ================================================================
-    // 🔐 CEK KODE AKSES
+    // 🔐 CEK KODE AKSES (HANYA UNTUK DAFTAR)
     // ================================================================
     function cekKodeAkses(kode) {
         return kode.trim().toUpperCase() === KODE_AKSES.trim().toUpperCase();
     }
 
     // ================================================================
-    // LOGIN
+    // LOGIN (TANPA KODE AKSES)
     // ================================================================
     function checkAuth() {
         const saved = localStorage.getItem(USER_KEY);
@@ -1014,20 +1019,12 @@
         updateNavigation();
     }
 
-    // Login
+    // Login - TANPA KODE AKSES
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const kode = kodeAkses.value.trim();
         const email = loginEmail.value.trim();
         const pass = loginPassword.value.trim();
-
-        if (!cekKodeAkses(kode)) {
-            showToast('❌ Kode Akses salah! Hubungi penjual.', 'error');
-            kodeAkses.value = '';
-            kodeAkses.focus();
-            return;
-        }
 
         if (!email || !pass) {
             showToast('❌ Isi email & password!', 'error');
@@ -1050,7 +1047,7 @@
         }
     });
 
-    // Register
+    // Register - DENGAN KODE AKSES
     registerForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -1714,13 +1711,11 @@
     // NAVIGASI
     // ================================================================
     window.showPage = function(page) {
-        // Jika belum login dan bukan home, tolak
         if (!isLoggedIn() && page !== 'home') {
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
 
-        // Hide semua page
         Object.keys(pages).forEach(key => {
             pages[key].classList.remove('active');
         });
@@ -1728,7 +1723,6 @@
             pages[page].classList.add('active');
         }
 
-        // Update nav
         navItems.forEach(btn => {
             btn.classList.remove('active');
             if (btn.dataset.page === page) {
@@ -1736,17 +1730,14 @@
             }
         });
 
-        // Render konten
         if (page === 'riwayat') renderRiwayat();
         if (page === 'home') renderHome();
     };
 
-    // Event klik nav items
     navItems.forEach(btn => {
         btn.addEventListener('click', function() {
             const page = this.dataset.page;
             
-            // Jika tombol disabled, tampilkan pesan
             if (this.classList.contains('disabled')) {
                 showToast('🔒 Silakan login terlebih dahulu!', 'error');
                 return;
