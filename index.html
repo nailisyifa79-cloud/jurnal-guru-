@@ -6,7 +6,6 @@
     <title>Jurnal Guru - @Konsiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ===== SEMUA STYLE SAMA SEPERTI SEBELUMNYA ===== */
         * { box-sizing: border-box; }
         body { 
             font-family: Arial, sans-serif; 
@@ -211,7 +210,6 @@
         }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
-        /* ===== BOTTOM NAV - SEMUA MENU AKTIF SETELAH LOGIN ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -244,7 +242,6 @@
         .bottom-nav button.active { color: #2563eb; }
         .bottom-nav button .icon { font-size: 22px; }
 
-        /* ===== DISABLED HANYA SEBELUM LOGIN ===== */
         .bottom-nav button.disabled {
             color: #cbd5e1 !important;
             cursor: not-allowed !important;
@@ -261,7 +258,6 @@
             font-size: 10px;
         }
 
-        /* ===== LOCK MESSAGE HANYA SEBELUM LOGIN ===== */
         .lock-message {
             text-align: center;
             padding: 40px 20px;
@@ -627,7 +623,7 @@
                 <button class="btn btn-primary btn-sm" onclick="showPage('jurnal')">+ Buat</button>
             </div>
             <div id="homeRecent">
-                <div class="empty"><div class="icon">📭</div><p>Belum ada jurnal. Buat jurnal pertama Anda di tab Jurnal.</p></div>
+                <div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>
             </div>
         </div>
 
@@ -636,13 +632,11 @@
 
     <!-- ===== PAGE: JURNAL ===== -->
     <div id="pageJurnal" class="page">
-        <!-- Lock message HANYA untuk BELUM LOGIN -->
         <div id="jurnalLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
         </div>
 
-        <!-- Konten Jurnal (langsung muncul setelah login) -->
         <div id="jurnalContent" style="display:block;">
             <div class="card">
                 <div class="card-title"><span>✏️ Buat Jurnal</span></div>
@@ -710,13 +704,11 @@
 
     <!-- ===== PAGE: RIWAYAT ===== -->
     <div id="pageRiwayat" class="page">
-        <!-- Lock message HANYA untuk BELUM LOGIN -->
         <div id="riwayatLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
         </div>
 
-        <!-- Konten Riwayat (langsung muncul setelah login) -->
         <div id="riwayatContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
@@ -731,7 +723,7 @@
                 </div>
                 <div id="riwayatList"></div>
                 <div id="riwayatEmpty" class="empty" style="display:none;">
-                    <div class="icon">📭</div><p>Belum ada jurnal. Buat jurnal pertama Anda di tab Jurnal.</p>
+                    <div class="icon">📭</div><p>Belum ada jurnal</p>
                 </div>
             </div>
 
@@ -761,13 +753,11 @@
 
     <!-- ===== PAGE: LAPORAN ===== -->
     <div id="pageLaporan" class="page">
-        <!-- Lock message HANYA untuk BELUM LOGIN -->
         <div id="laporanLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
         </div>
 
-        <!-- Konten Laporan (langsung muncul setelah login) -->
         <div id="laporanContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
@@ -836,15 +826,15 @@
             <span class="icon">🏠</span>
             <span>Beranda</span>
         </button>
-        <button class="nav-item disabled" data-page="jurnal" id="navJurnal">
+        <button class="nav-item" data-page="jurnal" id="navJurnal">
             <span class="icon">✏️</span>
             <span>Jurnal</span>
         </button>
-        <button class="nav-item disabled" data-page="riwayat" id="navRiwayat">
+        <button class="nav-item" data-page="riwayat" id="navRiwayat">
             <span class="icon">📋</span>
             <span>Riwayat</span>
         </button>
-        <button class="nav-item disabled" data-page="laporan" id="navLaporan">
+        <button class="nav-item" data-page="laporan" id="navLaporan">
             <span class="icon">📊</span>
             <span>Laporan</span>
         </button>
@@ -859,10 +849,9 @@
     'use strict';
 
     // ================================================================
-    // 🔑 KONFIGURASI PASSWORD GLOBAL
+    // 🔑 KONFIGURASI
     // ================================================================
     const KODE_AKSES = 'konsiva26';
-
     const STORAGE_KEY = 'jurnalData';
     const USER_KEY = 'jurnalUser';
     const USERS_KEY = 'jurnalUsers';
@@ -873,12 +862,9 @@
 
     // ===== DOM =====
     const $ = id => document.getElementById(id);
-    const qs = (sel, ctx) => (ctx || document).querySelector(sel);
     const qsa = (sel, ctx) => (ctx || document).querySelectorAll(sel);
 
     const splash = $('splash');
-
-    // Login
     const loginPage = $('loginPage');
     const loginForm = $('loginForm');
     const loginEmail = $('loginEmail');
@@ -890,9 +876,13 @@
     const registerPassword = $('registerPassword');
     const toggleLink = $('toggleLink');
     const toggleText = $('toggleText');
-
     const app = $('app');
     const userDisplay = $('userDisplay');
+    const navItems = qsa('.nav-item');
+    const navHome = $('navHome');
+    const navJurnal = $('navJurnal');
+    const navRiwayat = $('navRiwayat');
+    const navLaporan = $('navLaporan');
 
     // Pages
     const pages = {
@@ -901,13 +891,6 @@
         riwayat: $('pageRiwayat'),
         laporan: $('pageLaporan')
     };
-
-    // Nav
-    const navHome = $('navHome');
-    const navJurnal = $('navJurnal');
-    const navRiwayat = $('navRiwayat');
-    const navLaporan = $('navLaporan');
-    const navItems = qsa('.nav-item');
 
     // Lock & Content
     const jurnalLock = $('jurnalLock');
@@ -958,55 +941,7 @@
     const todayDate = $('todayDate');
     const homeSummary = $('homeSummary');
     const homeRecent = $('homeRecent');
-
-    // Toast
     const toast = $('toast');
-
-    // ================================================================
-    // 🔐 FUNGSI CEK LOGIN
-    // ================================================================
-    function isLoggedIn() {
-        return currentUser !== null;
-    }
-
-    // ================================================================
-    // 🔐 UPDATE NAVIGASI
-    // ================================================================
-    function updateNavigation() {
-        const loggedIn = isLoggedIn();
-
-        if (loggedIn) {
-            // SEMUA MENU AKTIF (BISA DIKLIK)!
-            navJurnal.classList.remove('disabled');
-            navRiwayat.classList.remove('disabled');
-            navLaporan.classList.remove('disabled');
-            
-            // Sembunyikan lock message
-            jurnalLock.style.display = 'none';
-            riwayatLock.style.display = 'none';
-            laporanLock.style.display = 'none';
-            
-            // Tampilkan konten
-            jurnalContent.style.display = 'block';
-            riwayatContent.style.display = 'block';
-            laporanContent.style.display = 'block';
-        } else {
-            // SEMUA MENU NONAKTIF (TIDAK BISA DIKLIK)
-            navJurnal.classList.add('disabled');
-            navRiwayat.classList.add('disabled');
-            navLaporan.classList.add('disabled');
-            
-            // Tampilkan lock message
-            jurnalLock.style.display = 'block';
-            riwayatLock.style.display = 'block';
-            laporanLock.style.display = 'block';
-            
-            // Sembunyikan konten
-            jurnalContent.style.display = 'none';
-            riwayatContent.style.display = 'none';
-            laporanContent.style.display = 'none';
-        }
-    }
 
     // ================================================================
     // 👁️ TOMBOL MATA
@@ -1046,7 +981,6 @@
         return Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
     }
 
-    // ===== TOAST =====
     function showToast(msg, type) {
         toast.textContent = msg;
         toast.className = 'toast ' + (type || '');
@@ -1056,7 +990,6 @@
         toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // ===== SPLASH =====
     function hideSplash() {
         setTimeout(() => splash.classList.add('hide'), 800);
     }
@@ -1071,6 +1004,46 @@
     // ================================================================
     // LOGIN
     // ================================================================
+    function isLoggedIn() {
+        return currentUser !== null;
+    }
+
+    function updateNavigation() {
+        const loggedIn = isLoggedIn();
+
+        if (loggedIn) {
+            // HAPUS SEMUA CLASS DISABLED
+            navJurnal.classList.remove('disabled');
+            navRiwayat.classList.remove('disabled');
+            navLaporan.classList.remove('disabled');
+            
+            // SEMBUNYIKAN LOCK
+            jurnalLock.style.display = 'none';
+            riwayatLock.style.display = 'none';
+            laporanLock.style.display = 'none';
+            
+            // TAMPILKAN KONTEN
+            jurnalContent.style.display = 'block';
+            riwayatContent.style.display = 'block';
+            laporanContent.style.display = 'block';
+        } else {
+            // TAMBAHKAN CLASS DISABLED
+            navJurnal.classList.add('disabled');
+            navRiwayat.classList.add('disabled');
+            navLaporan.classList.add('disabled');
+            
+            // TAMPILKAN LOCK
+            jurnalLock.style.display = 'block';
+            riwayatLock.style.display = 'block';
+            laporanLock.style.display = 'block';
+            
+            // SEMBUNYIKAN KONTEN
+            jurnalContent.style.display = 'none';
+            riwayatContent.style.display = 'none';
+            laporanContent.style.display = 'none';
+        }
+    }
+
     function checkAuth() {
         const saved = localStorage.getItem(USER_KEY);
         if (saved) {
@@ -1211,11 +1184,20 @@
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             jurnalData = raw ? JSON.parse(raw) : [];
-        } catch(e) { jurnalData = []; }
+            console.log('✅ Data dimuat:', jurnalData.length, 'jurnal');
+        } catch(e) { 
+            jurnalData = [];
+            console.log('❌ Gagal muat data');
+        }
     }
 
     function saveData() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
+            console.log('✅ Data disimpan:', jurnalData.length, 'jurnal');
+        } catch(e) {
+            console.log('❌ Gagal simpan data');
+        }
     }
 
     // ===== PRESENSI =====
@@ -1421,7 +1403,7 @@
 
         const recent = jurnalData.slice(0, 5);
         if (recent.length === 0) {
-            homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal. Buat jurnal pertama Anda di tab Jurnal.</p></div>';
+            homeRecent.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>';
         } else {
             homeRecent.innerHTML = recent.map(j => {
                 const hadir = j.presensi.filter(p => p.status === 'hadir').length;
@@ -1658,7 +1640,7 @@
         }
 
         if (data.length === 0) {
-            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk periode ini. Buat jurnal terlebih dahulu.</p></div>';
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk periode ini</p></div>';
             return;
         }
 
@@ -1690,7 +1672,7 @@
         }
 
         if (data.length === 0) {
-            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk minggu ini. Buat jurnal terlebih dahulu.</p></div>';
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Belum ada data untuk minggu ini</p></div>';
             return;
         }
 
