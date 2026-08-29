@@ -107,6 +107,8 @@
         .btn-restore:hover { background: #b45309; }
         .btn-refresh { background: #2563eb; color: white; }
         .btn-refresh:hover { background: #1d4ed8; }
+        .btn-pdf { background: #dc2626; color: white; }
+        .btn-pdf:hover { background: #b91c1c; }
 
         .student-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 5px; }
         .student-item .name { flex: 1; font-size: 14px; font-weight: 500; }
@@ -159,12 +161,25 @@
         .backup-card .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .backup-card .btn-group .btn { flex: 1; min-width: 100px; justify-content: center; }
 
+        /* ===== TOMBOL CETAK ===== */
+        .cetak-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .cetak-group .btn {
+            flex: 1;
+            min-width: 100px;
+            justify-content: center;
+        }
+
         @media (max-width: 480px) {
             .header { padding: 12px 14px; }
             .header h2 { font-size: 16px; }
             .page { padding: 10px; }
             .grid-3 { grid-template-columns: 1fr 1fr; }
             .backup-card .btn-group .btn { min-width: 80px; font-size: 12px; }
+            .cetak-group .btn { min-width: 80px; font-size: 12px; }
         }
     </style>
 </head>
@@ -381,7 +396,6 @@
             <div class="card">
                 <div class="card-title">
                     <span>📊 Laporan</span>
-                    <button id="cetakLaporanBtn" class="btn btn-success btn-sm">🖨️ Cetak</button>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
                     <button id="periodeBulanan" class="btn btn-sm btn-outline active" style="flex:1;">📅 Bulanan</button>
@@ -419,6 +433,16 @@
                     <div style="font-size:11px;color:#94a3b8;margin-top:4px;">💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.</div>
                 </div>
                 <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
+                
+                <!-- ===== TOMBOL CETAK & SIMPAN PDF ===== -->
+                <div class="cetak-group" style="margin-top:12px;">
+                    <button id="cetakLaporanBtn" class="btn btn-success" style="flex:1;">🖨️ Cetak</button>
+                    <button id="simpanPdfBtn" class="btn btn-pdf" style="flex:1;">📄 Simpan PDF</button>
+                </div>
+                <div style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;">
+                    💡 "Simpan PDF" untuk menyimpan di HP • "Cetak" untuk print
+                </div>
+
                 <div id="laporanHasil" class="mt-3">
                     <div class="empty"><div class="icon">📊</div><p>Pilih periode & klik Tampilkan</p></div>
                 </div>
@@ -437,7 +461,7 @@
 </div>
 
 <!-- ========================================================== -->
-<!-- JAVASCRIPT - PASTI BERHASIL DI HP -->
+<!-- JAVASCRIPT -->
 <!-- ========================================================== -->
 <script>
 (function() {
@@ -450,7 +474,6 @@
     const STORAGE_KEY = 'jurnalData';
     const USER_KEY = 'jurnalUser';
     const USERS_KEY = 'jurnalUsers';
-    const BACKUP_KEY = 'jurnalData_backup';
 
     let jurnalData = [];
     let currentUser = null;
@@ -525,6 +548,7 @@
     const laporanKelasMinggu = $('laporanKelasMinggu');
     const tampilkanLaporanBtn = $('tampilkanLaporanBtn');
     const cetakLaporanBtn = $('cetakLaporanBtn');
+    const simpanPdfBtn = $('simpanPdfBtn');
     const laporanHasil = $('laporanHasil');
 
     const todayDate = $('todayDate');
@@ -758,58 +782,37 @@
     };
 
     // ================================================================
-    // 💾 STORAGE - DOUBLE STORAGE (PASTI AMAN)
+    // 💾 STORAGE
     // ================================================================
     function loadData() {
         try {
-            // Coba ambil dari LocalStorage
-            let raw = localStorage.getItem(STORAGE_KEY);
-            
-            // Jika LocalStorage kosong, coba dari SessionStorage
-            if (!raw) {
-                raw = sessionStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    // Restore ke LocalStorage
-                    localStorage.setItem(STORAGE_KEY, raw);
-                    console.log('✅ HP: Restore dari SessionStorage ke LocalStorage');
-                }
-            }
-            
+            const raw = localStorage.getItem(STORAGE_KEY);
             if (raw) {
                 jurnalData = JSON.parse(raw);
-                console.log('✅ HP: Data dimuat:', jurnalData.length, 'jurnal');
+                console.log('✅ Data dimuat:', jurnalData.length, 'jurnal');
             } else {
                 jurnalData = [];
-                console.log('ℹ️ HP: Belum ada data');
+                console.log('ℹ️ Belum ada data');
             }
         } catch(e) { 
             jurnalData = [];
-            console.log('❌ HP: Gagal muat data');
+            console.log('❌ Gagal muat data');
         }
     }
 
     function saveData() {
         try {
-            const json = JSON.stringify(jurnalData);
-            
-            // Simpan ke LocalStorage
-            localStorage.setItem(STORAGE_KEY, json);
-            
-            // Simpan ke SessionStorage (cadangan)
-            try {
-                sessionStorage.setItem(STORAGE_KEY, json);
-            } catch(e) {}
-            
-            console.log('✅ HP: Data disimpan:', jurnalData.length, 'jurnal');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
+            console.log('✅ Data disimpan:', jurnalData.length, 'jurnal');
             return true;
         } catch(e) {
-            console.log('❌ HP: Gagal simpan data');
+            console.log('❌ Gagal simpan data');
             return false;
         }
     }
 
     // ================================================================
-    // 🔄 REFRESH DATA (Tombol Refresh)
+    // 🔄 REFRESH DATA
     // ================================================================
     function refreshData() {
         showToast('🔄 Memuat ulang data...', 'info');
@@ -1043,7 +1046,6 @@
     function renderRiwayat() {
         if (!isLoggedIn()) return;
 
-        // Pastikan data terbaru
         loadData();
 
         const txt = filterRiwayat.value.trim().toLowerCase();
@@ -1396,7 +1398,9 @@
         showToast('✅ ' + data.length + ' jurnal ditemukan', 'success');
     }
 
-    // ===== CETAK LAPORAN =====
+    // ================================================================
+    // 🖨️ CETAK LAPORAN (Print)
+    // ================================================================
     cetakLaporanBtn.onclick = function() {
         if (!isLoggedIn()) {
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
@@ -1462,6 +1466,87 @@
     };
 
     // ================================================================
+    // 📄 SIMPAN PDF (Khusus HP - Langsung Download)
+    // ================================================================
+    simpanPdfBtn.onclick = function() {
+        if (!isLoggedIn()) {
+            showToast('🔒 Silakan login terlebih dahulu!', 'error');
+            return;
+        }
+        const content = laporanHasil.innerHTML;
+        if (!content || content.includes('Tidak ada data')) {
+            showToast('❌ Tidak ada data untuk dijadikan PDF', 'error');
+            return;
+        }
+
+        showToast('📄 Membuat PDF...', 'info');
+
+        const bulan = laporanBulan.value;
+        const kelas = laporanKelas.value;
+        const [th, bl] = bulan ? bulan.split('-') : ['',''];
+        const namaBulan = bl ? ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1] : '';
+
+        // Buat halaman baru untuk PDF
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Laporan Jurnal - ${namaBulan} ${th}</title>
+                <style>
+                    body { font-family: Arial; padding: 30px; max-width: 800px; margin: auto; }
+                    .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 15px; }
+                    .header h1 { color: #2563eb; margin: 0; }
+                    .header p { color: #64748b; margin: 3px 0; }
+                    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 15px 0; }
+                    .stat { background: #f8fafc; padding: 10px; border-radius: 8px; text-align: center; }
+                    .stat .num { font-size: 22px; font-weight: bold; }
+                    .stat .label { font-size: 11px; color: #64748b; }
+                    .item { background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 4px; }
+                    .footer { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 11px; }
+                    .brand { color: #2563eb; font-weight: 600; }
+                    .watermark { position: fixed; bottom: 30px; right: 30px; font-size: 28px; color: rgba(37,99,235,0.04); font-weight: 700; transform: rotate(-15deg); }
+                    .rekap-alfa { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; margin: 12px 0; }
+                    .rekap-alfa .title { font-weight: 600; color: #991b1b; font-size: 14px; margin-bottom: 8px; }
+                    .rekap-alfa .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #fee2e2; font-size: 13px; }
+                    .rekap-alfa .item:last-child { border-bottom: none; }
+                    .rekap-alfa .item .jml { background: #fee2e2; padding: 1px 10px; border-radius: 12px; font-weight: 600; color: #991b1b; font-size: 12px; }
+                    @media print { 
+                        body { padding: 20px; }
+                        .no-print { display: none; } 
+                    }
+                    /* Sembunyikan tombol saat print */
+                    .no-print { display: none; }
+                </style>
+            </head>
+            <body>
+                <div class="watermark">@Konsiva</div>
+                <div class="header">
+                    <h1>📚 Laporan Jurnal Guru</h1>
+                    <p>${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
+                    <p style="color:#2563eb;font-weight:600;">@Konsiva — Aplikasi Jurnal Guru</p>
+                    <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
+                </div>
+                ${content}
+                <div class="footer">
+                    Laporan dibuat dengan <span class="brand">@Konsiva</span> — Jurnal Guru Digital<br>
+                    © ${new Date().getFullYear()} Konsiva
+                </div>
+                <script>
+                    // Otomatis buka print dialog untuk save as PDF
+                    window.onload = function() { 
+                        setTimeout(function() {
+                            window.print();
+                        }, 500);
+                    }
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    };
+
+    // ================================================================
     // NAVIGASI
     // ================================================================
     window.showPage = function(page) {
@@ -1505,18 +1590,9 @@
     });
 
     // ================================================================
-    // INIT - KHUSUS HP (PASTI BERHASIL)
+    // INIT
     // ================================================================
     function init() {
-        // Cek apakah ada data di sessionStorage (cadangan)
-        try {
-            const backup = sessionStorage.getItem(STORAGE_KEY);
-            if (backup && !localStorage.getItem(STORAGE_KEY)) {
-                localStorage.setItem(STORAGE_KEY, backup);
-                console.log('✅ HP: Restore dari sessionStorage ke LocalStorage');
-            }
-        } catch(e) {}
-
         const loggedIn = checkAuth();
         if (!loggedIn) {
             hideSplash();
@@ -1527,7 +1603,6 @@
             setDefaults();
             hideSplash();
             updateNavigation();
-            // Render ulang setelah 1 detik untuk memastikan
             setTimeout(function() {
                 renderAll();
             }, 500);
