@@ -330,7 +330,21 @@
         }
         .info-box .highlight { font-weight: 700; }
 
-        /* Jumlah siswa box */
+        /* Petunjuk kecil di bawah */
+        .petunjuk {
+            font-size: 11px;
+            color: #64748b;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 6px;
+            border: 1px dashed #cbd5e1;
+            line-height: 1.6;
+        }
+        .petunjuk .icon-bullet { margin-right: 4px; }
+        .petunjuk strong { color: #1e293b; }
+
+        /* Count box */
         .count-box {
             display: flex;
             gap: 12px;
@@ -439,9 +453,18 @@
             <!-- INFO CARA PAKAI -->
             <div class="info-box">
                 💡 <span class="highlight">Cara pakai:</span><br>
-                • Klik <b>"✅ Semua Hadir"</b> → isi <b>jumlah siswa</b> (otomatis semua hadir)<br>
-                • Klik <b>"➕ Tidak Hadir"</b> → tulis nama siswa yang <b>tidak hadir</b> saja<br>
+                • Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b> (nama otomatis sesuai urutan absen)<br>
+                • Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama lengkap</b> siswa yang tidak hadir<br>
                 • Siswa yang tidak hadir otomatis statusnya ❌ Tidak Hadir
+            </div>
+
+            <!-- PETUNJUK KECIL -->
+            <div class="petunjuk">
+                <span class="icon-bullet">📌</span> <strong>Catatan:</strong><br>
+                • Untuk <strong>Semua Hadir</strong>, Anda <strong>tidak perlu</strong> menulis nama satu per satu.<br>
+                • Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong> sesuai urutan absen.<br>
+                • Untuk <strong>Tidak Hadir</strong>, tulis <strong>nama lengkap</strong> siswa yang tidak hadir.<br>
+                • Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.
             </div>
 
             <form id="jurnalForm">
@@ -854,9 +877,9 @@
 
     // ===== TOMBOL PRESENSI =====
 
-    // 1. Semua Hadir - Cukup isi JUMLAH siswa
+    // 1. Semua Hadir - Cukup isi JUMLAH siswa (tanpa input nama)
     semuaHadirBtn.onclick = function() {
-        const input = prompt('Masukkan JUMLAH siswa yang hadir:\nContoh: 25');
+        const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25\n\n📌 Nama siswa otomatis "Siswa 1, Siswa 2, ..." sesuai urutan absen.');
         if (input && input.trim() !== '') {
             const jumlah = parseInt(input.trim());
             if (isNaN(jumlah) || jumlah <= 0) {
@@ -868,27 +891,10 @@
                 return;
             }
             
-            // Tanyakan nama siswa opsional (bisa diisi atau langsung OK)
-            const namaList = prompt('Masukkan nama siswa (pisahkan koma) atau klik OK untuk otomatis "Siswa 1, Siswa 2, ..." :');
-            
-            let names = [];
-            if (namaList && namaList.trim() !== '') {
-                // Pakai nama yang diinput
-                names = namaList.split(',').map(n => n.trim()).filter(n => n !== '');
-            } else {
-                // Otomatis: Siswa 1, Siswa 2, ...
-                for (let i = 1; i <= jumlah; i++) {
-                    names.push('Siswa ' + i);
-                }
-            }
-            
-            // Jika jumlah nama kurang dari jumlah yang diminta, tambahkan otomatis
-            while (names.length < jumlah) {
-                names.push('Siswa ' + (names.length + 1));
-            }
-            // Jika kelebihan, potong
-            if (names.length > jumlah) {
-                names = names.slice(0, jumlah);
+            // Buat nama otomatis: Siswa 1, Siswa 2, ...
+            const names = [];
+            for (let i = 1; i <= jumlah; i++) {
+                names.push('Siswa ' + i);
             }
             
             names.forEach(n => {
@@ -902,7 +908,7 @@
 
     // 2. Tambah Tidak Hadir - Tulis nama siswa yang tidak hadir
     tambahTidakHadirBtn.onclick = function() {
-        const nama = prompt('Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\nContoh: Andi, Budi, Cici');
+        const nama = prompt('📝 Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\n\nContoh: Andi, Budi, Cici\n\n📌 Nama akan masuk ke laporan.');
         if (nama && nama.trim() !== '') {
             const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
             names.forEach(n => {
