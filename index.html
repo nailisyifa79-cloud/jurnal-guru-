@@ -357,6 +357,39 @@
         .count-box .h { color: #16a34a; }
         .count-box .a { color: #dc2626; }
 
+        /* ===== REKAP TIDAK HADIR ===== */
+        .rekap-alfa {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .rekap-alfa .title {
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .rekap-alfa .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #fee2e2;
+            font-size: 13px;
+        }
+        .rekap-alfa .item:last-child { border-bottom: none; }
+        .rekap-alfa .item .nama { font-weight: 500; }
+        .rekap-alfa .item .jml { 
+            background: #fee2e2; 
+            padding: 1px 10px; 
+            border-radius: 12px; 
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 12px;
+        }
+        .rekap-alfa .item .jml.banyak { background: #fecaca; }
+
         /* Responsive */
         @media (max-width: 480px) {
             .header { padding: 12px 14px; }
@@ -670,6 +703,13 @@
         return p[2] + ' ' + bulan[parseInt(p[1])-1] + ' ' + p[0];
     }
 
+    function formatDateFull(tgl) {
+        if (!tgl) return '-';
+        const p = tgl.split('-');
+        const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        return p[2] + ' ' + bulan[parseInt(p[1])-1] + ' ' + p[0];
+    }
+
     function escapeHtml(text) {
         if (!text) return '';
         const d = document.createElement('div');
@@ -877,7 +917,7 @@
 
     // ===== TOMBOL PRESENSI =====
 
-    // 1. Semua Hadir - Cukup isi JUMLAH siswa (tanpa input nama)
+    // 1. Semua Hadir
     semuaHadirBtn.onclick = function() {
         const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25\n\n📌 Nama siswa otomatis "Siswa 1, Siswa 2, ..." sesuai urutan absen.');
         if (input && input.trim() !== '') {
@@ -891,7 +931,6 @@
                 return;
             }
             
-            // Buat nama otomatis: Siswa 1, Siswa 2, ...
             const names = [];
             for (let i = 1; i <= jumlah; i++) {
                 names.push('Siswa ' + i);
@@ -906,7 +945,7 @@
         }
     };
 
-    // 2. Tambah Tidak Hadir - Tulis nama siswa yang tidak hadir
+    // 2. Tambah Tidak Hadir
     tambahTidakHadirBtn.onclick = function() {
         const nama = prompt('📝 Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\n\nContoh: Andi, Budi, Cici\n\n📌 Nama akan masuk ke laporan.');
         if (nama && nama.trim() !== '') {
@@ -1162,6 +1201,29 @@
         const [th, bl] = bulan.split('-');
         const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1];
 
+        // ===== REKAP SISWA TIDAK HADIR =====
+        // Kumpulkan semua siswa yang tidak hadir
+        const alfaMap = {};
+        data.forEach(j => {
+            j.presensi.forEach(p => {
+                if (p.status === 'alfa') {
+                    if (!alfaMap[p.nama]) {
+                        alfaMap[p.nama] = {
+                            nama: p.nama,
+                            jumlah: 0,
+                            tanggal: []
+                        };
+                    }
+                    alfaMap[p.nama].jumlah++;
+                    alfaMap[p.nama].tanggal.push(formatDate(j.tanggal));
+                }
+            });
+        });
+
+        // Urutkan dari yang paling sering tidak hadir
+        const alfaList = Object.values(alfaMap).sort((a, b) => b.jumlah - a.jumlah);
+
+        // ===== HTML LAPORAN =====
         let html = `
             <div style="margin-bottom:10px;text-align:center;border-bottom:2px solid #2563eb;padding-bottom:8px;">
                 <h3 style="margin:0;color:#2563eb;">📚 Laporan ${namaBulan} ${th}</h3>
@@ -1185,13 +1247,40 @@
             <div style="background:#f1f5f9;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;">
                 📊 Kehadiran: <strong style="color:#2563eb;font-size:18px;">${persen}%</strong> (${hadir}/${total} siswa)
             </div>
-            <div style="border-top:1px solid #e2e8f0;padding-top:8px;">
-                <h4 style="margin:0 0 6px;font-size:14px;">📋 Daftar Jurnal</h4>
+        `;
+
+        // ===== REKAP TIDAK HADIR =====
+        if (alfaList.length > 0) {
+            html += `
+                <div class="rekap-alfa">
+                    <div class="title">📋 Rekap Siswa Tidak Hadir (${alfaList.length} siswa)</div>
+                    ${alfaList.map((item, idx) => `
+                        <div class="item">
+                            <span class="nama">${idx+1}. ${escapeHtml(item.nama)}</span>
+                            <span class="jml ${item.jumlah > 3 ? 'banyak' : ''}">${item.jumlah}x tidak hadir</span>
+                        </div>
+                    `).join('')}
+                    <div style="font-size:10px;color:#94a3b8;margin-top:6px;border-top:1px solid #fee2e2;padding-top:4px;">
+                        💡 Urutan dari yang paling sering tidak hadir
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== DAFTAR JURNAL =====
+        html += `
+            <div style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;">
+                <h4 style="margin:0 0 6px;font-size:14px;">📋 Detail Jurnal</h4>
                 ${data.map(j => `
                     <div style="background:#f8fafc;padding:8px 12px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:4px;">
                         <div style="font-size:12px;color:#64748b;">📅 ${formatDate(j.tanggal)} · 🏫 ${j.kelas} · 📖 ${j.mapel}</div>
                         <div style="font-weight:600;font-size:14px;">${escapeHtml(j.materi)}</div>
                         <div style="font-size:11px;color:#64748b;">👨‍🎓 ${j.presensi.filter(p=>p.status==='hadir').length}/${j.presensi.length} hadir</div>
+                        ${j.presensi.filter(p=>p.status==='alfa').length > 0 ? `
+                            <div style="font-size:10px;color:#dc2626;margin-top:2px;">
+                                ❌ Tidak hadir: ${j.presensi.filter(p=>p.status==='alfa').map(p=>p.nama).join(', ')}
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('')}
             </div>
@@ -1235,6 +1324,11 @@
                     .footer { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 11px; }
                     .brand { color: #2563eb; font-weight: 600; }
                     .watermark { position: fixed; bottom: 30px; right: 30px; font-size: 28px; color: rgba(37,99,235,0.04); font-weight: 700; transform: rotate(-15deg); }
+                    .rekap-alfa { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; margin: 12px 0; }
+                    .rekap-alfa .title { font-weight: 600; color: #991b1b; font-size: 14px; margin-bottom: 8px; }
+                    .rekap-alfa .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #fee2e2; font-size: 13px; }
+                    .rekap-alfa .item:last-child { border-bottom: none; }
+                    .rekap-alfa .item .jml { background: #fee2e2; padding: 1px 10px; border-radius: 12px; font-weight: 600; color: #991b1b; font-size: 12px; }
                     @media print { .no-print { display: none; } }
                 </style>
             </head>
