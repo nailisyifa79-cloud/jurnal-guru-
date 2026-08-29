@@ -263,8 +263,6 @@
         }
         .student-item .status-badge.hadir { background: #dcfce7; color: #166534; }
         .student-item .status-badge.alfa { background: #fecaca; color: #991b1b; }
-        .student-item .status-badge.sakit { background: #fef3c7; color: #92400e; }
-        .student-item .status-badge.izin { background: #dbeafe; color: #1e40af; }
         .student-item .del { color: #ef4444; font-weight: bold; cursor: pointer; font-size: 18px; }
 
         /* Jurnal card */
@@ -331,6 +329,19 @@
             color: #1e40af;
         }
         .info-box .highlight { font-weight: 700; }
+
+        /* Jumlah siswa box */
+        .count-box {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #64748b;
+            padding: 6px 0;
+            flex-wrap: wrap;
+        }
+        .count-box span { font-weight: 600; }
+        .count-box .h { color: #16a34a; }
+        .count-box .a { color: #dc2626; }
 
         /* Responsive */
         @media (max-width: 480px) {
@@ -428,9 +439,9 @@
             <!-- INFO CARA PAKAI -->
             <div class="info-box">
                 💡 <span class="highlight">Cara pakai:</span><br>
-                • Jika <b>semua siswa hadir</b> → klik <b>"✅ Semua Hadir"</b><br>
-                • Jika ada yang <b>tidak hadir</b> → klik <b>"➕ Tambah Tidak Hadir"</b><br>
-                • Status otomatis: Hadir atau Alfa
+                • Klik <b>"✅ Semua Hadir"</b> → isi <b>jumlah siswa</b> (otomatis semua hadir)<br>
+                • Klik <b>"➕ Tidak Hadir"</b> → tulis nama siswa yang <b>tidak hadir</b> saja<br>
+                • Siswa yang tidak hadir otomatis statusnya ❌ Tidak Hadir
             </div>
 
             <form id="jurnalForm">
@@ -467,12 +478,12 @@
                         </div>
                     </div>
                     <div id="presensiContainer">
-                        <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa. Klik "Semua Hadir" atau "Tambah Tidak Hadir"</div>
+                        <div class="empty" style="padding:16px;" id="emptySiswa">Belum ada siswa</div>
                     </div>
-                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;text-align:right;">
-                        Total: <span id="totalSiswaCount">0</span> siswa · 
-                        ✅ Hadir: <span id="hadirCount">0</span> · 
-                        ❌ Tidak Hadir: <span id="alfaCount">0</span>
+                    <div class="count-box">
+                        Total: <span id="totalSiswaCount">0</span> siswa ·
+                        ✅ Hadir: <span class="h" id="hadirCount">0</span> ·
+                        ❌ Tidak Hadir: <span class="a" id="alfaCount">0</span>
                     </div>
                 </div>
 
@@ -811,7 +822,7 @@
     function renderPresensi() {
         presensiContainer.innerHTML = '';
         if (siswaList.length === 0) {
-            presensiContainer.innerHTML = '<div class="empty" style="padding:16px;">Belum ada siswa. Klik "Semua Hadir" atau "Tambah Tidak Hadir"</div>';
+            presensiContainer.innerHTML = '<div class="empty" style="padding:16px;">Belum ada siswa</div>';
             updateCounts();
             return;
         }
@@ -843,22 +854,55 @@
 
     // ===== TOMBOL PRESENSI =====
 
-    // 1. Semua Hadir
+    // 1. Semua Hadir - Cukup isi JUMLAH siswa
     semuaHadirBtn.onclick = function() {
-        const nama = prompt('Masukkan nama siswa (pisahkan dengan koma jika lebih dari 1):\nContoh: Andi, Budi, Cici');
-        if (nama && nama.trim() !== '') {
-            const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
+        const input = prompt('Masukkan JUMLAH siswa yang hadir:\nContoh: 25');
+        if (input && input.trim() !== '') {
+            const jumlah = parseInt(input.trim());
+            if (isNaN(jumlah) || jumlah <= 0) {
+                showToast('❌ Masukkan angka yang valid!', 'error');
+                return;
+            }
+            if (jumlah > 100) {
+                showToast('❌ Maksimal 100 siswa', 'error');
+                return;
+            }
+            
+            // Tanyakan nama siswa opsional (bisa diisi atau langsung OK)
+            const namaList = prompt('Masukkan nama siswa (pisahkan koma) atau klik OK untuk otomatis "Siswa 1, Siswa 2, ..." :');
+            
+            let names = [];
+            if (namaList && namaList.trim() !== '') {
+                // Pakai nama yang diinput
+                names = namaList.split(',').map(n => n.trim()).filter(n => n !== '');
+            } else {
+                // Otomatis: Siswa 1, Siswa 2, ...
+                for (let i = 1; i <= jumlah; i++) {
+                    names.push('Siswa ' + i);
+                }
+            }
+            
+            // Jika jumlah nama kurang dari jumlah yang diminta, tambahkan otomatis
+            while (names.length < jumlah) {
+                names.push('Siswa ' + (names.length + 1));
+            }
+            // Jika kelebihan, potong
+            if (names.length > jumlah) {
+                names = names.slice(0, jumlah);
+            }
+            
             names.forEach(n => {
                 siswaList.push({ nama: n, status: 'hadir' });
             });
+            
             renderPresensi();
-            showToast('✅ ' + names.length + ' siswa ditambahkan (Hadir)', 'success');
+            showToast('✅ ' + names.length + ' siswa ditambahkan (Semua Hadir)', 'success');
         }
     };
 
-    // 2. Tambah Tidak Hadir
+    // 2. Tambah Tidak Hadir - Tulis nama siswa yang tidak hadir
     tambahTidakHadirBtn.onclick = function() {
-        const nama = prompt('Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\nContoh: Andi, Budi');
+        const nama = prompt('Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\nContoh: Andi, Budi, Cici');
         if (nama && nama.trim() !== '') {
             const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
             names.forEach(n => {
