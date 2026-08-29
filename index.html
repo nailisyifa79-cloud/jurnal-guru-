@@ -6,7 +6,7 @@
     <title>Jurnal Guru - @Konsiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ===== STYLE LENGKAP SAMA SEPERTI SEBELUMNYA ===== */
+        /* ===== SEMUA STYLE ===== */
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; min-height: 100vh; }
 
@@ -34,7 +34,6 @@
         .password-wrapper input { width: 100%; padding: 12px 14px; padding-right: 45px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; }
         .password-wrapper input:focus { border-color: #2563eb; outline: none; background: white; }
         .password-wrapper .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8; padding: 4px; transition: 0.3s; border-radius: 8px; }
-        .password-wrapper .toggle-password:hover { color: #2563eb; background: #f1f5f9; }
 
         .email-input { width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; transition: 0.3s; }
         .email-input:focus { border-color: #2563eb; outline: none; background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08); }
@@ -44,10 +43,8 @@
 
         .login-box .btn { width: 100%; padding: 13px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .login-box .btn:hover { background: #1d4ed8; }
-
         .login-box .toggle-link { text-align: center; margin-top: 14px; font-size: 13px; color: #64748b; }
         .login-box .toggle-link a { color: #2563eb; text-decoration: none; font-weight: 600; cursor: pointer; }
-
         .login-box .brand-footer { text-align: center; margin-top: 18px; font-size: 12px; color: #94a3b8; }
         .login-box .brand-footer span { color: #2563eb; font-weight: 600; }
 
@@ -108,6 +105,8 @@
         .btn-backup:hover { background: #15803d; }
         .btn-restore { background: #d97706; color: white; }
         .btn-restore:hover { background: #b45309; }
+        .btn-refresh { background: #2563eb; color: white; }
+        .btn-refresh:hover { background: #1d4ed8; }
 
         .student-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 5px; }
         .student-item .name { flex: 1; font-size: 14px; font-weight: 500; }
@@ -158,14 +157,14 @@
         .backup-card .title { font-weight: 600; color: #166534; font-size: 15px; margin-bottom: 8px; }
         .backup-card .desc { font-size: 12px; color: #64748b; margin-bottom: 12px; }
         .backup-card .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .backup-card .btn-group .btn { flex: 1; min-width: 120px; justify-content: center; }
+        .backup-card .btn-group .btn { flex: 1; min-width: 100px; justify-content: center; }
 
         @media (max-width: 480px) {
             .header { padding: 12px 14px; }
             .header h2 { font-size: 16px; }
             .page { padding: 10px; }
             .grid-3 { grid-template-columns: 1fr 1fr; }
-            .backup-card .btn-group .btn { min-width: 100px; }
+            .backup-card .btn-group .btn { min-width: 80px; font-size: 12px; }
         }
     </style>
 </head>
@@ -343,7 +342,10 @@
             <div class="card">
                 <div class="card-title">
                     <span>📋 Riwayat Jurnal</span>
-                    <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️ Hapus Semua</button>
+                    <span style="display:flex;gap:4px;">
+                        <button id="refreshDataBtn" class="btn btn-refresh btn-sm">🔄 Refresh</button>
+                        <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️</button>
+                    </span>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
                     <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
@@ -351,15 +353,17 @@
                 </div>
                 <div id="riwayatList"></div>
                 <div id="riwayatEmpty" class="empty" style="display:none;">
-                    <div class="icon">📭</div><p>Belum ada jurnal</p>
+                    <div class="icon">📭</div>
+                    <p>Belum ada jurnal</p>
+                    <p style="font-size:12px;margin-top:4px;">💡 Buat jurnal pertama di tab Jurnal</p>
                 </div>
             </div>
             <div class="backup-card">
                 <div class="title">💾 Backup & Restore Data</div>
                 <div class="desc">📌 Backup data untuk berjaga-jaga jika ganti HP atau HP hilang.<br>File backup bisa disimpan di Google Drive, Email, atau chat sendiri di WhatsApp.</div>
                 <div class="btn-group">
-                    <button onclick="backupData()" class="btn btn-backup">💾 Backup Data</button>
-                    <button onclick="restoreData()" class="btn btn-restore">📂 Restore Data</button>
+                    <button onclick="backupData()" class="btn btn-backup">💾 Backup</button>
+                    <button onclick="restoreData()" class="btn btn-restore">📂 Restore</button>
                 </div>
                 <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center;">⏰ Lakukan backup setiap 1-3 bulan sekali</div>
             </div>
@@ -433,7 +437,7 @@
 </div>
 
 <!-- ========================================================== -->
-<!-- JAVASCRIPT - KHUSUS HP (PASTI STABIL) -->
+<!-- JAVASCRIPT - PASTI BERHASIL DI HP -->
 <!-- ========================================================== -->
 <script>
 (function() {
@@ -446,11 +450,11 @@
     const STORAGE_KEY = 'jurnalData';
     const USER_KEY = 'jurnalUser';
     const USERS_KEY = 'jurnalUsers';
+    const BACKUP_KEY = 'jurnalData_backup';
 
     let jurnalData = [];
     let currentUser = null;
     let siswaList = [];
-    let isDataLoaded = false;
 
     // ===== DOM =====
     const $ = id => document.getElementById(id);
@@ -471,10 +475,10 @@
     const app = $('app');
     const userDisplay = $('userDisplay');
     const navItems = qsa('.nav-item');
-    const navHome = $('navHome');
     const navJurnal = $('navJurnal');
     const navRiwayat = $('navRiwayat');
     const navLaporan = $('navLaporan');
+    const refreshDataBtn = $('refreshDataBtn');
 
     const pages = {
         home: $('pageHome'),
@@ -572,7 +576,7 @@
         void toast.offsetWidth;
         toast.classList.add('show');
         clearTimeout(toast._timer);
-        toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
     function hideSplash() {
@@ -639,18 +643,10 @@
         if (currentUser) {
             userDisplay.textContent = '👤 ' + currentUser.name;
         }
-        // FORCE LOAD DATA
         loadData();
-        // Tunggu sebentar agar data siap
-        setTimeout(function() {
-            renderAll();
-            setDefaults();
-            updateNavigation();
-            // Render ulang setelah 1 detik untuk memastikan
-            setTimeout(function() {
-                renderAll();
-            }, 500);
-        }, 300);
+        renderAll();
+        setDefaults();
+        updateNavigation();
     }
 
     // Login
@@ -762,11 +758,23 @@
     };
 
     // ================================================================
-    // 💾 STORAGE - DIPERKUAT UNTUK HP
+    // 💾 STORAGE - DOUBLE STORAGE (PASTI AMAN)
     // ================================================================
     function loadData() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            // Coba ambil dari LocalStorage
+            let raw = localStorage.getItem(STORAGE_KEY);
+            
+            // Jika LocalStorage kosong, coba dari SessionStorage
+            if (!raw) {
+                raw = sessionStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    // Restore ke LocalStorage
+                    localStorage.setItem(STORAGE_KEY, raw);
+                    console.log('✅ HP: Restore dari SessionStorage ke LocalStorage');
+                }
+            }
+            
             if (raw) {
                 jurnalData = JSON.parse(raw);
                 console.log('✅ HP: Data dimuat:', jurnalData.length, 'jurnal');
@@ -774,28 +782,43 @@
                 jurnalData = [];
                 console.log('ℹ️ HP: Belum ada data');
             }
-            isDataLoaded = true;
         } catch(e) { 
             jurnalData = [];
-            isDataLoaded = true;
             console.log('❌ HP: Gagal muat data');
         }
     }
 
     function saveData() {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
-            console.log('✅ HP: Data disimpan:', jurnalData.length, 'jurnal');
-            // Simpan ke sessionStorage sebagai cadangan
+            const json = JSON.stringify(jurnalData);
+            
+            // Simpan ke LocalStorage
+            localStorage.setItem(STORAGE_KEY, json);
+            
+            // Simpan ke SessionStorage (cadangan)
             try {
-                sessionStorage.setItem(STORAGE_KEY + '_backup', JSON.stringify(jurnalData));
+                sessionStorage.setItem(STORAGE_KEY, json);
             } catch(e) {}
+            
+            console.log('✅ HP: Data disimpan:', jurnalData.length, 'jurnal');
             return true;
         } catch(e) {
             console.log('❌ HP: Gagal simpan data');
             return false;
         }
     }
+
+    // ================================================================
+    // 🔄 REFRESH DATA (Tombol Refresh)
+    // ================================================================
+    function refreshData() {
+        showToast('🔄 Memuat ulang data...', 'info');
+        loadData();
+        renderAll();
+        showToast('✅ Data berhasil dimuat: ' + jurnalData.length + ' jurnal', 'success');
+    }
+
+    refreshDataBtn.addEventListener('click', refreshData);
 
     // ===== PRESENSI =====
     function updateCounts() {
@@ -1016,7 +1039,7 @@
         }
     }
 
-    // ===== RIWAYAT - DIPERKUAT UNTUK HP =====
+    // ===== RIWAYAT =====
     function renderRiwayat() {
         if (!isLoggedIn()) return;
 
@@ -1122,7 +1145,6 @@
             return;
         }
         try {
-            // Pastikan data terbaru
             loadData();
             const data = {
                 jurnalData: localStorage.getItem(STORAGE_KEY),
@@ -1210,7 +1232,6 @@
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
-        // Pastikan data terbaru
         loadData();
         if (periode === 'bulanan') {
             tampilkanLaporanBulanan();
@@ -1464,7 +1485,6 @@
         });
 
         if (page === 'riwayat') {
-            // Pastikan data terbaru
             loadData();
             renderRiwayat();
         }
@@ -1485,15 +1505,15 @@
     });
 
     // ================================================================
-    // INIT - KHUSUS HP
+    // INIT - KHUSUS HP (PASTI BERHASIL)
     // ================================================================
     function init() {
         // Cek apakah ada data di sessionStorage (cadangan)
         try {
-            const backup = sessionStorage.getItem(STORAGE_KEY + '_backup');
+            const backup = sessionStorage.getItem(STORAGE_KEY);
             if (backup && !localStorage.getItem(STORAGE_KEY)) {
                 localStorage.setItem(STORAGE_KEY, backup);
-                console.log('✅ HP: Restore dari sessionStorage');
+                console.log('✅ HP: Restore dari sessionStorage ke LocalStorage');
             }
         } catch(e) {}
 
