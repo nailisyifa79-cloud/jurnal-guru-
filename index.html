@@ -6,315 +6,91 @@
     <title>Jurnal Guru - @Konsiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* ===== STYLE LENGKAP SAMA SEPERTI SEBELUMNYA ===== */
         * { box-sizing: border-box; }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: #f0f4f8; 
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
+        body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; min-height: 100vh; }
 
         #splash {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #2563eb, #1e40af);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.5s;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
         #splash h1 { color: white; font-size: 28px; margin: 10px 0 5px; }
         #splash .brand { color: #fcd34d; font-size: 16px; letter-spacing: 3px; }
-        #splash .loader {
-            width: 30px; height: 30px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-top: 20px;
-        }
+        #splash .loader { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.2); border-top: 3px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 20px; }
         @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
 
-        #loginPage {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            padding: 20px;
-        }
+        #loginPage { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2563eb, #1e40af); padding: 20px; }
         #loginPage.hide { display: none; }
 
-        .login-box {
-            background: white;
-            border-radius: 20px;
-            padding: 30px 24px;
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-        }
+        .login-box { background: white; border-radius: 20px; padding: 30px 24px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
         .login-box .icon { text-align: center; font-size: 48px; }
         .login-box h1 { text-align: center; color: #1e293b; font-size: 22px; margin: 5px 0; }
         .login-box .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
 
-        .password-wrapper {
-            position: relative;
-            margin-bottom: 12px;
-        }
-        .password-wrapper input {
-            width: 100%;
-            padding: 12px 14px;
-            padding-right: 45px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 14px;
-            background: #f8fafc;
-        }
-        .password-wrapper input:focus {
-            border-color: #2563eb;
-            outline: none;
-            background: white;
-        }
-        .password-wrapper .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            color: #94a3b8;
-            padding: 4px;
-            transition: 0.3s;
-            border-radius: 8px;
-        }
-        .password-wrapper .toggle-password:hover {
-            color: #2563eb;
-            background: #f1f5f9;
-        }
+        .password-wrapper { position: relative; margin-bottom: 12px; }
+        .password-wrapper input { width: 100%; padding: 12px 14px; padding-right: 45px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; }
+        .password-wrapper input:focus { border-color: #2563eb; outline: none; background: white; }
+        .password-wrapper .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8; padding: 4px; transition: 0.3s; border-radius: 8px; }
+        .password-wrapper .toggle-password:hover { color: #2563eb; background: #f1f5f9; }
 
-        .email-input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 14px;
-            background: #f8fafc;
-            transition: 0.3s;
-        }
-        .email-input:focus {
-            border-color: #2563eb;
-            outline: none;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
+        .email-input { width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; transition: 0.3s; }
+        .email-input:focus { border-color: #2563eb; outline: none; background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08); }
 
-        .kode-akses {
-            border-color: #f59e0b !important;
-            background: #fffbeb !important;
-        }
-        .kode-akses:focus {
-            border-color: #d97706 !important;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
-        }
+        .kode-akses { border-color: #f59e0b !important; background: #fffbeb !important; }
+        .kode-akses:focus { border-color: #d97706 !important; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important; }
 
-        .login-box .btn {
-            width: 100%;
-            padding: 13px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+        .login-box .btn { width: 100%; padding: 13px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .login-box .btn:hover { background: #1d4ed8; }
 
-        .login-box .toggle-link {
-            text-align: center;
-            margin-top: 14px;
-            font-size: 13px;
-            color: #64748b;
-        }
-        .login-box .toggle-link a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .login-box .toggle-link { text-align: center; margin-top: 14px; font-size: 13px; color: #64748b; }
+        .login-box .toggle-link a { color: #2563eb; text-decoration: none; font-weight: 600; cursor: pointer; }
 
-        .login-box .brand-footer {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
+        .login-box .brand-footer { text-align: center; margin-top: 18px; font-size: 12px; color: #94a3b8; }
         .login-box .brand-footer span { color: #2563eb; font-weight: 600; }
 
-        .info-kode {
-            background: #fef3c7;
-            border: 1px solid #fcd34d;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 11px;
-            color: #92400e;
-            margin-bottom: 14px;
-            text-align: center;
-        }
+        .info-kode { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 8px 12px; font-size: 11px; color: #92400e; margin-bottom: 14px; text-align: center; }
         .info-kode .highlight { font-weight: 700; }
 
-        #app {
-            max-width: 480px;
-            margin: 0 auto;
-            background: #f0f4f8;
-            min-height: 100vh;
-            padding-bottom: 70px;
-            display: none;
-        }
+        #app { max-width: 480px; margin: 0 auto; background: #f0f4f8; min-height: 100vh; padding-bottom: 70px; display: none; }
         #app.show { display: block; }
 
-        .header {
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            padding: 16px 18px 14px;
-            color: white;
-            border-radius: 0 0 24px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-        .header .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .header { background: linear-gradient(135deg, #2563eb, #1e40af); padding: 16px 18px 14px; color: white; border-radius: 0 0 24px 24px; position: sticky; top: 0; z-index: 50; }
+        .header .top { display: flex; justify-content: space-between; align-items: center; }
         .header h2 { font-size: 18px; margin: 0; }
         .header h2 .tag { font-size: 10px; opacity: 0.7; background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 12px; margin-left: 6px; }
         .header .user { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-        .header .logout {
-            background: rgba(255,255,255,0.15);
-            border: none;
-            color: white;
-            padding: 5px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.3s;
-        }
+        .header .logout { background: rgba(255,255,255,0.15); border: none; color: white; padding: 5px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; transition: 0.3s; }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 12px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-            border-radius: 20px 20px 0 0;
-            z-index: 100;
-        }
-        .bottom-nav button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px 16px;
-            color: #94a3b8;
-            font-size: 10px;
-            font-weight: 500;
-            transition: 0.3s;
-            position: relative;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 8px 0 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 20px 20px 0 0; z-index: 100; }
+        .bottom-nav button { display: flex; flex-direction: column; align-items: center; background: none; border: none; cursor: pointer; padding: 4px 16px; color: #94a3b8; font-size: 10px; font-weight: 500; transition: 0.3s; position: relative; }
         .bottom-nav button.active { color: #2563eb; }
         .bottom-nav button .icon { font-size: 22px; }
 
-        .bottom-nav button.disabled {
-            color: #cbd5e1 !important;
-            cursor: not-allowed !important;
-            opacity: 0.6;
-        }
-        .bottom-nav button.disabled .icon {
-            opacity: 0.5;
-        }
-        .bottom-nav button.disabled::after {
-            content: '🔒';
-            position: absolute;
-            top: -4px;
-            right: 2px;
-            font-size: 10px;
-        }
+        .bottom-nav button.disabled { color: #cbd5e1 !important; cursor: not-allowed !important; opacity: 0.6; }
+        .bottom-nav button.disabled .icon { opacity: 0.5; }
+        .bottom-nav button.disabled::after { content: '🔒'; position: absolute; top: -4px; right: 2px; font-size: 10px; }
 
-        .lock-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #94a3b8;
-            font-size: 14px;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px dashed #cbd5e1;
-        }
+        .lock-message { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; }
         .lock-message .icon { font-size: 40px; display: block; margin-bottom: 12px; }
         .lock-message strong { color: #2563eb; }
 
         .page { display: none; padding: 14px; }
         .page.active { display: block; }
 
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            border: 1px solid #f1f5f9;
-        }
-        .card-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; }
+        .card-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-bottom: 3px; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 14px;
-            background: #fafcff;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: #2563eb;
-            outline: none;
-        }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #fafcff; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2563eb; outline: none; }
         .form-group textarea { resize: vertical; min-height: 50px; }
 
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .btn { padding: 10px 20px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .btn-primary { background: #2563eb; color: white; }
         .btn-primary:hover { background: #1d4ed8; }
         .btn-danger { background: #dc2626; color: white; }
@@ -325,51 +101,22 @@
         .btn-warning:hover { background: #b45309; }
         .btn-sm { padding: 5px 14px; font-size: 12px; }
         .btn-block { width: 100%; }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #e2e8f0;
-            color: #475569;
-        }
+        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #475569; }
         .btn-outline:hover { background: #f8fafc; }
-        .btn-outline.active {
-            border-color: #2563eb;
-            color: #2563eb;
-            background: #eff6ff;
-        }
+        .btn-outline.active { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
         .btn-backup { background: #16a34a; color: white; }
         .btn-backup:hover { background: #15803d; }
         .btn-restore { background: #d97706; color: white; }
         .btn-restore:hover { background: #b45309; }
 
-        .student-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 5px;
-        }
+        .student-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 5px; }
         .student-item .name { flex: 1; font-size: 14px; font-weight: 500; }
-        .student-item .status-badge {
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+        .student-item .status-badge { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .student-item .status-badge.hadir { background: #dcfce7; color: #166534; }
         .student-item .status-badge.alfa { background: #fecaca; color: #991b1b; }
         .student-item .del { color: #ef4444; font-weight: bold; cursor: pointer; font-size: 18px; }
 
-        .jurnal-card {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 12px 14px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 10px;
-            border-left: 4px solid #2563eb;
-        }
+        .jurnal-card { background: #f8fafc; border-radius: 12px; padding: 12px 14px; border: 1px solid #e2e8f0; margin-bottom: 10px; border-left: 4px solid #2563eb; }
         .jurnal-card .meta { font-size: 12px; color: #64748b; display: flex; flex-wrap: wrap; gap: 6px; }
         .jurnal-card .meta .tag { background: #e2e8f0; padding: 0 10px; border-radius: 12px; }
         .jurnal-card .title { font-weight: 600; color: #1e293b; margin: 4px 0; }
@@ -378,133 +125,40 @@
         .empty { text-align: center; padding: 30px 16px; color: #94a3b8; }
         .empty .icon { font-size: 36px; }
 
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(60px);
-            padding: 10px 22px;
-            border-radius: 12px;
-            background: #1e293b;
-            color: white;
-            font-size: 14px;
-            z-index: 999;
-            opacity: 0;
-            transition: 0.4s;
-            max-width: 90%;
-            text-align: center;
-        }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(60px); padding: 10px 22px; border-radius: 12px; background: #1e293b; color: white; font-size: 14px; z-index: 999; opacity: 0; transition: 0.4s; max-width: 90%; text-align: center; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.success { background: #065f46; }
         .toast.error { background: #991b1b; }
 
-        .footer-brand {
-            text-align: center;
-            padding: 12px 0 6px;
-            font-size: 12px;
-            color: #94a3b8;
-            border-top: 1px solid #e2e8f0;
-            margin-top: 6px;
-        }
+        .footer-brand { text-align: center; padding: 12px 0 6px; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; margin-top: 6px; }
         .footer-brand span { color: #2563eb; font-weight: 700; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
-        .info-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            color: #1e40af;
-        }
+        .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 13px; color: #1e40af; }
         .info-box .highlight { font-weight: 700; }
 
-        .petunjuk {
-            font-size: 11px;
-            color: #64748b;
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-top: 6px;
-            border: 1px dashed #cbd5e1;
-            line-height: 1.6;
-        }
+        .petunjuk { font-size: 11px; color: #64748b; background: #f8fafc; border-radius: 8px; padding: 8px 12px; margin-top: 6px; border: 1px dashed #cbd5e1; line-height: 1.6; }
 
-        .count-box {
-            display: flex;
-            gap: 12px;
-            font-size: 12px;
-            color: #64748b;
-            padding: 6px 0;
-            flex-wrap: wrap;
-        }
+        .count-box { display: flex; gap: 12px; font-size: 12px; color: #64748b; padding: 6px 0; flex-wrap: wrap; }
         .count-box span { font-weight: 600; }
         .count-box .h { color: #16a34a; }
         .count-box .a { color: #dc2626; }
 
-        .rekap-alfa {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 12px;
-        }
-        .rekap-alfa .title {
-            font-weight: 600;
-            color: #991b1b;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-        .rekap-alfa .item {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px solid #fee2e2;
-            font-size: 13px;
-        }
+        .rekap-alfa { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 10px; padding: 12px; margin-top: 12px; }
+        .rekap-alfa .title { font-weight: 600; color: #991b1b; font-size: 13px; margin-bottom: 8px; }
+        .rekap-alfa .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #fee2e2; font-size: 13px; }
         .rekap-alfa .item:last-child { border-bottom: none; }
         .rekap-alfa .item .nama { font-weight: 500; }
-        .rekap-alfa .item .jml { 
-            background: #fee2e2; 
-            padding: 1px 10px; 
-            border-radius: 12px; 
-            font-weight: 600;
-            color: #991b1b;
-            font-size: 12px;
-        }
+        .rekap-alfa .item .jml { background: #fee2e2; padding: 1px 10px; border-radius: 12px; font-weight: 600; color: #991b1b; font-size: 12px; }
         .rekap-alfa .item .jml.banyak { background: #fecaca; }
 
-        .backup-card {
-            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-            border: 1px solid #bbf7d0;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 14px;
-        }
-        .backup-card .title {
-            font-weight: 600;
-            color: #166534;
-            font-size: 15px;
-            margin-bottom: 8px;
-        }
-        .backup-card .desc {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 12px;
-        }
-        .backup-card .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .backup-card .btn-group .btn {
-            flex: 1;
-            min-width: 120px;
-            justify-content: center;
-        }
+        .backup-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #bbf7d0; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+        .backup-card .title { font-weight: 600; color: #166534; font-size: 15px; margin-bottom: 8px; }
+        .backup-card .desc { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+        .backup-card .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .backup-card .btn-group .btn { flex: 1; min-width: 120px; justify-content: center; }
 
         @media (max-width: 480px) {
             .header { padding: 12px 14px; }
@@ -541,45 +195,30 @@
 
         <form id="loginForm">
             <div class="password-wrapper">
-                <input type="email" id="loginEmail" placeholder="📧 Email" 
-                       class="email-input" autocomplete="off" required />
+                <input type="email" id="loginEmail" placeholder="📧 Email" class="email-input" autocomplete="off" required />
             </div>
-            
             <div class="password-wrapper">
                 <input type="password" id="loginPassword" placeholder="🔒 Password" required minlength="4" />
-                <button type="button" class="toggle-password" data-target="loginPassword">
-                    👁️
-                </button>
+                <button type="button" class="toggle-password" data-target="loginPassword">👁️</button>
             </div>
-
             <button type="submit" class="btn">Masuk</button>
         </form>
 
         <form id="registerForm" style="display:none; margin-top:12px;">
             <div class="password-wrapper">
-                <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses (dari penjual)" 
-                       class="kode-akses" required />
-                <button type="button" class="toggle-password" data-target="kodeAksesRegister">
-                    👁️
-                </button>
+                <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses (dari penjual)" class="kode-akses" required />
+                <button type="button" class="toggle-password" data-target="kodeAksesRegister">👁️</button>
             </div>
-            
             <div class="password-wrapper">
                 <input type="text" id="registerName" placeholder="👤 Nama Lengkap" required />
             </div>
-            
             <div class="password-wrapper">
-                <input type="email" id="registerEmail" placeholder="📧 Email" 
-                       class="email-input" autocomplete="off" required />
+                <input type="email" id="registerEmail" placeholder="📧 Email" class="email-input" autocomplete="off" required />
             </div>
-            
             <div class="password-wrapper">
                 <input type="password" id="registerPassword" placeholder="🔒 Password (min 4)" required minlength="4" />
-                <button type="button" class="toggle-password" data-target="registerPassword">
-                    👁️
-                </button>
+                <button type="button" class="toggle-password" data-target="registerPassword">👁️</button>
             </div>
-
             <button type="submit" class="btn">Daftar</button>
         </form>
 
@@ -616,7 +255,6 @@
                 <div class="empty"><div class="icon">📝</div><p>Belum ada data hari ini</p></div>
             </div>
         </div>
-
         <div class="card">
             <div class="card-title">
                 <span>📝 Jurnal Terbaru</span>
@@ -626,7 +264,6 @@
                 <div class="empty"><div class="icon">📭</div><p>Belum ada jurnal</p></div>
             </div>
         </div>
-
         <div class="footer-brand"><span>@Konsiva</span> — Aplikasi Jurnal Guru</div>
     </div>
 
@@ -636,22 +273,18 @@
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
         </div>
-
         <div id="jurnalContent" style="display:block;">
             <div class="card">
                 <div class="card-title"><span>✏️ Buat Jurnal</span></div>
-
                 <div class="info-box">
                     💡 <span class="highlight">Cara pakai:</span><br>
                     • Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b><br>
                     • Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama</b> siswa yang tidak hadir
                 </div>
-
                 <div class="petunjuk">
                     📌 Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong><br>
                     Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.
                 </div>
-
                 <form id="jurnalForm">
                     <div class="form-group">
                         <label>📅 Tanggal</label>
@@ -675,7 +308,6 @@
                         <label>📌 Catatan</label>
                         <textarea id="fCatatan" rows="2" placeholder="Catatan tambahan..."></textarea>
                     </div>
-
                     <div class="form-group">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;">
                             <label style="margin:0;">👨‍🎓 Daftar Siswa</label>
@@ -694,7 +326,6 @@
                             ❌ Tidak Hadir: <span class="a" id="alfaCount">0</span>
                         </div>
                     </div>
-
                     <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">💾 Simpan Jurnal</button>
                 </form>
             </div>
@@ -708,7 +339,6 @@
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
         </div>
-
         <div id="riwayatContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
@@ -716,37 +346,23 @@
                     <button id="hapusSemuaBtn" class="btn btn-danger btn-sm">🗑️ Hapus Semua</button>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-                    <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." 
-                           style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
-                    <input type="text" id="filterKelasRiwayat" placeholder="🏫 Filter Kelas..." 
-                           style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                    <input type="text" id="filterRiwayat" placeholder="🔍 Cari..." style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
+                    <input type="text" id="filterKelasRiwayat" placeholder="🏫 Filter Kelas..." style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;" />
                 </div>
                 <div id="riwayatList"></div>
                 <div id="riwayatEmpty" class="empty" style="display:none;">
                     <div class="icon">📭</div><p>Belum ada jurnal</p>
                 </div>
             </div>
-
-            <!-- ===== BACKUP & RESTORE ===== -->
             <div class="backup-card">
                 <div class="title">💾 Backup & Restore Data</div>
-                <div class="desc">
-                    📌 Backup data untuk berjaga-jaga jika ganti HP atau HP hilang.<br>
-                    File backup bisa disimpan di Google Drive, Email, atau chat sendiri di WhatsApp.
-                </div>
+                <div class="desc">📌 Backup data untuk berjaga-jaga jika ganti HP atau HP hilang.<br>File backup bisa disimpan di Google Drive, Email, atau chat sendiri di WhatsApp.</div>
                 <div class="btn-group">
-                    <button onclick="backupData()" class="btn btn-backup">
-                        💾 Backup Data
-                    </button>
-                    <button onclick="restoreData()" class="btn btn-restore">
-                        📂 Restore Data
-                    </button>
+                    <button onclick="backupData()" class="btn btn-backup">💾 Backup Data</button>
+                    <button onclick="restoreData()" class="btn btn-restore">📂 Restore Data</button>
                 </div>
-                <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center;">
-                    ⏰ Lakukan backup setiap 1-3 bulan sekali
-                </div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center;">⏰ Lakukan backup setiap 1-3 bulan sekali</div>
             </div>
-
             <div class="footer-brand"><span>@Konsiva</span> — Semua data aman</div>
         </div>
     </div>
@@ -757,19 +373,16 @@
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
         </div>
-
         <div id="laporanContent" style="display:block;">
             <div class="card">
                 <div class="card-title">
                     <span>📊 Laporan</span>
                     <button id="cetakLaporanBtn" class="btn btn-success btn-sm">🖨️ Cetak</button>
                 </div>
-
                 <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
                     <button id="periodeBulanan" class="btn btn-sm btn-outline active" style="flex:1;">📅 Bulanan</button>
                     <button id="periodeMingguan" class="btn btn-sm btn-outline" style="flex:1;">📅 Mingguan</button>
                 </div>
-
                 <div id="filterBulanan">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                         <div class="form-group" style="margin:0;">
@@ -778,12 +391,10 @@
                         </div>
                         <div class="form-group" style="margin:0;">
                             <label>🏫 Kelas</label>
-                            <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" 
-                                   style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                            <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
                         </div>
                     </div>
                 </div>
-
                 <div id="filterMingguan" style="display:none;">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
                         <div class="form-group" style="margin:0;">
@@ -793,24 +404,16 @@
                         <div class="form-group" style="margin:0;">
                             <label>📅 Minggu ke-</label>
                             <select id="laporanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;">
-                                <option value="1">Minggu 1</option>
-                                <option value="2">Minggu 2</option>
-                                <option value="3">Minggu 3</option>
-                                <option value="4">Minggu 4</option>
-                                <option value="5">Minggu 5</option>
+                                <option value="1">Minggu 1</option><option value="2">Minggu 2</option><option value="3">Minggu 3</option><option value="4">Minggu 4</option><option value="5">Minggu 5</option>
                             </select>
                         </div>
                         <div class="form-group" style="margin:0;">
                             <label>🏫 Kelas</label>
-                            <input type="text" id="laporanKelasMinggu" placeholder="Semua / 1A / 7B" 
-                                   style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                            <input type="text" id="laporanKelasMinggu" placeholder="Semua / 1A / 7B" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
                         </div>
                     </div>
-                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
-                        💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.
-                    </div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.</div>
                 </div>
-
                 <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
                 <div id="laporanHasil" class="mt-3">
                     <div class="empty"><div class="icon">📊</div><p>Pilih periode & klik Tampilkan</p></div>
@@ -822,27 +425,15 @@
 
     <!-- ===== BOTTOM NAV ===== -->
     <div class="bottom-nav">
-        <button class="nav-item active" data-page="home" id="navHome">
-            <span class="icon">🏠</span>
-            <span>Beranda</span>
-        </button>
-        <button class="nav-item" data-page="jurnal" id="navJurnal">
-            <span class="icon">✏️</span>
-            <span>Jurnal</span>
-        </button>
-        <button class="nav-item" data-page="riwayat" id="navRiwayat">
-            <span class="icon">📋</span>
-            <span>Riwayat</span>
-        </button>
-        <button class="nav-item" data-page="laporan" id="navLaporan">
-            <span class="icon">📊</span>
-            <span>Laporan</span>
-        </button>
+        <button class="nav-item active" data-page="home" id="navHome"><span class="icon">🏠</span><span>Beranda</span></button>
+        <button class="nav-item" data-page="jurnal" id="navJurnal"><span class="icon">✏️</span><span>Jurnal</span></button>
+        <button class="nav-item" data-page="riwayat" id="navRiwayat"><span class="icon">📋</span><span>Riwayat</span></button>
+        <button class="nav-item" data-page="laporan" id="navLaporan"><span class="icon">📊</span><span>Laporan</span></button>
     </div>
 </div>
 
 <!-- ========================================================== -->
-<!-- JAVASCRIPT -->
+<!-- JAVASCRIPT - KHUSUS HP (PASTI STABIL) -->
 <!-- ========================================================== -->
 <script>
 (function() {
@@ -859,6 +450,7 @@
     let jurnalData = [];
     let currentUser = null;
     let siswaList = [];
+    let isDataLoaded = false;
 
     // ===== DOM =====
     const $ = id => document.getElementById(id);
@@ -884,7 +476,6 @@
     const navRiwayat = $('navRiwayat');
     const navLaporan = $('navLaporan');
 
-    // Pages
     const pages = {
         home: $('pageHome'),
         jurnal: $('pageJurnal'),
@@ -892,7 +483,6 @@
         laporan: $('pageLaporan')
     };
 
-    // Lock & Content
     const jurnalLock = $('jurnalLock');
     const jurnalContent = $('jurnalContent');
     const riwayatLock = $('riwayatLock');
@@ -900,7 +490,6 @@
     const laporanLock = $('laporanLock');
     const laporanContent = $('laporanContent');
 
-    // Jurnal Form
     const jurnalForm = $('jurnalForm');
     const fTanggal = $('fTanggal');
     const fKelas = $('fKelas');
@@ -908,7 +497,6 @@
     const fMateri = $('fMateri');
     const fCatatan = $('fCatatan');
     const presensiContainer = $('presensiContainer');
-    const emptySiswa = $('emptySiswa');
     const semuaHadirBtn = $('semuaHadirBtn');
     const tambahTidakHadirBtn = $('tambahTidakHadirBtn');
     const hapusSemuaSiswaBtn = $('hapusSemuaSiswaBtn');
@@ -916,14 +504,12 @@
     const hadirCount = $('hadirCount');
     const alfaCount = $('alfaCount');
 
-    // Riwayat
     const riwayatList = $('riwayatList');
     const riwayatEmpty = $('riwayatEmpty');
     const filterRiwayat = $('filterRiwayat');
     const filterKelasRiwayat = $('filterKelasRiwayat');
     const hapusSemuaBtn = $('hapusSemuaBtn');
 
-    // Laporan
     const periodeBulanan = $('periodeBulanan');
     const periodeMingguan = $('periodeMingguan');
     const filterBulanan = $('filterBulanan');
@@ -937,7 +523,6 @@
     const cetakLaporanBtn = $('cetakLaporanBtn');
     const laporanHasil = $('laporanHasil');
 
-    // Home
     const todayDate = $('todayDate');
     const homeSummary = $('homeSummary');
     const homeRecent = $('homeRecent');
@@ -1002,7 +587,7 @@
     }
 
     // ================================================================
-    // LOGIN
+    // 🔐 LOGIN & NAVIGASI
     // ================================================================
     function isLoggedIn() {
         return currentUser !== null;
@@ -1012,32 +597,22 @@
         const loggedIn = isLoggedIn();
 
         if (loggedIn) {
-            // HAPUS SEMUA CLASS DISABLED
             navJurnal.classList.remove('disabled');
             navRiwayat.classList.remove('disabled');
             navLaporan.classList.remove('disabled');
-            
-            // SEMBUNYIKAN LOCK
             jurnalLock.style.display = 'none';
             riwayatLock.style.display = 'none';
             laporanLock.style.display = 'none';
-            
-            // TAMPILKAN KONTEN
             jurnalContent.style.display = 'block';
             riwayatContent.style.display = 'block';
             laporanContent.style.display = 'block';
         } else {
-            // TAMBAHKAN CLASS DISABLED
             navJurnal.classList.add('disabled');
             navRiwayat.classList.add('disabled');
             navLaporan.classList.add('disabled');
-            
-            // TAMPILKAN LOCK
             jurnalLock.style.display = 'block';
             riwayatLock.style.display = 'block';
             laporanLock.style.display = 'block';
-            
-            // SEMBUNYIKAN KONTEN
             jurnalContent.style.display = 'none';
             riwayatContent.style.display = 'none';
             laporanContent.style.display = 'none';
@@ -1064,16 +639,23 @@
         if (currentUser) {
             userDisplay.textContent = '👤 ' + currentUser.name;
         }
+        // FORCE LOAD DATA
         loadData();
-        renderAll();
-        setDefaults();
-        updateNavigation();
+        // Tunggu sebentar agar data siap
+        setTimeout(function() {
+            renderAll();
+            setDefaults();
+            updateNavigation();
+            // Render ulang setelah 1 detik untuk memastikan
+            setTimeout(function() {
+                renderAll();
+            }, 500);
+        }, 300);
     }
 
     // Login
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const email = loginEmail.value.trim();
         const pass = loginPassword.value.trim();
 
@@ -1179,24 +761,39 @@
         }
     };
 
-    // ===== STORAGE =====
+    // ================================================================
+    // 💾 STORAGE - DIPERKUAT UNTUK HP
+    // ================================================================
     function loadData() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
-            jurnalData = raw ? JSON.parse(raw) : [];
-            console.log('✅ Data dimuat:', jurnalData.length, 'jurnal');
+            if (raw) {
+                jurnalData = JSON.parse(raw);
+                console.log('✅ HP: Data dimuat:', jurnalData.length, 'jurnal');
+            } else {
+                jurnalData = [];
+                console.log('ℹ️ HP: Belum ada data');
+            }
+            isDataLoaded = true;
         } catch(e) { 
             jurnalData = [];
-            console.log('❌ Gagal muat data');
+            isDataLoaded = true;
+            console.log('❌ HP: Gagal muat data');
         }
     }
 
     function saveData() {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(jurnalData));
-            console.log('✅ Data disimpan:', jurnalData.length, 'jurnal');
+            console.log('✅ HP: Data disimpan:', jurnalData.length, 'jurnal');
+            // Simpan ke sessionStorage sebagai cadangan
+            try {
+                sessionStorage.setItem(STORAGE_KEY + '_backup', JSON.stringify(jurnalData));
+            } catch(e) {}
+            return true;
         } catch(e) {
-            console.log('❌ Gagal simpan data');
+            console.log('❌ HP: Gagal simpan data');
+            return false;
         }
     }
 
@@ -1259,16 +856,13 @@
                 showToast('❌ Maksimal 100 siswa', 'error');
                 return;
             }
-            
             const names = [];
             for (let i = 1; i <= jumlah; i++) {
                 names.push('Siswa ' + i);
             }
-            
             names.forEach(n => {
                 siswaList.push({ nama: n, status: 'hadir' });
             });
-            
             renderPresensi();
             showToast('✅ ' + names.length + ' siswa ditambahkan (Semua Hadir)', 'success');
         }
@@ -1422,9 +1016,12 @@
         }
     }
 
-    // ===== RIWAYAT =====
+    // ===== RIWAYAT - DIPERKUAT UNTUK HP =====
     function renderRiwayat() {
         if (!isLoggedIn()) return;
+
+        // Pastikan data terbaru
+        loadData();
 
         const txt = filterRiwayat.value.trim().toLowerCase();
         const kl = filterKelasRiwayat.value.trim().toLowerCase();
@@ -1525,6 +1122,8 @@
             return;
         }
         try {
+            // Pastikan data terbaru
+            loadData();
             const data = {
                 jurnalData: localStorage.getItem(STORAGE_KEY),
                 users: localStorage.getItem(USERS_KEY),
@@ -1532,7 +1131,6 @@
                 tanggal: new Date().toISOString(),
                 versi: '1.0'
             };
-            
             const json = JSON.stringify(data, null, 2);
             const blob = new Blob([json], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -1544,8 +1142,7 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
-            showToast('✅ Backup berhasil! File sudah di-download.', 'success');
+            showToast('✅ Backup berhasil!', 'success');
         } catch (e) {
             showToast('❌ Gagal backup: ' + e.message, 'error');
         }
@@ -1568,29 +1165,24 @@
             reader.onload = function(event) {
                 try {
                     const data = JSON.parse(event.target.result);
-                    
                     if (!data.jurnalData && !data.users && !data.user) {
                         showToast('❌ File backup tidak valid!', 'error');
                         return;
                     }
-                    
-                    if (!confirm('⚠️ Restore akan mengganti semua data saat ini.\n\nData yang ada sekarang akan hilang!\n\nLanjutkan?')) {
+                    if (!confirm('⚠️ Restore akan mengganti semua data saat ini.\n\nLanjutkan?')) {
                         return;
                     }
-                    
                     if (data.jurnalData !== undefined) localStorage.setItem(STORAGE_KEY, data.jurnalData);
                     if (data.users !== undefined) localStorage.setItem(USERS_KEY, data.users);
                     if (data.user !== undefined) localStorage.setItem(USER_KEY, data.user);
-                    
-                    showToast('✅ Restore berhasil! Halaman akan di-refresh.', 'success');
+                    showToast('✅ Restore berhasil!', 'success');
                     setTimeout(() => location.reload(), 1500);
                 } catch (e) {
-                    showToast('❌ File backup rusak atau tidak valid!', 'error');
+                    showToast('❌ File backup rusak!', 'error');
                 }
             };
             reader.readAsText(file);
         };
-        
         input.click();
     };
 
@@ -1618,6 +1210,8 @@
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
+        // Pastikan data terbaru
+        loadData();
         if (periode === 'bulanan') {
             tampilkanLaporanBulanan();
         } else {
@@ -1869,19 +1463,21 @@
             }
         });
 
-        if (page === 'riwayat') renderRiwayat();
+        if (page === 'riwayat') {
+            // Pastikan data terbaru
+            loadData();
+            renderRiwayat();
+        }
         if (page === 'home') renderHome();
     };
 
     navItems.forEach(btn => {
         btn.addEventListener('click', function() {
             const page = this.dataset.page;
-            
             if (this.classList.contains('disabled')) {
                 showToast('🔒 Silakan login terlebih dahulu!', 'error');
                 return;
             }
-            
             if (page) {
                 showPage(page);
             }
@@ -1889,9 +1485,18 @@
     });
 
     // ================================================================
-    // INIT
+    // INIT - KHUSUS HP
     // ================================================================
     function init() {
+        // Cek apakah ada data di sessionStorage (cadangan)
+        try {
+            const backup = sessionStorage.getItem(STORAGE_KEY + '_backup');
+            if (backup && !localStorage.getItem(STORAGE_KEY)) {
+                localStorage.setItem(STORAGE_KEY, backup);
+                console.log('✅ HP: Restore dari sessionStorage');
+            }
+        } catch(e) {}
+
         const loggedIn = checkAuth();
         if (!loggedIn) {
             hideSplash();
@@ -1902,6 +1507,10 @@
             setDefaults();
             hideSplash();
             updateNavigation();
+            // Render ulang setelah 1 detik untuk memastikan
+            setTimeout(function() {
+                renderAll();
+            }, 500);
         }
     }
 
