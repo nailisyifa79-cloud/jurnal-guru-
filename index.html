@@ -242,6 +242,17 @@
         .btn-warning:hover { background: #b45309; }
         .btn-sm { padding: 5px 14px; font-size: 12px; }
         .btn-block { width: 100%; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+        }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-outline.active {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
 
         /* Student item */
         .student-item {
@@ -317,6 +328,7 @@
 
         /* Grid */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
         /* Info box */
         .info-box {
@@ -395,6 +407,7 @@
             .header { padding: 12px 14px; }
             .header h2 { font-size: 16px; }
             .page { padding: 10px; }
+            .grid-3 { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -574,23 +587,62 @@
     <div id="pageLaporan" class="page">
         <div class="card">
             <div class="card-title">
-                <span>📊 Laporan Bulanan</span>
+                <span>📊 Laporan</span>
                 <button id="cetakLaporanBtn" class="btn btn-success btn-sm">🖨️ Cetak</button>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <div class="form-group" style="margin:0;">
-                    <label>📅 Bulan</label>
-                    <input type="month" id="laporanBulan" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
-                </div>
-                <div class="form-group" style="margin:0;">
-                    <label>🏫 Kelas</label>
-                    <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" 
-                           style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+
+            <!-- Pilihan Periode: Bulanan / Mingguan -->
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <button id="periodeBulanan" class="btn btn-sm btn-outline active" style="flex:1;">📅 Bulanan</button>
+                <button id="periodeMingguan" class="btn btn-sm btn-outline" style="flex:1;">📅 Mingguan</button>
+            </div>
+
+            <!-- Filter Bulanan -->
+            <div id="filterBulanan">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div class="form-group" style="margin:0;">
+                        <label>📅 Bulan</label>
+                        <input type="month" id="laporanBulan" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>🏫 Kelas</label>
+                        <input type="text" id="laporanKelas" placeholder="Semua / 1A / 7B" 
+                               style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                    </div>
                 </div>
             </div>
+
+            <!-- Filter Mingguan -->
+            <div id="filterMingguan" style="display:none;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                    <div class="form-group" style="margin:0;">
+                        <label>📅 Bulan</label>
+                        <input type="month" id="laporanBulanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>📅 Minggu ke-</label>
+                        <select id="laporanMinggu" style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;background:white;">
+                            <option value="1">Minggu 1</option>
+                            <option value="2">Minggu 2</option>
+                            <option value="3">Minggu 3</option>
+                            <option value="4">Minggu 4</option>
+                            <option value="5">Minggu 5</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>🏫 Kelas</label>
+                        <input type="text" id="laporanKelasMinggu" placeholder="Semua / 1A / 7B" 
+                               style="width:100%;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;" />
+                    </div>
+                </div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
+                    💡 Minggu 1 = tanggal 1-7, Minggu 2 = 8-14, dst.
+                </div>
+            </div>
+
             <button id="tampilkanLaporanBtn" class="btn btn-primary btn-block" style="margin-top:10px;padding:12px;">📊 Tampilkan</button>
             <div id="laporanHasil" class="mt-3">
-                <div class="empty"><div class="icon">📊</div><p>Pilih bulan & klik Tampilkan</p></div>
+                <div class="empty"><div class="icon">📊</div><p>Pilih periode & klik Tampilkan</p></div>
             </div>
         </div>
         <div class="footer-brand"><span>@Konsiva</span> — Laporan siap cetak</div>
@@ -678,8 +730,15 @@
     const hapusSemuaBtn = $('hapusSemuaBtn');
 
     // Laporan
+    const periodeBulanan = $('periodeBulanan');
+    const periodeMingguan = $('periodeMingguan');
+    const filterBulanan = $('filterBulanan');
+    const filterMingguan = $('filterMingguan');
     const laporanBulan = $('laporanBulan');
     const laporanKelas = $('laporanKelas');
+    const laporanBulanMinggu = $('laporanBulanMinggu');
+    const laporanMinggu = $('laporanMinggu');
+    const laporanKelasMinggu = $('laporanKelasMinggu');
     const tampilkanLaporanBtn = $('tampilkanLaporanBtn');
     const cetakLaporanBtn = $('cetakLaporanBtn');
     const laporanHasil = $('laporanHasil');
@@ -708,6 +767,12 @@
         const p = tgl.split('-');
         const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
         return p[2] + ' ' + bulan[parseInt(p[1])-1] + ' ' + p[0];
+    }
+
+    function getMingguKe(tanggal) {
+        // Hitung minggu ke- dari tanggal
+        const day = parseInt(tanggal.split('-')[2]);
+        return Math.ceil(day / 7);
     }
 
     function escapeHtml(text) {
@@ -1022,6 +1087,7 @@
         const d = String(now.getDate()).padStart(2,'0');
         fTanggal.value = y + '-' + m + '-' + d;
         laporanBulan.value = y + '-' + m;
+        laporanBulanMinggu.value = y + '-' + m;
         todayDate.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
     }
 
@@ -1168,8 +1234,36 @@
         }
     };
 
-    // ===== LAPORAN =====
+    // ===== LAPORAN - PERIODE =====
+    let periode = 'bulanan'; // 'bulanan' atau 'mingguan'
+
+    periodeBulanan.addEventListener('click', function() {
+        periode = 'bulanan';
+        this.classList.add('active');
+        periodeMingguan.classList.remove('active');
+        filterBulanan.style.display = 'block';
+        filterMingguan.style.display = 'none';
+    });
+
+    periodeMingguan.addEventListener('click', function() {
+        periode = 'mingguan';
+        this.classList.add('active');
+        periodeBulanan.classList.remove('active');
+        filterBulanan.style.display = 'none';
+        filterMingguan.style.display = 'block';
+    });
+
+    // ===== LAPORAN - TAMPILKAN =====
     tampilkanLaporanBtn.onclick = function() {
+        if (periode === 'bulanan') {
+            tampilkanLaporanBulanan();
+        } else {
+            tampilkanLaporanMingguan();
+        }
+    };
+
+    // ===== LAPORAN BULANAN =====
+    function tampilkanLaporanBulanan() {
         const bulan = laporanBulan.value;
         const kelas = laporanKelas.value.trim();
 
@@ -1188,6 +1282,49 @@
             return;
         }
 
+        const [th, bl] = bulan.split('-');
+        const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1];
+        const labelPeriode = 'Bulanan - ' + namaBulan + ' ' + th;
+
+        renderLaporan(data, labelPeriode, kelas);
+    }
+
+    // ===== LAPORAN MINGGUAN =====
+    function tampilkanLaporanMingguan() {
+        const bulan = laporanBulanMinggu.value;
+        const minggu = parseInt(laporanMinggu.value);
+        const kelas = laporanKelasMinggu.value.trim();
+
+        if (!bulan) {
+            showToast('❌ Pilih bulan!', 'error');
+            return;
+        }
+
+        // Hitung rentang tanggal untuk minggu tersebut
+        const startDay = (minggu - 1) * 7 + 1;
+        const endDay = Math.min(minggu * 7, 31);
+        const startDate = bulan + '-' + String(startDay).padStart(2, '0');
+        const endDate = bulan + '-' + String(endDay).padStart(2, '0');
+
+        let data = jurnalData.filter(j => j.tanggal >= startDate && j.tanggal <= endDate);
+        if (kelas) {
+            data = data.filter(j => j.kelas.toLowerCase().includes(kelas.toLowerCase()));
+        }
+
+        if (data.length === 0) {
+            laporanHasil.innerHTML = '<div class="empty"><div class="icon">📭</div><p>Tidak ada data untuk minggu ini</p></div>';
+            return;
+        }
+
+        const [th, bl] = bulan.split('-');
+        const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1];
+        const labelPeriode = 'Mingguan - Minggu ' + minggu + ' (' + formatDate(startDate) + ' - ' + formatDate(endDate) + ')';
+
+        renderLaporan(data, labelPeriode, kelas);
+    }
+
+    // ===== RENDER LAPORAN (Sama untuk Bulanan & Mingguan) =====
+    function renderLaporan(data, labelPeriode, kelas) {
         let total = 0, hadir = 0, alfa = 0;
         data.forEach(j => {
             j.presensi.forEach(p => {
@@ -1198,11 +1335,8 @@
         });
 
         const persen = total > 0 ? Math.round((hadir/total)*100) : 0;
-        const [th, bl] = bulan.split('-');
-        const namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][parseInt(bl)-1];
 
         // ===== REKAP SISWA TIDAK HADIR =====
-        // Kumpulkan semua siswa yang tidak hadir
         const alfaMap = {};
         data.forEach(j => {
             j.presensi.forEach(p => {
@@ -1220,13 +1354,12 @@
             });
         });
 
-        // Urutkan dari yang paling sering tidak hadir
         const alfaList = Object.values(alfaMap).sort((a, b) => b.jumlah - a.jumlah);
 
-        // ===== HTML LAPORAN =====
+        // ===== HTML =====
         let html = `
             <div style="margin-bottom:10px;text-align:center;border-bottom:2px solid #2563eb;padding-bottom:8px;">
-                <h3 style="margin:0;color:#2563eb;">📚 Laporan ${namaBulan} ${th}</h3>
+                <h3 style="margin:0;color:#2563eb;">📚 Laporan ${labelPeriode}</h3>
                 ${kelas ? '<p style="margin:2px 0;font-size:13px;color:#64748b;">Kelas: ' + escapeHtml(kelas) + '</p>' : ''}
                 <p style="margin:2px 0;font-size:11px;color:#94a3b8;">@Konsiva — Jurnal Guru</p>
             </div>
@@ -1249,7 +1382,7 @@
             </div>
         `;
 
-        // ===== REKAP TIDAK HADIR =====
+        // Rekap Tidak Hadir
         if (alfaList.length > 0) {
             html += `
                 <div class="rekap-alfa">
@@ -1267,7 +1400,7 @@
             `;
         }
 
-        // ===== DAFTAR JURNAL =====
+        // Detail Jurnal
         html += `
             <div style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;">
                 <h4 style="margin:0 0 6px;font-size:14px;">📋 Detail Jurnal</h4>
@@ -1291,7 +1424,7 @@
 
         laporanHasil.innerHTML = html;
         showToast('✅ ' + data.length + ' jurnal ditemukan', 'success');
-    };
+    }
 
     // ===== CETAK LAPORAN =====
     cetakLaporanBtn.onclick = function() {
