@@ -8,6 +8,7 @@
     <!-- ===== LIBRARY HTML2PDF UNTUK DOWNLOAD PDF LANGSUNG ===== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
+        /* ===== SEMUA STYLE SAMA ===== */
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 0; min-height: 100vh; }
 
@@ -748,7 +749,7 @@
             }
         } catch(e) { 
             jurnalData = [];
-            console.log('❌ Gagal muat data');
+            console.log('❌ Gagal muat数据');
         }
     }
 
@@ -1365,16 +1366,28 @@
     };
 
     // ================================================================
-    // 📄 SIMPAN PDF - LANGSUNG DOWNLOAD (PAKAI HTML2PDF)
+    // 📄 SIMPAN PDF - LANGSUNG DOWNLOAD (FIX KOSONG)
     // ================================================================
     simpanPdfBtn.onclick = function() {
         if (!isLoggedIn()) {
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
-        var content = laporanHasil.innerHTML;
-        if (!content || content.includes('Tidak ada data')) {
-            showToast('❌ Tidak ada data untuk dijadikan PDF', 'error');
+
+        // CEK: Apakah laporan sudah tampil?
+        var laporanElement = document.getElementById('laporanHasil');
+        var content = laporanElement.innerHTML;
+        
+        // CEK: Apakah ada data atau masih kosong?
+        if (!content || content.includes('Pilih periode') || content.includes('Belum ada data') || content.includes('Tidak ada data')) {
+            showToast('❌ Tampilkan laporan terlebih dahulu!', 'error');
+            return;
+        }
+
+        // CEK: Apakah benar-benar ada jurnal?
+        var jumlahJurnal = content.match(/📝 Jurnal/g);
+        if (!jumlahJurnal) {
+            showToast('❌ Tidak ada data jurnal untuk periode ini', 'error');
             return;
         }
 
@@ -1398,29 +1411,33 @@
             namaBulan = '';
         }
 
+        // ===== GUNAKAN KONTEN LAPORAN YANG SUDAH TAMPIL =====
+        var laporanContent = laporanElement.innerHTML;
+        
         // Buat elemen sementara untuk di-PDF
         var pdfContainer = document.createElement('div');
-        pdfContainer.style.padding = '20px';
+        pdfContainer.style.padding = '30px';
         pdfContainer.style.fontFamily = 'Arial, sans-serif';
         pdfContainer.style.maxWidth = '800px';
         pdfContainer.style.margin = 'auto';
         pdfContainer.style.background = 'white';
+        pdfContainer.style.width = '100%';
         
         pdfContainer.innerHTML = `
             <div style="text-align:center;border-bottom:2px solid #2563eb;padding-bottom:15px;margin-bottom:15px;">
-                <h1 style="color:#2563eb;margin:0;">📚 Laporan Jurnal Guru</h1>
-                <p style="color:#64748b;margin:3px 0;">${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
-                <p style="color:#2563eb;font-weight:600;">@Konsiva — Aplikasi Jurnal Guru</p>
+                <h1 style="color:#2563eb;margin:0;font-size:24px;">📚 Laporan Jurnal Guru</h1>
+                <p style="color:#64748b;margin:3px 0;font-size:14px;">${namaBulan} ${th} ${kelas ? '- Kelas ' + escapeHtml(kelas) : ''}</p>
+                <p style="color:#2563eb;font-weight:600;font-size:12px;">@Konsiva — Aplikasi Jurnal Guru</p>
                 <p style="font-size:11px;color:#94a3b8;">Dicetak: ${new Date().toLocaleDateString('id-ID')}</p>
             </div>
-            ${content}
+            ${laporanContent}
             <div style="text-align:center;margin-top:20px;padding-top:12px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:11px;">
                 Laporan dibuat dengan <span style="color:#2563eb;font-weight:600;">@Konsiva</span> — Jurnal Guru Digital<br>
                 © ${new Date().getFullYear()} Konsiva
             </div>
         `;
 
-        // Tambahkan ke body sementara
+        // Tambahkan ke body sementara (di luar layar)
         pdfContainer.style.position = 'fixed';
         pdfContainer.style.left = '-9999px';
         pdfContainer.style.top = '0';
@@ -1437,7 +1454,6 @@
         };
 
         html2pdf().set(opt).from(pdfContainer).save().then(function() {
-            // Selesai
             document.body.removeChild(pdfContainer);
             simpanPdfBtn.textContent = '📄 Simpan PDF';
             simpanPdfBtn.disabled = false;
