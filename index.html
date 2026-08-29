@@ -103,7 +103,6 @@
             background: #f1f5f9;
         }
 
-        /* Kode Akses dengan warna khusus */
         .kode-akses {
             border-color: #f59e0b !important;
             background: #fffbeb !important;
@@ -119,7 +118,6 @@
             display: block;
             margin-bottom: 4px;
         }
-        .label-kode .icon { font-size: 14px; }
 
         .login-box .btn {
             width: 100%;
@@ -207,7 +205,7 @@
         }
         .header .logout:hover { background: rgba(255,255,255,0.25); }
 
-        /* ===== BOTTOM NAV - Dengan status disabled ===== */
+        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -240,7 +238,7 @@
         .bottom-nav button.active { color: #2563eb; }
         .bottom-nav button .icon { font-size: 22px; }
 
-        /* ===== TOMBOL DISABLED (Sebelum Login) ===== */
+        /* ===== TOMBOL DISABLED (SEBELUM LOGIN) ===== */
         .bottom-nav button.disabled {
             color: #cbd5e1 !important;
             cursor: not-allowed !important;
@@ -257,20 +255,20 @@
             font-size: 10px;
         }
 
-        /* ===== PESAN LOCK ===== */
+        /* ===== LOCK MESSAGE ===== */
         .lock-message {
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             color: #94a3b8;
-            font-size: 13px;
+            font-size: 14px;
             background: #f8fafc;
             border-radius: 12px;
             border: 1px dashed #cbd5e1;
         }
-        .lock-message .icon { font-size: 28px; display: block; margin-bottom: 8px; }
+        .lock-message .icon { font-size: 40px; display: block; margin-bottom: 12px; }
         .lock-message strong { color: #2563eb; }
 
-        /* ===== REST OF STYLE (sama seperti sebelumnya) ===== */
+        /* ===== REST OF STYLE ===== */
         .page { display: none; padding: 14px; }
         .page.active { display: block; }
 
@@ -429,8 +427,6 @@
             border: 1px dashed #cbd5e1;
             line-height: 1.6;
         }
-        .petunjuk .icon-bullet { margin-right: 4px; }
-        .petunjuk strong { color: #1e293b; }
 
         .count-box {
             display: flex;
@@ -509,7 +505,6 @@
         </div>
 
         <form id="loginForm">
-            <!-- Kode Akses -->
             <div class="password-wrapper">
                 <input type="password" id="kodeAkses" placeholder="🔑 Kode Akses" 
                        class="kode-akses" required />
@@ -518,12 +513,10 @@
                 </button>
             </div>
             
-            <!-- Email -->
             <div class="password-wrapper">
                 <input type="email" id="loginEmail" placeholder="📧 Email" required />
             </div>
             
-            <!-- Password dengan tombol mata -->
             <div class="password-wrapper">
                 <input type="password" id="loginPassword" placeholder="🔒 Password" required minlength="4" />
                 <button type="button" class="toggle-password" data-target="loginPassword">
@@ -535,7 +528,6 @@
         </form>
 
         <form id="registerForm" style="display:none; margin-top:12px;">
-            <!-- Kode Akses -->
             <div class="password-wrapper">
                 <input type="password" id="kodeAksesRegister" placeholder="🔑 Kode Akses" 
                        class="kode-akses" required />
@@ -544,17 +536,14 @@
                 </button>
             </div>
             
-            <!-- Nama -->
             <div class="password-wrapper">
                 <input type="text" id="registerName" placeholder="👤 Nama Lengkap" required />
             </div>
             
-            <!-- Email -->
             <div class="password-wrapper">
                 <input type="email" id="registerEmail" placeholder="📧 Email" required />
             </div>
             
-            <!-- Password dengan tombol mata -->
             <div class="password-wrapper">
                 <input type="password" id="registerPassword" placeholder="🔒 Password (min 4)" required minlength="4" />
                 <button type="button" class="toggle-password" data-target="registerPassword">
@@ -614,30 +603,24 @@
 
     <!-- ===== PAGE: JURNAL ===== -->
     <div id="pageJurnal" class="page">
-        <!-- Lock message untuk yang belum login -->
         <div id="jurnalLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Jurnal</p>
         </div>
 
-        <!-- Konten Jurnal (hanya muncul setelah login) -->
         <div id="jurnalContent" style="display:none;">
             <div class="card">
                 <div class="card-title"><span>✏️ Buat Jurnal</span></div>
 
                 <div class="info-box">
                     💡 <span class="highlight">Cara pakai:</span><br>
-                    • Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b> (nama otomatis sesuai urutan absen)<br>
-                    • Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama lengkap</b> siswa yang tidak hadir<br>
-                    • Siswa yang tidak hadir otomatis statusnya ❌ Tidak Hadir
+                    • Klik <b>"✅ Semua Hadir"</b> → masukkan <b>jumlah siswa</b><br>
+                    • Klik <b>"➕ Tidak Hadir"</b> → tulis <b>nama</b> siswa yang tidak hadir
                 </div>
 
                 <div class="petunjuk">
-                    <span class="icon-bullet">📌</span> <strong>Catatan:</strong><br>
-                    • Untuk <strong>Semua Hadir</strong>, Anda <strong>tidak perlu</strong> menulis nama satu per satu.<br>
-                    • Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong> sesuai urutan absen.<br>
-                    • Untuk <strong>Tidak Hadir</strong>, tulis <strong>nama lengkap</strong> siswa yang tidak hadir.<br>
-                    • Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.
+                    📌 Nama siswa otomatis <strong>"Siswa 1", "Siswa 2", ...</strong><br>
+                    Nama yang ditulis di <strong>"Tidak Hadir"</strong> akan masuk ke laporan.
                 </div>
 
                 <form id="jurnalForm">
@@ -692,13 +675,11 @@
 
     <!-- ===== PAGE: RIWAYAT ===== -->
     <div id="pageRiwayat" class="page">
-        <!-- Lock message untuk yang belum login -->
         <div id="riwayatLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Riwayat</p>
         </div>
 
-        <!-- Konten Riwayat (hanya muncul setelah login) -->
         <div id="riwayatContent" style="display:none;">
             <div class="card">
                 <div class="card-title">
@@ -722,13 +703,11 @@
 
     <!-- ===== PAGE: LAPORAN ===== -->
     <div id="pageLaporan" class="page">
-        <!-- Lock message untuk yang belum login -->
         <div id="laporanLock" class="lock-message" style="display:none;">
             <div class="icon">🔒</div>
             <p><strong>Silakan login terlebih dahulu</strong><br>untuk mengakses halaman Laporan</p>
         </div>
 
-        <!-- Konten Laporan (hanya muncul setelah login) -->
         <div id="laporanContent" style="display:none;">
             <div class="card">
                 <div class="card-title">
@@ -805,7 +784,7 @@
             <span class="icon">📋</span>
             <span>Riwayat</span>
         </button>
-        <button class="nav-item" data-page="laporan" id="navLaporan">
+        <button class="nav-item disabled" data-page="laporan" id="navLaporan">
             <span class="icon">📊</span>
             <span>Laporan</span>
         </button>
@@ -822,7 +801,7 @@
     // ================================================================
     // 🔑 KONFIGURASI PASSWORD GLOBAL
     // ================================================================
-    const KODE_AKSES = 'KONSIVA77';  // <-- GANTI dengan kode pilihan Anda!
+    const KODE_AKSES = 'konsiva26';  // <-- GANTI dengan kode pilihan Anda!
 
     const STORAGE_KEY = 'jurnalData';
     const USER_KEY = 'jurnalUser';
@@ -866,7 +845,7 @@
         laporan: $('pageLaporan')
     };
 
-    // Lock messages
+    // Lock messages & content
     const jurnalLock = $('jurnalLock');
     const jurnalContent = $('jurnalContent');
     const riwayatLock = $('riwayatLock');
@@ -1027,10 +1006,10 @@
     }
 
     // ================================================================
-    // 🔐 CEK KODE AKSES
+    // 🔐 CEK KODE AKSES (Tidak peduli huruf besar/kecil & spasi)
     // ================================================================
     function cekKodeAkses(kode) {
-        return kode === KODE_AKSES;
+        return kode.trim().toUpperCase() === KODE_AKSES.trim().toUpperCase();
     }
 
     // ================================================================
@@ -1239,7 +1218,7 @@
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
-        const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25\n\n📌 Nama siswa otomatis "Siswa 1, Siswa 2, ..." sesuai urutan absen.');
+        const input = prompt('📝 Masukkan JUMLAH siswa yang hadir:\n\nContoh: 25\n\n📌 Nama siswa otomatis "Siswa 1, Siswa 2, ..."');
         if (input && input.trim() !== '') {
             const jumlah = parseInt(input.trim());
             if (isNaN(jumlah) || jumlah <= 0) {
@@ -1270,7 +1249,7 @@
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
-        const nama = prompt('📝 Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\n\nContoh: Andi, Budi, Cici\n\n📌 Nama akan masuk ke laporan.');
+        const nama = prompt('📝 Masukkan nama siswa yang TIDAK HADIR (pisahkan dengan koma):\n\nContoh: Andi, Budi, Cici');
         if (nama && nama.trim() !== '') {
             const names = nama.split(',').map(n => n.trim()).filter(n => n !== '');
             names.forEach(n => {
@@ -1413,7 +1392,7 @@
         }
     }
 
-    // RIWAYAT
+    // ===== RIWAYAT =====
     function renderRiwayat() {
         if (!isLoggedIn()) return;
 
@@ -1762,8 +1741,8 @@
     // NAVIGASI
     // ================================================================
     window.showPage = function(page) {
-        // Cek apakah page yang dituju memerlukan login
-        if ((page === 'jurnal' || page === 'riwayat' || page === 'laporan') && !isLoggedIn()) {
+        // Jika belum login dan bukan home, tolak
+        if (!isLoggedIn() && page !== 'home') {
             showToast('🔒 Silakan login terlebih dahulu!', 'error');
             return;
         }
@@ -1784,6 +1763,7 @@
             }
         });
 
+        // Render konten
         if (page === 'riwayat') renderRiwayat();
         if (page === 'home') renderHome();
     };
@@ -1793,7 +1773,7 @@
         btn.addEventListener('click', function() {
             const page = this.dataset.page;
             
-            // Jika tombol disabled, tidak bisa diklik
+            // Jika tombol disabled, tampilkan pesan
             if (this.classList.contains('disabled')) {
                 showToast('🔒 Silakan login terlebih dahulu!', 'error');
                 return;
